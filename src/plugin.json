@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "panel",
+  "name": "Grafana Intelligence Gateway",
+  "id": "digitalrcs-intelligencegateway-panel",
+  "info": {
+    "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "panel"],
+    "description": "AI-assisted assessments of Grafana dashboard data using OpenAI, LM Studio, compatible APIs, or experimental Copilot messaging endpoints.",
+    "author": {
+      "name": "DigitalRCS",
+      "url": "https://www.digitalrcs.com"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      { "name": "DigitalRCS", "url": "https://www.digitalrcs.com" },
+      { "name": "Source", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway" },
+      { "name": "Documentation", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway" },
+      { "name": "Issues", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues" }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.4.0",
+    "plugins": []
+  }
+}
