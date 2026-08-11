@@ -23,5 +23,5 @@ test('exposes the manual analysis behavior option', async ({ gotoPanelEditPage, 
   const panelEditPage = await gotoPanelEditPage({ dashboard, id: '1' });
   const behavior = panelEditPage.getCustomOptions('Behavior');
   const analyzeButton = behavior.getSwitch('Show Analyze button');
-  await expect(analyzeButton.locator).toBeChecked();
+  await expect(analyzeButton).toBeChecked();
 });
