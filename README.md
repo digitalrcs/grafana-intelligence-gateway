@@ -6,7 +6,7 @@
 Grafana Intelligence Gateway is a panel plugin by **DigitalRCS** that turns Grafana DataFrames into focused AI assessments. It supports OpenAI, LM Studio, custom OpenAI-compatible chat-completions APIs, and an experimental Copilot Studio messaging mode.
 
 Plugin ID: `digitalrcs-intelligencegateway-panel`  
-Grafana: `>=10.4.0` (the multi-version GitHub Actions E2E matrix is the compatibility authority)
+Grafana: `>=11.6.0` (the multi-version GitHub Actions E2E matrix is the compatibility authority)
 
 ![Grafana Intelligence Gateway assessment and configuration](docs/images/configuration-model-generation.png)
 

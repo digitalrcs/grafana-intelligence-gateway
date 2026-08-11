@@ -6,7 +6,7 @@ This page tracks the repository items used for Grafana plugin catalog review. Gr
 
 - Plugin ID: `digitalrcs-intelligencegateway-panel`
 - Plugin type: panel
-- Declared Grafana dependency: `>=10.4.0`
+- Declared Grafana dependency: `>=11.6.0`
 - Frontend: TypeScript, React, and Grafana public plugin APIs
 - Backend binary: none
 - License: Apache-2.0
