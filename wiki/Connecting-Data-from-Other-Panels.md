@@ -34,4 +34,4 @@ Use transformed source results when the source panel already filters, joins, ren
 
 Repeated rows and tabs can reference the source in the original row rather than the repeated copy. Prefer explicit, non-repeated source panels for AI assessment.
 
-See the complete repository guide: [`docs/CONNECTING_DATA.md`](../docs/CONNECTING_DATA.md).
+See the complete repository guide: [`docs/CONNECTING_DATA.md`](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/CONNECTING_DATA.md).

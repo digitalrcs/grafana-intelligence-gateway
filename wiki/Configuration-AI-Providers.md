@@ -6,4 +6,4 @@ LM Studio also provides a reasoning-effort control. Reasoning tokens share the c
 
 OpenAI-compatible base URLs should end at `/v1`; the panel appends `/chat/completions`. Streaming uses browser `fetch` and SSE. Buffered requests use Grafana's frontend request service. Both require the remote server to allow the Grafana browser origin unless a backend proxy is introduced.
 
-Panel option credentials are not secure storage. See [Security Considerations](Security-Considerations.md).
+Panel option credentials are not secure storage. See [Security Considerations](Security-Considerations).

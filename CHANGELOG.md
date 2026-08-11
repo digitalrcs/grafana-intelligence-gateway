@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added a Clear analysis control that removes generated output and errors and cancels an in-progress request without changing panel configuration or source data.
+
 ## 1.0.0 - 2026-08-11
 
 - Initial release of Grafana Intelligence Gateway.

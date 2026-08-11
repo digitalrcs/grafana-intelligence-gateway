@@ -4,7 +4,7 @@ Grafana Intelligence Gateway is DigitalRCS's AI assessment panel for Grafana. It
 
 ![Grafana Intelligence Gateway assessment](images/panel-assessment.png)
 
-Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration.md). It covers the complete dashboard-data connection, provider setup, every panel option, realistic example values, and the first analysis. Then use the provider-specific and prompt guides as needed.
+Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration). It covers the complete dashboard-data connection, provider setup, every panel option, realistic example values, and the first analysis. Then use the provider-specific and prompt guides as needed.
 
 ## Pages
 

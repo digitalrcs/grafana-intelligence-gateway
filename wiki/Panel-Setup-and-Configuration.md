@@ -98,18 +98,19 @@ Each serialized frame includes its name, query reference ID, field names and typ
 
 ![Behavior and display controls](images/configuration-data-behavior.png)
 
-| Option                          | What it does                                                   | Example value                                  |
-| ------------------------------- | -------------------------------------------------------------- | ---------------------------------------------- |
-| **Analyze automatically**       | Runs analysis after data, time range, or prompt changes.       | `Off` initially                                |
-| **Auto-analysis debounce (ms)** | Waits before an automatic run to combine rapid updates.        | `1200`                                         |
-| **Show Analyze button**         | Shows the manual Analyze/Refresh assessment button.            | `On`                                           |
-| **Assessment title**            | Heading rendered above the AI response.                        | `Intelligence assessment`                      |
-| **Description**                 | Optional explanatory text below the heading.                   | `AI review of the selected production metrics` |
-| **Background color**            | Panel response background.                                     | `transparent` or `#111827`                     |
-| **Text color**                  | Explicit response text color. Blank follows the Grafana theme. | blank or `#E5E7EB`                             |
-| **Font size**                   | Response font size in pixels.                                  | `14`                                           |
-| **Padding**                     | Inner panel spacing in pixels.                                 | `16`                                           |
-| **Alignment**                   | Left, center, or right text alignment.                         | `Left`                                         |
+| Option                          | What it does                                                                                                                                                                   | Example value                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| **Analyze automatically**       | Runs analysis after data, time range, or prompt changes.                                                                                                                       | `Off` initially                                        |
+| **Auto-analysis debounce (ms)** | Waits before an automatic run to combine rapid updates.                                                                                                                        | `1200`                                                 |
+| **Show Analyze button**         | Shows the manual Analyze/Refresh assessment button.                                                                                                                            | `On`                                                   |
+| **Clear analysis**              | Removes the current response or error and cancels an in-progress request without changing panel settings or source data. This button appears when there is something to clear. | Select after reviewing or before sharing the dashboard |
+| **Assessment title**            | Heading rendered above the AI response.                                                                                                                                        | `Intelligence assessment`                              |
+| **Description**                 | Optional explanatory text below the heading.                                                                                                                                   | `AI review of the selected production metrics`         |
+| **Background color**            | Panel response background.                                                                                                                                                     | `transparent` or `#111827`                             |
+| **Text color**                  | Explicit response text color. Blank follows the Grafana theme.                                                                                                                 | blank or `#E5E7EB`                                     |
+| **Font size**                   | Response font size in pixels.                                                                                                                                                  | `14`                                                   |
+| **Padding**                     | Inner panel spacing in pixels.                                                                                                                                                 | `16`                                                   |
+| **Alignment**                   | Left, center, or right text alignment.                                                                                                                                         | `Left`                                                 |
 
 Start with manual analysis. Enable automatic analysis only after the provider, prompt, data limits, and rate/cost behavior are understood.
 
@@ -119,7 +120,8 @@ Start with manual analysis. Enable automatic analysis only after the provider, p
 2. Confirm LM Studio or the remote provider receives the request.
 3. Confirm the response appears as formatted Markdown.
 4. Verify cited timestamps, series names, and values against the source panel.
-5. Save the dashboard.
+5. Select **Clear analysis** to confirm the response is removed without changing the configuration.
+6. Save the dashboard.
 
 ![Completed AI assessment](images/panel-assessment.png)
 
@@ -134,4 +136,4 @@ Start with manual analysis. Enable automatic analysis only after the provider, p
 | HTTPS Grafana cannot call HTTP LM Studio            | Browser mixed-content policy blocked the request.                | Put LM Studio behind local TLS or a backend proxy.                                                    |
 | No source data                                      | Dashboard data source is not connected or source panel is empty. | Re-select `-- Dashboard --`, choose the source panel, and inspect its data for the active time range. |
 
-See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels.md) for transformations, repeated panels, multiple frames, and query-inspector guidance.
+See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels) for transformations, repeated panels, multiple frames, and query-inspector guidance.

@@ -18,7 +18,7 @@ For the complete setup guide, every panel option, example values, provider-speci
 - Serializes field names, types, labels, units, recent rows, and the active time range.
 - Supports `{{data}}`, `{{timeRange}}`, `{{panelTitle}}`, `{{panelId}}`, `{{skills}}`, and `{{sourcePanel}}` prompt variables plus Grafana dashboard variables.
 - Provides system instructions, a user template, reusable skills/context, and a live constructed-prompt preview.
-- Offers manual analysis, optional debounced auto-analysis, context-size controls, buffered requests, and OpenAI-compatible SSE streaming.
+- Offers manual analysis, a clear-analysis control, optional debounced auto-analysis, context-size controls, buffered requests, and OpenAI-compatible SSE streaming.
 - Renders sanitized Markdown through Grafana UI with theme-aware colors, loading state, actionable errors, and configurable typography/layout.
 
 ## Security boundary
