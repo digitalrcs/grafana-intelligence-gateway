@@ -6,9 +6,11 @@
 Grafana Intelligence Gateway is a panel plugin by **DigitalRCS** that turns Grafana DataFrames into focused AI assessments. It supports OpenAI, LM Studio, custom OpenAI-compatible chat-completions APIs, and an experimental Copilot Studio messaging mode.
 
 Plugin ID: `digitalrcs-intelligencegateway-panel`  
-Grafana: `>=10.4.0` (designed for Grafana 10.4, 11, and 12; CI should remain the compatibility authority)
+Grafana: `>=10.4.0` (the multi-version GitHub Actions E2E matrix is the compatibility authority)
 
-> Screenshot placeholder: add `docs/images/panel-assessment.png` after capturing a real panel in both light and dark themes before catalog submission.
+![Grafana Intelligence Gateway assessment and configuration](docs/images/configuration-model-generation.png)
+
+For the complete setup guide, every panel option, example values, provider-specific instructions, and troubleshooting, use the [GitHub Wiki](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki).
 
 ## Features
 
@@ -61,6 +63,8 @@ The **Source panel title or ID (hint)** option adds a label to the prompt; it do
 
 For screenshots-independent, step-by-step instructions, transformation choices, dashboard JSON, multiple-frame behavior, and troubleshooting, see [Connecting data from another Grafana panel](docs/CONNECTING_DATA.md).
 
+The illustrated setup walkthrough is in [Panel Setup and Configuration](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Panel-Setup-and-Configuration).
+
 ## Provider configuration
 
 ### OpenAI
@@ -104,7 +108,9 @@ npm run build
 npm run sign -- --rootUrls https://grafana.example.com/
 ```
 
-For community catalog signing, ensure the `digitalrcs` prefix matches the Grafana Cloud organization slug, add real screenshots to `src/plugin.json`, create a GitHub release from the exact source tag, and submit the artifact through Grafana's plugin submission process. Restart Grafana after any `plugin.json` change.
+For community catalog signing, ensure the `digitalrcs` prefix matches the Grafana Cloud organization slug, configure the `GRAFANA_ACCESS_POLICY_TOKEN` GitHub secret after Grafana grants a public signature level, create a GitHub release from the exact source tag, and submit the artifact through Grafana's plugin submission process. Restart Grafana after any `plugin.json` change.
+
+See [Grafana Compatibility and Certification](docs/CERTIFICATION.md) for the current readiness checklist and the exact submission fields.
 
 ## Repository map
 
@@ -115,7 +121,7 @@ For community catalog signing, ensure the `digitalrcs` prefix matches the Grafan
 - `src/module.ts` — panel option registration.
 - `provisioning/dashboards/dashboard.json` — local development dashboard.
 - `examples/dashboard.json` — importable configuration example.
-- `wiki/` — ready-to-publish GitHub Wiki pages.
+- `wiki/` — source for the published GitHub Wiki pages.
 
 ## Roadmap
 
