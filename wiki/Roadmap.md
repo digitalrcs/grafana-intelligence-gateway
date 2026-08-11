@@ -3,7 +3,7 @@
 ## Near term
 
 - Backend proxy and secure credential storage.
-- Continue compatibility testing against supported Grafana releases and nightly builds.
+- Continue compatibility testing against supported Grafana releases.
 - Provider-specific endpoint validation and connection testing.
 - Stronger request cancellation, retry policy, and per-provider error guidance.
 

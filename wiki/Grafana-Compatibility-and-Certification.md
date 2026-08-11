@@ -11,7 +11,7 @@ This page tracks the repository items used for Grafana plugin catalog review. Gr
 - Backend binary: none
 - License: Apache-2.0
 
-The CI matrix builds, lints, type-checks, unit-tests, packages, validates metadata, and runs `@grafana/plugin-e2e` across supported Grafana Enterprise releases and a nightly image. The repository's GitHub Actions results are the compatibility authority.
+The CI matrix builds, lints, type-checks, unit-tests, packages, validates metadata, and runs `@grafana/plugin-e2e` across supported released Grafana Enterprise versions. The repository's GitHub Actions results are the compatibility authority.
 
 ## Repository readiness
 
