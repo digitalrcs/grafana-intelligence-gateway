@@ -6,9 +6,11 @@
 Grafana Intelligence Gateway is a panel plugin by **DigitalRCS** that turns Grafana DataFrames into focused AI assessments. It supports OpenAI, LM Studio, custom OpenAI-compatible chat-completions APIs, and an experimental Copilot Studio messaging mode.
 
 Plugin ID: `digitalrcs-intelligencegateway-panel`  
-Grafana: `>=10.4.0` (designed for Grafana 10.4, 11, and 12; CI should remain the compatibility authority)
+Grafana: `>=11.6.0` (the multi-version GitHub Actions E2E matrix is the compatibility authority)
 
-> Screenshot placeholder: add `docs/images/panel-assessment.png` after capturing a real panel in both light and dark themes before catalog submission.
+![Grafana Intelligence Gateway assessment and configuration](docs/images/configuration-model-generation.png)
+
+For the complete setup guide, every panel option, example values, provider-specific instructions, and troubleshooting, use the [GitHub Wiki](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki).
 
 ## Features
 
@@ -16,14 +18,19 @@ Grafana: `>=10.4.0` (designed for Grafana 10.4, 11, and 12; CI should remain the
 - Serializes field names, types, labels, units, recent rows, and the active time range.
 - Supports `{{data}}`, `{{timeRange}}`, `{{panelTitle}}`, `{{panelId}}`, `{{skills}}`, and `{{sourcePanel}}` prompt variables plus Grafana dashboard variables.
 - Provides system instructions, a user template, reusable skills/context, and a live constructed-prompt preview.
-- Offers manual analysis, optional debounced auto-analysis, context-size controls, buffered requests, and OpenAI-compatible SSE streaming.
+- Offers manual analysis, a clear-analysis control, optional debounced auto-analysis, context-size controls, buffered requests, and OpenAI-compatible SSE streaming.
+- Provides a hard output-token slider up to 1,048,576, a provider-default/no-panel-cap mode, and a separate soft visible-answer length instruction.
 - Renders sanitized Markdown through Grafana UI with theme-aware colors, loading state, actionable errors, and configurable typography/layout.
 
-## Security boundary
+## Secure production mode
 
-This is a frontend-only panel. **Panel options cannot use Grafana `secureJsonData`; any API key or token saved here is serialized into dashboard JSON and may be readable by users with dashboard access.** The editor masks the input but does not make storage secure.
+Install the companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource), configure its provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**. The panel then stores only the data-source UID and non-secret generation choices. Prompts go through Grafana's authenticated resource API; the decrypted credential never reaches dashboard JSON or browser code.
 
-Use only restricted development credentials in panel options. For production, add a Grafana backend/data-source component that owns secrets in `secureJsonData`, allow-lists provider hosts, applies authentication server-side, and proxies requests. Never export or commit dashboards containing real credentials.
+HTTPS is required by default. Data-source administrators can explicitly enable **Allow insecure HTTP** when an organizational provider endpoint cannot be classified reliably by hostname or IP range. The override permits HTTP regardless of address classification, so credentials and prompts may be exposed in transit.
+
+Direct provider modes remain available for local LM Studio and restricted development credentials. **Any API key or token entered directly into panel options is serialized into dashboard JSON.** Never use a production credential there or export a dashboard containing one.
+
+See [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) for the panel workflow and the [data-source wiki](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki) for installation, provisioning, reviewer setup, and enforced backend policies.
 
 ## Install for development
 
@@ -35,7 +42,9 @@ npm run dev
 docker compose up
 ```
 
-Open <http://localhost:3000> and sign in with `admin` / `admin`. The development compose file enables loading the unsigned plugin.
+Open <http://localhost:3004>. The integrated Docker environment mounts both sibling plugins and provisions an `Intelligence Gateway Secure AI` data source. Build the companion frontend and Linux backend first; set `OPENAI_API_KEY` in the shell before `docker compose up` to run live OpenAI analysis. Anonymous Admin access is enabled only in this local development container.
+
+The provisioned test dashboard uses [`testdata/datasource.csv`](testdata/datasource.csv). After replacing that file, run `npm run sync:test-data` and restart Grafana. The command embeds the CSV in Grafana TestData's **CSV Content** query and adjusts the dashboard time range to the file's timestamps.
 
 Production build:
 
@@ -61,7 +70,17 @@ The **Source panel title or ID (hint)** option adds a label to the prompt; it do
 
 For screenshots-independent, step-by-step instructions, transformation choices, dashboard JSON, multiple-frame behavior, and troubleshooting, see [Connecting data from another Grafana panel](docs/CONNECTING_DATA.md).
 
+The illustrated setup walkthrough is in [Panel Setup and Configuration](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Panel-Setup-and-Configuration).
+
 ## Provider configuration
+
+### Secure AI data source (recommended)
+
+- Install and configure the companion data source.
+- Select it under **Secure AI data source**.
+- Select or enter an administrator-allowed model.
+- Configure temperature and the panel request cap. The backend applies the lower of the panel cap and administrator ceiling.
+- Secure mode is buffered in the current panel integration; direct browser streaming remains available only in direct modes.
 
 ### OpenAI
 
@@ -104,7 +123,9 @@ npm run build
 npm run sign -- --rootUrls https://grafana.example.com/
 ```
 
-For community catalog signing, ensure the `digitalrcs` prefix matches the Grafana Cloud organization slug, add real screenshots to `src/plugin.json`, create a GitHub release from the exact source tag, and submit the artifact through Grafana's plugin submission process. Restart Grafana after any `plugin.json` change.
+For community catalog signing, ensure the `digitalrcs` prefix matches the Grafana Cloud organization slug, configure the `GRAFANA_ACCESS_POLICY_TOKEN` GitHub secret after Grafana grants a public signature level, create a GitHub release from the exact source tag, and submit the artifact through Grafana's plugin submission process. Restart Grafana after any `plugin.json` change.
+
+See [Grafana Compatibility and Certification](docs/CERTIFICATION.md) for the current readiness checklist and the exact submission fields.
 
 ## Repository map
 
@@ -115,12 +136,12 @@ For community catalog signing, ensure the `digitalrcs` prefix matches the Grafan
 - `src/module.ts` — panel option registration.
 - `provisioning/dashboards/dashboard.json` — local development dashboard.
 - `examples/dashboard.json` — importable configuration example.
-- `wiki/` — ready-to-publish GitHub Wiki pages.
+- `wiki/` — source for the published GitHub Wiki pages.
 
 ## Roadmap
 
-- Backend proxy and `secureJsonData` secret storage.
-- Host allow-listing, server-side audit controls, and per-user/provider quotas.
+- OpenAI Responses API and richer secure streaming support.
+- Server-side audit controls and per-user/provider quotas.
 - Provider-specific adapters for OpenAI Responses API and Copilot conversations.
 - Multi-panel context selection using supported Grafana APIs as they become available.
 - Response persistence, citations back to fields/timestamps, and richer streaming controls.

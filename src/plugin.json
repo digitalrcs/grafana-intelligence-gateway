@@ -20,12 +20,15 @@
       { "name": "Documentation", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway" },
       { "name": "Issues", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues" }
     ],
-    "screenshots": [],
+    "screenshots": [
+      { "name": "AI assessment and model controls", "path": "img/panel-assessment.png" },
+      { "name": "AI provider configuration", "path": "img/configuration-ai-provider.png" }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaDependency": ">=10.4.0",
+    "grafanaDependency": ">=11.6.0",
     "plugins": []
   }
 }

@@ -68,6 +68,15 @@ export const IntelligenceGatewayPanel = ({
   }, [dataContext, id, options, replaceVariables, timeRange, title]);
   const responseHtml = useMemo(() => renderMarkdown(response), [response]);
 
+  const clearAnalysis = useCallback(() => {
+    requestSequence.current += 1;
+    abortController.current?.abort();
+    abortController.current = undefined;
+    setResponse('');
+    setError('');
+    setLoading(false);
+  }, []);
+
   const analyze = useCallback(async () => {
     if (data.series.length === 0 && options.emptyDataBehavior === 'block') {
       setError('No data is available. Configure a query (preferably the Dashboard data source) before analysis.');
@@ -146,11 +155,25 @@ export const IntelligenceGatewayPanel = ({
             {options.responseTitle ? <h3 className={styles.heading}>{options.responseTitle}</h3> : null}
             {options.responseDescription ? <p className={styles.description}>{options.responseDescription}</p> : null}
           </div>
-          {options.showAnalyzeButton ? (
-            <Button size="sm" icon="robot" onClick={() => void analyze()} disabled={loading}>
-              {response ? 'Refresh assessment' : 'Analyze'}
-            </Button>
-          ) : null}
+          <Stack direction="row" gap={1}>
+            {response || error || loading ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                icon="trash-alt"
+                onClick={clearAnalysis}
+                data-testid="clear-analysis-button"
+              >
+                Clear analysis
+              </Button>
+            ) : null}
+            {options.showAnalyzeButton ? (
+              <Button type="button" size="sm" icon="robot" onClick={() => void analyze()} disabled={loading}>
+                {response ? 'Refresh assessment' : 'Analyze'}
+              </Button>
+            ) : null}
+          </Stack>
         </div>
 
         {data.series.length === 0 && options.emptyDataBehavior === 'warn' ? (

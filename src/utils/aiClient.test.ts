@@ -1,4 +1,13 @@
-import { extractModelIds, extractResponseText } from './aiClient';
+import { getDataSourceSrv } from '@grafana/runtime';
+import { DEFAULT_OPTIONS } from '../types';
+import { analyzeWithAI, extractModelIds, extractResponseText, fetchAvailableModels } from './aiClient';
+
+jest.mock('@grafana/runtime', () => ({
+  getBackendSrv: jest.fn(),
+  getDataSourceSrv: jest.fn(),
+}));
+
+const mockedGetDataSourceSrv = jest.mocked(getDataSourceSrv);
 
 describe('extractResponseText', () => {
   it('reads an OpenAI chat completion', () => {
@@ -40,5 +49,52 @@ describe('extractModelIds', () => {
       'local-model',
       'named-model',
     ]);
+  });
+});
+
+describe('secure data source transport', () => {
+  const getResource = jest.fn();
+  const postResource = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockedGetDataSourceSrv.mockReturnValue({
+      get: jest.fn().mockResolvedValue({
+        type: 'digitalrcs-intelligencegateway-datasource',
+        getResource,
+        postResource,
+      }),
+    } as unknown as ReturnType<typeof getDataSourceSrv>);
+  });
+
+  it('loads models through the selected backend resource', async () => {
+    getResource.mockResolvedValue({ data: [{ id: 'secure-model' }] });
+
+    await expect(
+      fetchAvailableModels({ secureDataSourceUid: 'secure-uid', baseUrl: '', apiKey: '' })
+    ).resolves.toEqual(['secure-model']);
+    expect(getResource).toHaveBeenCalledWith('models');
+  });
+
+  it('sends prompts without credentials through the selected backend resource', async () => {
+    postResource.mockResolvedValue({ choices: [{ message: { content: 'Secure assessment' } }] });
+
+    await expect(
+      analyzeWithAI({
+        options: { ...DEFAULT_OPTIONS, secureDataSourceUid: 'secure-uid' },
+        prompt: { system: 'system', user: 'user' },
+      })
+    ).resolves.toBe('Secure assessment');
+
+    expect(postResource).toHaveBeenCalledWith(
+      'chat/completions',
+      expect.objectContaining({
+        prompt: { system: 'system', user: 'user' },
+        model: DEFAULT_OPTIONS.model,
+        maxOutputTokens: DEFAULT_OPTIONS.maxTokens,
+        stream: false,
+      }),
+      expect.objectContaining({ abortSignal: expect.any(AbortSignal) })
+    );
   });
 });

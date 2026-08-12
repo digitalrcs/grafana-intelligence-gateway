@@ -147,6 +147,9 @@ jobs:
       - name: Resolve Grafana E2E versions
         id: resolve-versions
         uses: grafana/plugin-actions/e2e-version@e2e-version/v3.0.1
+        with:
+          # Certify released Grafana versions. Nightly UI changes are tested upstream by plugin-e2e.
+          skip-grafana-nightly-image: true
 
   playwright-tests:
     needs: [resolve-versions, build]
@@ -168,6 +171,13 @@ jobs:
           path: dist
           name: ${{ needs.build.outputs.plugin-id }}-${{ needs.build.outputs.plugin-version }}
 
+      - name: Checkout secure companion data source
+        uses: actions/checkout@v6
+        with:
+          repository: DigitalRCS/grafana-intelligence-gateway-datasource
+          path: companion-datasource
+          persist-credentials: false
+
       - name: Execute permissions on binary
         if: needs.build.outputs.has-backend == 'true'
         run: |
@@ -179,18 +189,31 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Setup Go environment
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: companion-datasource/go.mod
+          cache-dependency-path: companion-datasource/go.sum
+
       - name: Install dev dependencies
         run: npm ci
+
+      - name: Build secure companion data source
+        run: |
+          npm ci --prefix companion-datasource
+          npm run build --prefix companion-datasource
+          cd companion-datasource
+          go run github.com/magefile/mage@v1.15.0 buildAll
 
       - name: Start Grafana
         run: |
           docker compose pull
-          ANONYMOUS_AUTH_ENABLED=false DEVELOPMENT=false GRAFANA_VERSION=${{ matrix.GRAFANA_IMAGE.VERSION }} GRAFANA_IMAGE=${{ matrix.GRAFANA_IMAGE.NAME }} docker compose up -d
+          ANONYMOUS_AUTH_ENABLED=false DEVELOPMENT=false INTELLIGENCE_GATEWAY_DATASOURCE_DIST=./companion-datasource/dist GRAFANA_VERSION=${{ matrix.GRAFANA_IMAGE.VERSION }} GRAFANA_IMAGE=${{ matrix.GRAFANA_IMAGE.NAME }} docker compose up -d
 
       - name: Wait for grafana server
         uses: grafana/plugin-actions/wait-for-grafana@wait-for-grafana/v1.0.4
         with:
-          url: http://localhost:3000/login
+          url: http://localhost:3004/login
 
       - name: Install Playwright Browsers
         run: npm exec playwright install chromium --with-deps
@@ -198,6 +221,8 @@ jobs:
       - name: Run Playwright tests
         id: run-tests
         run: npm run e2e
+        env:
+          GRAFANA_URL: http://localhost:3004
 
       - name: Docker logs
         if: ${{ always() && steps.run-tests.outcome == 'failure' }}

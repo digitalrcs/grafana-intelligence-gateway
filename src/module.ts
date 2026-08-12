@@ -3,6 +3,7 @@ import { ApiKeyEditor } from './components/ApiKeyEditor';
 import { IntelligenceGatewayPanel } from './components/IntelligenceGatewayPanel';
 import { ModelEditor } from './components/ModelEditor';
 import { PromptPreviewEditor } from './components/PromptPreviewEditor';
+import { SecureDataSourceEditor } from './components/SecureDataSourceEditor';
 import { AIProvider, DEFAULT_OPTIONS, IntelligenceGatewayOptions, ReasoningEffort } from './types';
 
 const providerOptions: Array<SelectableValue<AIProvider>> = [
@@ -22,12 +23,23 @@ const reasoningEffortOptions: Array<SelectableValue<ReasoningEffort>> = [
 
 export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGatewayPanel).setPanelOptions((builder) =>
   builder
+    .addCustomEditor({
+      id: 'secureDataSourceUid',
+      path: 'secureDataSourceUid',
+      name: 'Secure AI data source',
+      description:
+        'Recommended for production. Select a digitalrcs-intelligencegateway-datasource instance to keep credentials and provider policy on the Grafana server.',
+      category: ['AI provider'],
+      editor: SecureDataSourceEditor,
+      defaultValue: DEFAULT_OPTIONS.secureDataSourceUid,
+    })
     .addSelect({
       path: 'provider',
       name: 'Provider',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.provider,
       settings: { options: providerOptions },
+      showIf: (options) => !options.secureDataSourceUid,
     })
     .addCustomEditor({
       id: 'apiKey',
@@ -37,7 +49,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       editor: ApiKeyEditor,
       defaultValue: DEFAULT_OPTIONS.apiKey,
-      showIf: (options) => options.provider !== 'copilot',
+      showIf: (options) => !options.secureDataSourceUid && options.provider !== 'copilot',
     })
     .addTextInput({
       path: 'baseUrl',
@@ -45,7 +57,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       description: 'OpenAI defaults to https://api.openai.com/v1. LM Studio commonly uses http://localhost:1234/v1.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.baseUrl,
-      showIf: (options) => options.provider !== 'copilot',
+      showIf: (options) => !options.secureDataSourceUid && options.provider !== 'copilot',
     })
     .addCustomEditor({
       id: 'model',
@@ -55,7 +67,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       editor: ModelEditor,
       defaultValue: DEFAULT_OPTIONS.model,
-      showIf: (options) => options.provider !== 'copilot',
+      showIf: (options) => options.secureDataSourceUid !== '' || options.provider !== 'copilot',
     })
     .addTextInput({
       path: 'copilotEndpoint',
@@ -63,7 +75,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       description: 'Experimental: enter the complete Direct Line or compatible messaging URL.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.copilotEndpoint,
-      showIf: (options) => options.provider === 'copilot',
+      showIf: (options) => !options.secureDataSourceUid && options.provider === 'copilot',
     })
     .addCustomEditor({
       id: 'copilotToken',
@@ -73,7 +85,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       editor: ApiKeyEditor,
       defaultValue: DEFAULT_OPTIONS.copilotToken,
-      showIf: (options) => options.provider === 'copilot',
+      showIf: (options) => !options.secureDataSourceUid && options.provider === 'copilot',
     })
     .addSliderInput({
       path: 'temperature',
@@ -81,15 +93,36 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.temperature,
       settings: { min: 0, max: 2, step: 0.1 },
-      showIf: (options) => options.provider !== 'copilot',
+      showIf: (options) => options.secureDataSourceUid !== '' || options.provider !== 'copilot',
     })
-    .addNumberInput({
+    .addBooleanSwitch({
+      path: 'unlimitedOutputTokens',
+      name: 'Provider/model default output limit',
+      description:
+        'Omits max_tokens from the request. This removes the panel cap but does not bypass the provider, model, context-window, or account limits.',
+      category: ['AI provider'],
+      defaultValue: DEFAULT_OPTIONS.unlimitedOutputTokens,
+      showIf: (options) => options.secureDataSourceUid !== '' || options.provider !== 'copilot',
+    })
+    .addSliderInput({
       path: 'maxTokens',
       name: 'Maximum output tokens',
+      description: 'Hard request cap for output and, on many models, hidden reasoning. Supports up to 1,048,576 tokens.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.maxTokens,
-      settings: { min: 64, max: 32768, integer: true },
-      showIf: (options) => options.provider !== 'copilot',
+      settings: { min: 64, max: 1048576, step: 64 },
+      showIf: (options) =>
+        (options.secureDataSourceUid !== '' || options.provider !== 'copilot') && !options.unlimitedOutputTokens,
+    })
+    .addNumberInput({
+      path: 'responseLengthTokens',
+      name: 'Requested answer max tokens (soft)',
+      description:
+        'Adds a prompt instruction asking for a shorter visible answer. Use 0 for no length instruction. Models may only approximate token counts.',
+      category: ['AI provider'],
+      defaultValue: DEFAULT_OPTIONS.responseLengthTokens,
+      settings: { min: 0, max: 1048576, integer: true },
+      showIf: (options) => options.secureDataSourceUid !== '' || options.provider !== 'copilot',
     })
     .addSelect({
       path: 'reasoningEffort',
@@ -99,7 +132,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.reasoningEffort,
       settings: { options: reasoningEffortOptions },
-      showIf: (options) => options.provider === 'lmstudio',
+      showIf: (options) => !options.secureDataSourceUid && options.provider === 'lmstudio',
     })
     .addNumberInput({
       path: 'responseTimeoutSeconds',
@@ -108,15 +141,15 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.responseTimeoutSeconds,
       settings: { min: 10, max: 3600, integer: true },
-      showIf: (options) => options.provider !== 'copilot',
+      showIf: (options) => !options.secureDataSourceUid && options.provider !== 'copilot',
     })
     .addBooleanSwitch({
       path: 'streaming',
       name: 'Stream response',
-      description: 'Uses browser streaming and therefore requires endpoint CORS support. Copilot mode is buffered.',
+      description: 'Uses browser streaming and therefore requires endpoint CORS support. Secure data-source mode is buffered.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.streaming,
-      showIf: (options) => options.provider !== 'copilot',
+      showIf: (options) => !options.secureDataSourceUid && options.provider !== 'copilot',
     })
     .addTextInput({
       path: 'systemPrompt',

@@ -1,4 +1,4 @@
-import { getBackendSrv } from '@grafana/runtime';
+import { getBackendSrv, getDataSourceSrv } from '@grafana/runtime';
 import { IntelligenceGatewayOptions, ConstructedPrompt } from '../types';
 
 interface ChatCompletionResponse {
@@ -18,6 +18,25 @@ interface ModelListResponse {
   models?: Array<{ id?: string; name?: string } | string>;
 }
 
+interface ResourceDataSource {
+  getResource<T>(path: string): Promise<T>;
+  postResource<T>(path: string, body: unknown, options?: { abortSignal?: AbortSignal }): Promise<T>;
+}
+
+export const SECURE_DATASOURCE_PLUGIN_ID = 'digitalrcs-intelligencegateway-datasource';
+
+const getSecureDataSource = async (uid: string): Promise<ResourceDataSource> => {
+  const datasource = await getDataSourceSrv().get(uid);
+  if (datasource.type !== SECURE_DATASOURCE_PLUGIN_ID) {
+    throw new Error('The selected data source is not an Intelligence Gateway Secure AI instance.');
+  }
+  const resourceDatasource = datasource as unknown as Partial<ResourceDataSource>;
+  if (!resourceDatasource.getResource || !resourceDatasource.postResource) {
+    throw new Error('The selected secure AI data source does not expose backend resources.');
+  }
+  return resourceDatasource as ResourceDataSource;
+};
+
 const joinUrl = (baseUrl: string, path: string): string => `${baseUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 
 export const extractResponseText = (payload: ChatCompletionResponse): string => {
@@ -34,7 +53,7 @@ export const extractResponseText = (payload: ChatCompletionResponse): string => 
     if (reasoning?.trim()) {
       if (choice?.finish_reason === 'length') {
         throw new Error(
-          'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None or increase Maximum output tokens.'
+          'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None, increase Maximum output tokens, or enable Provider/model default output limit.'
         );
       }
       throw new Error(
@@ -113,8 +132,22 @@ export const extractModelIds = (payload: ModelListResponse): string[] => {
 };
 
 export const fetchAvailableModels = async (
-  options: Pick<IntelligenceGatewayOptions, 'baseUrl' | 'apiKey'>
+  options: Pick<IntelligenceGatewayOptions, 'secureDataSourceUid' | 'baseUrl' | 'apiKey'>
 ): Promise<string[]> => {
+  const secureDataSourceUid = options.secureDataSourceUid?.trim() ?? '';
+  if (secureDataSourceUid) {
+    try {
+      const datasource = await getSecureDataSource(secureDataSourceUid);
+      const payload = await datasource.getResource<ModelListResponse>('models');
+      const models = extractModelIds(payload);
+      if (models.length === 0) {
+        throw new Error('The secure data source returned no model identifiers.');
+      }
+      return models;
+    } catch (error) {
+      throw friendlyError(error);
+    }
+  }
   const baseUrl = options.baseUrl.trim();
   if (!baseUrl) {
     throw new Error('Enter a base URL before loading models.');
@@ -201,7 +234,7 @@ const requestStreaming = async (
   if (!complete.trim()) {
     if (sawReasoning && finishReason === 'length') {
       throw new Error(
-        'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None or increase Maximum output tokens.'
+        'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None, increase Maximum output tokens, or enable Provider/model default output limit.'
       );
     }
     if (sawReasoning) {
@@ -263,6 +296,26 @@ export const analyzeWithAI = async ({
   const timedSignal = createTimedSignal(signal, timeoutSeconds);
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
+    const secureDataSourceUid = options.secureDataSourceUid?.trim() ?? '';
+    if (secureDataSourceUid) {
+      if (!options.model.trim()) {
+        throw new Error('An AI model identifier is required.');
+      }
+      const datasource = await getSecureDataSource(secureDataSourceUid);
+      const body: Record<string, unknown> = {
+        prompt,
+        model: options.model.trim(),
+        temperature: options.temperature,
+        stream: false,
+      };
+      if (!options.unlimitedOutputTokens) {
+        body.maxOutputTokens = Math.max(1, Math.floor(options.maxTokens));
+      }
+      const payload = await datasource.postResource<ChatCompletionResponse>('chat/completions', body, {
+        abortSignal: timedSignal.signal,
+      });
+      return extractResponseText(payload);
+    }
     if (options.provider === 'copilot') {
       if (!options.copilotEndpoint.trim()) {
         throw new Error('A Copilot Studio messaging endpoint is required.');
@@ -305,9 +358,11 @@ export const analyzeWithAI = async ({
         { role: 'user', content: prompt.user },
       ],
       temperature: options.temperature,
-      max_tokens: options.maxTokens,
       stream: options.streaming,
     };
+    if (!options.unlimitedOutputTokens) {
+      body.max_tokens = Math.max(1, Math.floor(options.maxTokens));
+    }
     if (options.provider === 'lmstudio') {
       const reasoningEffort = options.reasoningEffort ?? 'none';
       if (reasoningEffort !== 'default') {

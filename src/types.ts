@@ -3,6 +3,7 @@ export type TextAlignment = 'left' | 'center' | 'right';
 export type ReasoningEffort = 'default' | 'none' | 'low' | 'medium' | 'high';
 
 export interface IntelligenceGatewayOptions {
+  secureDataSourceUid: string;
   provider: AIProvider;
   apiKey: string;
   baseUrl: string;
@@ -11,6 +12,8 @@ export interface IntelligenceGatewayOptions {
   copilotToken: string;
   temperature: number;
   maxTokens: number;
+  unlimitedOutputTokens: boolean;
+  responseLengthTokens: number;
   reasoningEffort: ReasoningEffort;
   responseTimeoutSeconds: number;
   streaming: boolean;
@@ -63,6 +66,7 @@ Dashboard data:
 {{data}}`;
 
 export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
+  secureDataSourceUid: '',
   provider: 'openai',
   apiKey: '',
   baseUrl: 'https://api.openai.com/v1',
@@ -71,6 +75,8 @@ export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
   copilotToken: '',
   temperature: 0.2,
   maxTokens: 1200,
+  unlimitedOutputTokens: false,
+  responseLengthTokens: 0,
   reasoningEffort: 'none',
   responseTimeoutSeconds: 300,
   streaming: false,

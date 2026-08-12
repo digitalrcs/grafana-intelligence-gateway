@@ -15,7 +15,9 @@ export const ModelEditor = ({
   context,
 }: StandardEditorProps<string, undefined, IntelligenceGatewayOptions>) => {
   const options = { ...DEFAULT_OPTIONS, ...context.options };
-  const requestKey = `${options.provider}\u0000${options.baseUrl}\u0000${options.apiKey}`;
+  const requestKey = options.secureDataSourceUid
+    ? `secure\u0000${options.secureDataSourceUid}`
+    : `${options.provider}\u0000${options.baseUrl}\u0000${options.apiKey}`;
   const [loaded, setLoaded] = useState<LoadedModels>({ key: '', items: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -54,13 +56,13 @@ export const ModelEditor = ({
         value={value ?? ''}
         onChange={(selection) => onChange(selection?.value ?? '')}
         placeholder="Enter a model ID or load available models"
-        noOptionsMessage="Load models from the configured base URL or enter a custom model ID."
+        noOptionsMessage="Load models from the selected secure data source or configured base URL, or enter a custom model ID."
         createCustomValue
         customValueDescription="Use custom model ID"
         isClearable
       />
       <Button type="button" variant="secondary" icon="search" disabled={loading} onClick={() => void loadModels()}>
-        {loading ? 'Loading models...' : 'Load available models'}
+        {loading ? 'Loading models...' : options.secureDataSourceUid ? 'Load models securely' : 'Load available models'}
       </Button>
       {availableModels.length > 0 ? <span>{availableModels.length} model(s) available in the dropdown.</span> : null}
       {error ? (

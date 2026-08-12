@@ -7,6 +7,13 @@ services:
       - 3004:3000/tcp
     volumes:
       - grafana-storage:/var/lib/grafana
+      - ${INTELLIGENCE_GATEWAY_DATASOURCE_DIST:-../digitalrcs-intelligencegateway-datasource/dist}:/var/lib/grafana/plugins/digitalrcs-intelligencegateway-datasource
+    environment:
+      GF_LOG_FILTERS: plugin.digitalrcs-intelligencegateway-panel:debug plugin.digitalrcs-intelligencegateway-datasource:debug
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: digitalrcs-intelligencegateway-panel,digitalrcs-intelligencegateway-datasource
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
 
 volumes:
   grafana-storage:
