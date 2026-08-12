@@ -1,0 +1,21 @@
+apiVersion: 1
+
+datasources:
+  - name: Intelligence Gateway Secure AI
+    uid: intelligence-gateway-secure
+    type: digitalrcs-intelligencegateway-datasource
+    access: proxy
+    isDefault: false
+    editable: true
+    jsonData:
+      provider: openai
+      baseUrl: https://api.openai.com/v1
+      defaultModel: gpt-4.1-mini
+      timeoutSeconds: 300
+      allowedModels:
+        - gpt-4.1-mini
+        - gpt-4.1
+      maxOutputTokens: 256000
+      allowStreaming: false
+    secureJsonData:
+      apiKey: ${OPENAI_API_KEY}

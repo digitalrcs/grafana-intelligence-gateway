@@ -21,13 +21,25 @@ The **Source panel title or ID (hint)** option is only descriptive prompt metada
 
 ![Dashboard data source and source panel selection](images/configuration-data-context.png)
 
-## 3. Configure the AI provider
+## 3. Configure the secure AI data source
 
 The provider settings appear under **AI provider** in the panel options.
 
 ![Provider and credential controls](images/configuration-provider-access.png)
 
-### Provider access options
+For production, install and configure `digitalrcs-intelligencegateway-datasource`, then select it under **Secure AI data source**. This hides the direct provider credential fields and routes model discovery and analysis through Grafana's backend.
+
+| Option | What it does | Guidance |
+| --- | --- | --- |
+| **Secure AI data source** | Selects a configured companion instance by UID. | Recommended for production. The panel stores the UID, not the credential. |
+| **Model** | Requests a model permitted by the administrator allow-list. | Select **Load models securely** or enter an allowed ID. |
+| **Temperature** | Sets output randomness. | Use `0`â€“`0.3` for repeatable operational analysis. |
+| **Maximum output tokens** | Supplies the panel request cap. | The backend applies the lower of this value and its administrator ceiling. |
+| **Provider/model default output limit** | Omits the panel cap. | The backend administrator ceiling and provider limits still apply. |
+
+Secure mode is buffered in the current panel integration. Direct browser streaming is hidden while a secure data source is selected.
+
+### Direct development options
 
 | Option                 | What it does                                                               | Example value                                                                            | Guidance                                                                                                                             |
 | ---------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -37,7 +49,7 @@ The provider settings appear under **AI provider** in the panel options.
 | **Messaging endpoint** | Complete Copilot/Direct Line-compatible message endpoint.                  | `https://example.directline.botframework.com/v3/directline/conversations/.../activities` | Only shown for Copilot Studio. The current adapter is experimental.                                                                  |
 | **Bearer token**       | Authorizes the Copilot messaging request.                                  | `short-lived-development-token`                                                          | Do not store production tokens in a panel. Use a backend token exchange.                                                             |
 
-The API-key warning is intentional: this frontend-only panel serializes its options into dashboard JSON. Use restricted development credentials only. Production deployments should proxy requests through a Grafana backend or data source with `secureJsonData`.
+The API-key warning is intentional: direct panel options are serialized into dashboard JSON. Use restricted development credentials only. Select the companion secure data source for production.
 
 ### Model and generation options
 
@@ -46,7 +58,7 @@ The API-key warning is intentional: this frontend-only panel serializes its opti
 | Option                         | What it does                                                                  | Example value   | Guidance                                                                                                                    |
 | ------------------------------ | ----------------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | **Model**                      | Model identifier sent to the provider.                                        | `qwen/qwen3-8b` | Enter an ID or select **Load available models** after setting the base URL and key. Use an ID returned by `/v1/models`.     |
-| **Load available models**      | Calls `<base URL>/models` and populates the model dropdown.                   | Button action   | If it fails, verify the base URL, key, CORS policy, and that the provider exposes `/v1/models`.                             |
+| **Load available models**      | Calls the secure data source's `/models` resource or the direct `<base URL>/models` endpoint. | Button action   | In secure mode, verify data-source health, credentials, and model policy. In direct mode, verify the base URL, key, and CORS. |
 | **Temperature**                | Controls output randomness.                                                   | `0.2`           | Use `0`–`0.3` for repeatable operational analysis; raise it only when varied wording is useful.                             |
 | **Provider/model default output limit** | Omits `max_tokens` from the provider request. | `Off` | Turn on for no panel-imposed cap. This is not truly unlimited: provider, model, context-window, server, and account limits still apply. |
 | **Maximum output tokens**      | Hard request cap for completion tokens, including reasoning tokens for many models. | `1200`          | Slider range: 64–1,048,576. Use only values supported by the selected model/provider. |
@@ -119,7 +131,7 @@ Start with manual analysis. Enable automatic analysis only after the provider, p
 ## 7. Run and verify
 
 1. Select **Analyze**.
-2. Confirm LM Studio or the remote provider receives the request.
+2. Confirm the companion data-source backend or direct development provider receives the request.
 3. Confirm the response appears as formatted Markdown.
 4. Verify cited timestamps, series names, and values against the source panel.
 5. Select **Clear analysis** to confirm the response is removed without changing the configuration.
@@ -131,10 +143,10 @@ Start with manual analysis. Enable automatic analysis only after the provider, p
 
 | Symptom                                             | Likely cause                                                     | Corrective action                                                                                     |
 | --------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| No models load                                      | Wrong base URL, key, CORS, or missing `/v1/models`.              | Verify `<base URL>/models` in the browser network inspector and provider logs.                        |
+| No models load                                      | Data-source health/model policy failure, or direct base URL/key/CORS failure. | In secure mode, use **Save & test** on the data source. In direct mode, verify `<base URL>/models`. |
 | Provider starts but panel reports no visible answer | Reasoning consumed the token budget.                             | Set Reasoning effort to None, increase Maximum output tokens, or enable Provider/model default output limit. |
 | Request times out                                   | Model loading or generation exceeded the configured duration.    | Increase Response timeout, reduce context, or use a faster/smaller model.                             |
-| Browser reports CORS or network failure             | Provider does not allow the Grafana origin.                      | Configure provider CORS or use a Grafana backend proxy.                                               |
+| Browser reports CORS or network failure             | A direct provider does not allow the Grafana origin.             | Select the secure data source, or configure CORS only for a deliberate direct development setup.     |
 | HTTPS Grafana cannot call HTTP LM Studio            | Browser mixed-content policy blocked the request.                | Put LM Studio behind local TLS or a backend proxy.                                                    |
 | No source data                                      | Dashboard data source is not connected or source panel is empty. | Re-select `-- Dashboard --`, choose the source panel, and inspect its data for the active time range. |
 

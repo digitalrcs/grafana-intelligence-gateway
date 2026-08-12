@@ -2,9 +2,9 @@
 
 ## Near term
 
-- Companion data source implementing the documented backend/proxy and `secureJsonData` contract in [Secure Backend and Secret Storage](Secure-Backend-and-Secrets).
+- Expand the released companion data source with OpenAI Responses API and richer secure streaming.
 - Continue compatibility testing against supported Grafana releases.
-- Provider-specific endpoint validation and connection testing.
+- Provider-specific connection diagnostics and administrator usage metrics.
 - Stronger request cancellation, retry policy, and per-provider error guidance.
 
 ## Later

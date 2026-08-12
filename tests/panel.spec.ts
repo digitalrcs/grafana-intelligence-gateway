@@ -38,3 +38,10 @@ test('exposes the manual analysis behavior option', async ({ gotoPanelEditPage, 
   const analyzeButton = behavior.getSwitch('Show Analyze button');
   await expect(analyzeButton).toBeChecked();
 });
+
+test('uses the provisioned secure AI data source', async ({ gotoPanelEditPage, readProvisionedDashboard, page }) => {
+  const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
+  await gotoPanelEditPage({ dashboard, id: '2' });
+  await expect(page.getByText('Server-side credentials enabled')).toBeVisible();
+  await expect(page.getByText(/API keys and provider policy remain on the Grafana server/)).toBeVisible();
+});

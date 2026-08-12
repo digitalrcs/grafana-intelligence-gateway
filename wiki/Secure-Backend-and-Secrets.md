@@ -1,41 +1,33 @@
 # Secure Backend and Secret Storage
 
-## Current support and the security boundary
+## Recommended production architecture
 
-Grafana Intelligence Gateway is currently a **panel plugin**. Grafana's plugin guidance is explicit that panel plugins cannot securely store credentials. The masked API-key field is convenient for local development, but its value is part of dashboard JSON.
+DigitalRCS provides the companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource). Install it beside the panel, create an **Intelligence Gateway Secure AI** data-source instance, store the provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**.
 
-Do not put a production key in panel options, `jsonData`, a JSON/CSV query result, a dashboard variable, or a field returned by another data source. Anything delivered to the panel runs in the browser and can be inspected by a dashboard user.
+The panel stores only the data-source UID, requested model, temperature, and output cap. Grafana resolves the instance server-side; the companion backend decrypts the credential, enforces administrator policy, calls the provider, and returns only the answer or sanitized error metadata.
 
-Grafana encrypts data-source `secureJsonData` on the server. After a data source is saved, the browser receives only a `secureJsonFields` flag indicating that a secret exists; it does not receive the value. The saved secret can be applied by Grafana's data source proxy or read by that data source's backend component.
+Direct browser modes remain available for local LM Studio and restricted temporary development keys. A key entered directly into panel options is part of dashboard JSON even though the field is masked.
 
 Official references:
 
 - [Grafana plugin authentication and secureJsonData](https://grafana.com/developers/plugin-tools/how-to-guides/data-source-plugins/add-authentication-for-data-source-plugins)
+- [Grafana backend resource handlers](https://grafana.com/developers/plugin-tools/how-to-guides/data-source-plugins/add-resource-handler)
 - [Grafana plugin security best practices](https://grafana.com/developers/plugin-tools/key-concepts/best-practices)
-- [Grafana backend plugin resources](https://grafana.com/developers/plugin-tools/key-concepts/backend-plugins)
 
-## Supported choices in this release
+## Install and configure
 
-| Choice | Where the credential lives | Production safe? | Use case |
-| --- | --- | --- | --- |
-| Direct browser connection | Panel option/dashboard JSON | No | Local LM Studio or a restricted temporary development key |
-| OpenAI-compatible gateway with no browser credential | The external gateway's server-side secret store | Yes, if the gateway is correctly secured | Existing organization proxy, API gateway, or local reverse proxy |
-| Grafana `secureJsonData` | A separate data source or app plugin instance | Yes | Planned DigitalRCS companion data source |
-| JSON/CSV data-source query result | Browser-visible DataFrame | No | Never use for secrets |
+1. Install both plugin directories in Grafana's plugin directory.
+2. Restart Grafana after installation or a `plugin.json` change.
+3. Open **Connections > Data sources > Add new data source**.
+4. Select **Intelligence Gateway Secure AI**.
+5. Configure the provider URL, default model, allowed models, timeout, administrator token ceiling, and streaming policy.
+6. Enter only the credential required by the provider and select **Save & test**.
+7. Edit the Intelligence Gateway panel and select the saved instance under **Secure AI data source**.
+8. Enter or securely load an administrator-allowed model, then select **Analyze**.
 
-An existing OpenAI-compatible gateway can be used today by choosing **Custom / OpenAI-compatible**, entering its `/v1` base URL, and leaving **API key** blank. The gateway must authenticate the Grafana user or network independently and must not require a long-lived secret in the panel.
+## Configuration contract
 
-## Why the panel cannot read another data source's secret
-
-`secureJsonData` belongs to a specific data-source or app-plugin instance. Grafana intentionally does not expose the decrypted object to browser code, including this panel. Querying another data source returns ordinary DataFrames; returning the key in a frame would turn it back into browser-visible data and defeat the protection.
-
-The safe design is a companion data source. The panel sends the prompt and bounded Grafana data to that data source. Grafana handles the request server-side, applies the stored credential, calls only an administrator-configured provider host, and returns the model's answer—not the secret—to the panel.
-
-## Companion data-source configuration contract
-
-The following is the proposed configuration contract for `digitalrcs-intelligencegateway-datasource`. It documents the boundary needed for implementation; the companion data source is **not included in the current panel release**, so the panel does not yet show a secure-data-source selector.
-
-### Non-secret `jsonData`
+Non-secret `jsonData`:
 
 ```json
 {
@@ -49,33 +41,29 @@ The following is the proposed configuration contract for `digitalrcs-intelligenc
 }
 ```
 
-| Property | Type | Purpose |
-| --- | --- | --- |
-| `provider` | string | Provider adapter, initially `openai`, `lmstudio`, or `custom`. |
-| `baseUrl` | URL string | Administrator-controlled provider base URL. The backend must validate and allow-list it to prevent SSRF. |
-| `defaultModel` | string | Default model when the panel does not request one. |
-| `timeoutSeconds` | integer | Server-side request deadline. |
-| `allowedModels` | string array | Optional allow-list of model IDs a panel may request. |
-| `maxOutputTokens` | integer | Administrator ceiling; the panel may request a lower cap but not a higher one. |
-| `allowStreaming` | boolean | Whether the backend permits streamed provider responses. |
+| Property | Purpose |
+| --- | --- |
+| `provider` | `openai`, `lmstudio`, or `custom` provider policy. |
+| `baseUrl` | Administrator-controlled provider base URL. Resource requests cannot replace it. |
+| `defaultModel` | Model used when a request does not override it. |
+| `timeoutSeconds` | Server-side provider deadline, from 1 to 600 seconds. |
+| `allowedModels` | Optional allow-list for panel-requested model IDs. |
+| `maxOutputTokens` | Administrator ceiling applied even when the panel omits its cap. |
+| `allowStreaming` | Whether the backend accepts streaming requests. The current panel secure mode is buffered. |
 
-Do not place keys, passwords, bearer tokens, client secrets, or private headers in `jsonData`. Grafana users who can access the data source can inspect this object.
-
-### Secret `secureJsonData`
+Secret `secureJsonData`:
 
 ```json
 {
   "apiKey": "provider-key-written-only-during-save",
   "bearerToken": "optional-provider-token",
-  "clientSecret": "optional-oauth-client-secret"
+  "clientSecret": "reserved-oauth-client-secret"
 }
 ```
 
-Only fields required by the selected authentication method should be stored. The configuration editor writes these values once and later displays only configured/reset state using `secureJsonFields`.
+The browser later receives configured/reset flags through `secureJsonFields`, never the decrypted values. A bearer token takes precedence over an API key. The client-secret field is reserved; OAuth client-credentials exchange requires a future token URL/client ID contract.
 
-### Provisioning YAML
-
-Environment-variable expansion keeps the key out of the committed file:
+## Provisioning
 
 ```yaml
 apiVersion: 1
@@ -98,19 +86,24 @@ datasources:
       apiKey: ${OPENAI_API_KEY}
 ```
 
-Set `OPENAI_API_KEY` in the Grafana server/container secret environment, not in the dashboard or source repository. Restrict who can edit and query the data source.
+Set `OPENAI_API_KEY` in the Grafana server/container secret environment. Never commit it in provisioning, a dashboard, or the source repository. Use Grafana data-source permissions to restrict who may edit and query the instance.
 
-## Expected request flow
+## Enforced backend policy
 
-1. The administrator configures the companion data source and saves its secret.
-2. The panel stores only the data-source UID and non-secret generation choices.
-3. The panel sends the constructed prompt, requested model, temperature, and output cap to the data source.
-4. Grafana resolves the data-source instance server-side.
-5. The proxy/backend enforces host, model, token, timeout, and payload policies and adds the decrypted credential.
-6. The provider answer and sanitized error metadata return to the panel. The credential never does.
+- Fixed `/models` and `/chat/completions` upstream paths; panel requests cannot choose an arbitrary host or path.
+- OpenAI is restricted to `api.openai.com`. Custom providers require HTTPS. LM Studio HTTP is limited to approved local hosts/loopback addresses.
+- Redirects, prohibited network addresses, unsupported message roles, disallowed models, and invalid temperatures are rejected.
+- Request bodies are capped at 1 MiB and buffered responses at 16 MiB.
+- Each instance permits four concurrent calls and 30 calls per minute.
+- Provider error bodies, prompts, answers, and credentials are not logged by default.
+- Provider authentication failures and rate limits return sanitized metadata.
 
-The companion should also redact provider errors, avoid logging prompts or keys by default, cap request bodies, enforce TLS for remote hosts, reject redirects to unapproved hosts, and apply rate/cost limits.
+Treat provider-side budgets and organization billing controls as the authoritative cost limit, and use network egress/firewall policy as a second SSRF boundary.
 
-## Token controls with a secure backend
+## Token behavior
 
-The panel's **Maximum output tokens** remains a request cap. The companion's `maxOutputTokens` is an administrator ceiling, so the effective hard cap is the lower of the two. Enabling **Provider/model default output limit** omits the panel cap, but the administrator ceiling and provider limits still apply. **Requested answer max tokens (soft)** is only a prompt instruction and cannot guarantee an exact token count.
+The effective hard cap is `min(panel Maximum output tokens, data-source maxOutputTokens)`. If **Provider/model default output limit** is enabled, the panel omits its cap but the administrator ceiling is still sent. **Requested answer max tokens (soft)** is only a prompt instruction and cannot guarantee an exact token count.
+
+## Integrated Docker test
+
+The panel repository's Docker Compose environment mounts both sibling `dist` directories and provisions the secure instance plus a dashboard already configured with UID `intelligence-gateway-secure`. Build both plugins, set `OPENAI_API_KEY`, start the panel Compose project, and open <http://localhost:3004>.

@@ -3,6 +3,7 @@ export type TextAlignment = 'left' | 'center' | 'right';
 export type ReasoningEffort = 'default' | 'none' | 'low' | 'medium' | 'high';
 
 export interface IntelligenceGatewayOptions {
+  secureDataSourceUid: string;
   provider: AIProvider;
   apiKey: string;
   baseUrl: string;
@@ -65,6 +66,7 @@ Dashboard data:
 {{data}}`;
 
 export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
+  secureDataSourceUid: '',
   provider: 'openai',
   apiKey: '',
   baseUrl: 'https://api.openai.com/v1',

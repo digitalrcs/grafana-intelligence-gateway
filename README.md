@@ -22,13 +22,13 @@ For the complete setup guide, every panel option, example values, provider-speci
 - Provides a hard output-token slider up to 1,048,576, a provider-default/no-panel-cap mode, and a separate soft visible-answer length instruction.
 - Renders sanitized Markdown through Grafana UI with theme-aware colors, loading state, actionable errors, and configurable typography/layout.
 
-## Security boundary
+## Secure production mode
 
-This is a frontend-only panel. **Panel options cannot use Grafana `secureJsonData`; any API key or token saved here is serialized into dashboard JSON and may be readable by users with dashboard access.** The editor masks the input but does not make storage secure.
+Install the companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource), configure its provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**. The panel then stores only the data-source UID and non-secret generation choices. Prompts go through Grafana's authenticated resource API; the decrypted credential never reaches dashboard JSON or browser code.
 
-Use only restricted development credentials in panel options. For production, add a Grafana backend/data-source component that owns secrets in `secureJsonData`, allow-lists provider hosts, applies authentication server-side, and proxies requests. Never export or commit dashboards containing real credentials.
+Direct provider modes remain available for local LM Studio and restricted development credentials. **Any API key or token entered directly into panel options is serialized into dashboard JSON.** Never use a production credential there or export a dashboard containing one.
 
-The Wiki's [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) page documents why a JSON query result cannot safely carry secrets and provides the proposed companion data source's `jsonData`, `secureJsonData`, and provisioning YAML structures. The companion data source is not included in this panel release, so no nonfunctional secure-data-source selector is shown in the panel.
+See [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) for installation, provisioning, enforced policies, and request flow.
 
 ## Install for development
 
@@ -40,7 +40,7 @@ npm run dev
 docker compose up
 ```
 
-Open <http://localhost:3004>. Anonymous Admin access is enabled only in this local development container, and the compose file permits the unsigned plugin.
+Open <http://localhost:3004>. The integrated Docker environment mounts both sibling plugins and provisions an `Intelligence Gateway Secure AI` data source. Build the companion frontend and Linux backend first; set `OPENAI_API_KEY` in the shell before `docker compose up` to run live OpenAI analysis. Anonymous Admin access is enabled only in this local development container.
 
 The provisioned test dashboard uses [`testdata/datasource.csv`](testdata/datasource.csv). After replacing that file, run `npm run sync:test-data` and restart Grafana. The command embeds the CSV in Grafana TestData's **CSV Content** query and adjusts the dashboard time range to the file's timestamps.
 
@@ -71,6 +71,14 @@ For screenshots-independent, step-by-step instructions, transformation choices, 
 The illustrated setup walkthrough is in [Panel Setup and Configuration](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Panel-Setup-and-Configuration).
 
 ## Provider configuration
+
+### Secure AI data source (recommended)
+
+- Install and configure the companion data source.
+- Select it under **Secure AI data source**.
+- Select or enter an administrator-allowed model.
+- Configure temperature and the panel request cap. The backend applies the lower of the panel cap and administrator ceiling.
+- Secure mode is buffered in the current panel integration; direct browser streaming remains available only in direct modes.
 
 ### OpenAI
 
@@ -130,8 +138,8 @@ See [Grafana Compatibility and Certification](docs/CERTIFICATION.md) for the cur
 
 ## Roadmap
 
-- Backend proxy and `secureJsonData` secret storage.
-- Host allow-listing, server-side audit controls, and per-user/provider quotas.
+- OpenAI Responses API and richer secure streaming support.
+- Server-side audit controls and per-user/provider quotas.
 - Provider-specific adapters for OpenAI Responses API and Copilot conversations.
 - Multi-panel context selection using supported Grafana APIs as they become available.
 - Response persistence, citations back to fields/timestamps, and richer streaming controls.
