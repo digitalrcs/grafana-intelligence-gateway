@@ -1,13 +1,16 @@
-# Configuration (AI Providers)
+# Configuration: Secure AI Provider
 
-Choose OpenAI, LM Studio, Custom/OpenAI-compatible, or experimental Copilot Studio. Configure endpoint, model, credentials, temperature, output-token cap, and optional streaming.
+The panel requires a configured **Intelligence Gateway Secure AI** data source. Provider URLs and credentials are configured only by a Grafana administrator in that data source; the panel stores only its UID and non-secret generation choices.
 
-**Maximum output tokens** is a hard request cap with a 64–1,048,576 slider range. **Provider/model default output limit** omits the `max_tokens` field; it removes the panel cap but is not truly unlimited. **Requested answer max tokens (soft)** adds a concision instruction to the system message, and the model may only approximate it.
+The data source supports OpenAI, LM Studio, and custom OpenAI-compatible chat-completions endpoints. Configure its default model, approved model list, timeout, administrator output-token ceiling, HTTPS policy, and API key or bearer token, then select **Save & test**.
 
-LM Studio also provides a reasoning-effort control. Reasoning tokens share the configured output-token budget, so a reasoning model can reach the limit before it emits a visible answer. The panel defaults LM Studio reasoning to **None**, reports this condition explicitly, and applies a configurable response timeout (300 seconds by default).
+In the panel:
 
-OpenAI-compatible base URLs should end at `/v1`; the panel appends `/chat/completions`. Streaming uses browser `fetch` and SSE. Buffered requests use Grafana's frontend request service. Both require the remote server to allow the Grafana browser origin unless a backend proxy is introduced.
+- **Secure AI data source** selects the backend instance.
+- **Model** can be typed or loaded securely. The backend returns only administrator-approved models.
+- **Maximum output tokens** is a request cap from 64 to 1,048,576; the backend administrator ceiling still wins.
+- **Provider/model default output limit** omits the panel cap, but the backend still applies its ceiling.
+- **Requested answer max tokens (soft)** adds a concision instruction that models can only approximate.
+- **Response timeout** cancels the browser-side wait from 10 to 600 seconds; the backend also enforces its configured deadline.
 
-Panel option credentials are not secure storage. See [Security Considerations](Security-Considerations).
-
-For the safe server-side credential design and exact `jsonData`/`secureJsonData` schemas, see [Secure Backend and Secret Storage](Secure-Backend-and-Secrets).
+See [Secure Backend and Secret Storage](Secure-Backend-and-Secrets) and the [data-source configuration guide](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki/Configuration).

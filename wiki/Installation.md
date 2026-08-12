@@ -13,14 +13,13 @@ go run github.com/magefile/mage@v1.17.2 -v build:linux
 cd ..\digitalrcs-intelligencegateway-panel
 npm install
 npm run build
-$env:OPENAI_API_KEY = "your-development-test-key"
 docker compose up --build
 ```
 
-Open `http://localhost:3004`. The development Compose configuration mounts both unsigned plugins, provisions the secure data source, and loads a dashboard that sends CSV panel data through it. The key comes from the server environment and is not committed.
+Open `http://localhost:3004`. The development Compose configuration mounts both unsigned plugins, starts a credential-free deterministic mock provider, provisions the secure data source, and loads a dashboard that sends CSV panel data through it.
 
 ## Built artifact
 
-Install both signed release artifacts for production. The plugin IDs are `digitalrcs-intelligencegateway-panel` and `digitalrcs-intelligencegateway-datasource`. Restart Grafana after installing a build or changing either `plugin.json`.
+Install the signed data-source release first, followed by the signed panel release. The plugin IDs are `digitalrcs-intelligencegateway-datasource` and `digitalrcs-intelligencegateway-panel`. Restart Grafana after installing a build or changing either `plugin.json`.
 
 Private instances can be signed with `npm run sign -- --rootUrls https://grafana.example.com/`. Catalog releases must meet Grafana's publishing and signature criteria.

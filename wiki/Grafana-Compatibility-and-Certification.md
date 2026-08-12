@@ -9,6 +9,7 @@ This page tracks the repository items used for Grafana plugin catalog review. Gr
 - Declared Grafana dependency: `>=11.6.0`
 - Frontend: TypeScript, React, and Grafana public plugin APIs
 - Backend binary: none
+- Required external plugin: `digitalrcs-intelligencegateway-datasource`
 - License: Apache-2.0
 
 The CI matrix builds, lints, type-checks, unit-tests, packages, validates metadata, and runs `@grafana/plugin-e2e` across supported released Grafana Enterprise versions. The repository's GitHub Actions results are the compatibility authority.
@@ -19,12 +20,13 @@ The CI matrix builds, lints, type-checks, unit-tests, packages, validates metada
 | ------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------ |
 | Public source repository                          | `https://github.com/digitalrcs/grafana-intelligence-gateway`             | Ready                          |
 | Valid plugin ID/type and metadata                 | `src/plugin.json`                                                        | Ready                          |
+| Required plugin dependency declared               | `dependencies.plugins` in `src/plugin.json`                              | Ready; publish data source first |
 | Clear description, keywords, author, links, logos | `src/plugin.json`                                                        | Ready                          |
-| Catalog screenshots                               | `src/img/panel-assessment.png`, `src/img/configuration-ai-provider.png`  | Ready                          |
+| Catalog screenshots                               | `src/img/panel-assessment.png`, `src/img/configuration-ai-provider.png`; secure flow evidence in `docs/images/production-secure-analysis.png` | Ready |
 | README and setup guidance                         | `README.md` and this Wiki                                                | Ready                          |
 | License                                           | `LICENSE` (Apache-2.0)                                                   | Ready                          |
 | Versioned changelog                               | `CHANGELOG.md`                                                           | Ready                          |
-| Provisioned test dashboard/data source            | `provisioning/` and `docker-compose.yaml`                                | Ready                          |
+| Provisioned deterministic test environment        | `provisioning/`, `testdata/mock-provider/`, and `docker-compose.yaml`     | Ready; no external credential required |
 | Unit and E2E tests                                | `src/**/*.test.ts` and `tests/panel.spec.ts`                             | Ready                          |
 | Multi-version compatibility CI                    | `.github/workflows/ci.yml`                                               | Configured; verify per release |
 | Release packaging workflow                        | `.github/workflows/release.yml`                                          | Ready                          |
@@ -64,7 +66,7 @@ Use these values in Grafana's **Submit New Plugin** form after publishing the Gi
 
 Suggested testing guidance:
 
-> Start the provisioned Grafana environment with `docker compose up`, open the provisioned Intelligence Gateway dashboard, and edit the panel. The panel is connected to the sample source panel through Grafana's Dashboard data source. Configure LM Studio at `http://localhost:1234/v1` or another OpenAI-compatible provider, load/select a model, and select Analyze. Verify that DataFrame context is sent and the Markdown assessment renders. No production credentials are required; panel option credentials are development-only and are documented as insecure frontend storage.
+> Install/build the required `digitalrcs-intelligencegateway-datasource` sibling plugin, then run `docker compose up --build` from the panel repository. Open the provisioned Intelligence Gateway CSV dashboard at `http://localhost:3004`. The environment starts a deterministic credential-free mock provider and provisions the secure data-source UID `intelligence-gateway-secure`. Edit panel 2, confirm **Server-side credentials enabled**, load `review-model`, and select **Analyze**. Verify the response begins `Review environment response:` and the CSV source contains DC1 and DC2. No external API account or credential is required.
 
 ## Packaging requirements
 
@@ -75,13 +77,14 @@ On Windows, create the ZIP with a tool that stores portable forward-slash entry 
 ## Manual submission steps
 
 1. Confirm the GitHub Actions compatibility matrix passes on the exact release commit.
-2. Confirm catalog screenshots and all metadata links render from the built plugin.
-3. Add `GRAFANA_ACCESS_POLICY_TOKEN` only after Grafana grants a public signature level.
-4. Create and push the semantic-version tag, for example `v1.0.0`.
-5. Wait for the release workflow and inspect the draft release assets and provenance attestation.
-6. Validate the release ZIP and its SHA1.
-7. Publish the GitHub release.
-8. Submit the ZIP URL, source URL, SHA1, testing guidance, and provisioning declaration through Grafana's Plugins Admin page.
+2. Submit and publish the required data source first; the panel declares it as an external plugin dependency.
+3. Confirm catalog screenshots and all metadata links render from the built plugin.
+4. Add `GRAFANA_ACCESS_POLICY_TOKEN` only after Grafana grants a public signature level.
+5. Create and push the semantic-version tag, for example `v1.0.0`.
+6. Wait for the release workflow and inspect the draft release assets and provenance attestation.
+7. Validate the release ZIP and its SHA1.
+8. Publish the GitHub release.
+9. Submit the ZIP URL, version-tag source URL, SHA1 value, testing guidance, and provisioning declaration through Grafana's Plugins Admin page.
 
 Official references:
 

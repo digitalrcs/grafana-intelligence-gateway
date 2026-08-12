@@ -14,6 +14,19 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      mock-ai:
+        condition: service_healthy
+
+  mock-ai:
+    build:
+      context: ./testdata/mock-provider
+    container_name: digitalrcs-intelligencegateway-panel-mock-ai
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8080/v1/models')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
 
 volumes:
   grafana-storage:

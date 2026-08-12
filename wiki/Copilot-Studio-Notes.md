@@ -1,7 +1,5 @@
-# Copilot Studio Notes
+# Copilot Studio Status
 
-Copilot Studio support is experimental because Direct Line and agent endpoints have different conversation, token-exchange, and response contracts.
+Copilot Studio is not supported by the production panel/data-source release. Its conversation creation, token exchange, polling, and activity contracts differ from OpenAI-compatible chat completions and require a dedicated server-side adapter.
 
-The current adapter POSTs a message activity to the configured complete endpoint and adds the system prompt to `channelData`. It extracts common text or activity response shapes. Streaming is buffered.
-
-A production adapter should run in a backend, exchange short-lived tokens, create/manage conversations, poll or stream activities as required, validate origins, and translate the specific agent contract into the panel's provider interface.
+No Copilot endpoint or bearer token can be stored in panel options. A future implementation must live in the secure data-source backend, keep tokens in `secureJsonData`, validate origins and conversation identifiers, bound polling or streaming, sanitize errors, and add deterministic integration tests before it is advertised as supported.

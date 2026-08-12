@@ -2,7 +2,7 @@
 
 Grafana Intelligence Gateway is DigitalRCS's AI assessment panel for Grafana. It converts query DataFrames and dashboard time context into structured prompts and renders provider responses as theme-aware Markdown.
 
-For production credentials, install the companion `digitalrcs-intelligencegateway-datasource`. It stores secrets in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side.
+The required companion `digitalrcs-intelligencegateway-datasource` stores secrets in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side. The panel has no credential or direct provider transport fields.
 
 ![Grafana Intelligence Gateway assessment](images/panel-assessment.png)
 
@@ -17,7 +17,6 @@ Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration). It co
 - Prompt Engineering Guide
 - LM Studio Setup
 - OpenAI Setup
-- Copilot Studio Notes
 - Development and Contributing
 - Security Considerations
 - Secure Backend and Secret Storage

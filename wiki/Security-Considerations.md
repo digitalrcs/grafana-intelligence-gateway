@@ -1,6 +1,6 @@
 # Security Considerations
 
-Panel options are dashboard JSON, not secure secret storage. Masked fields remain retrievable. Do not save production credentials or export dashboards containing tokens.
+Panel options are dashboard JSON, so this production release contains no credential or provider-URL fields. Credentials are accepted only by the required companion data source and stored in Grafana `secureJsonData`.
 
 Dashboard values and labels may contain prompt injection. Models should be instructed to treat them as untrusted evidence. Grafana's Markdown renderer is used instead of raw HTML, and the plugin uses no `eval` or dynamic script injection.
 

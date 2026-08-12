@@ -3,7 +3,7 @@
 [![CI](https://github.com/DigitalRCS/grafana-intelligence-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/DigitalRCS/grafana-intelligence-gateway/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-Grafana Intelligence Gateway is a panel plugin by **DigitalRCS** that turns Grafana DataFrames into focused AI assessments. It supports OpenAI, LM Studio, custom OpenAI-compatible chat-completions APIs, and an experimental Copilot Studio messaging mode.
+Grafana Intelligence Gateway is a panel plugin by **DigitalRCS** that turns Grafana DataFrames into focused AI assessments. All provider traffic is routed through the required DigitalRCS secure AI data source, which supports OpenAI, LM Studio, and custom OpenAI-compatible chat-completions APIs.
 
 Plugin ID: `digitalrcs-intelligencegateway-panel`  
 Grafana: `>=11.6.0` (the multi-version GitHub Actions E2E matrix is the compatibility authority)
@@ -18,17 +18,17 @@ For the complete setup guide, every panel option, example values, provider-speci
 - Serializes field names, types, labels, units, recent rows, and the active time range.
 - Supports `{{data}}`, `{{timeRange}}`, `{{panelTitle}}`, `{{panelId}}`, `{{skills}}`, and `{{sourcePanel}}` prompt variables plus Grafana dashboard variables.
 - Provides system instructions, a user template, reusable skills/context, and a live constructed-prompt preview.
-- Offers manual analysis, a clear-analysis control, optional debounced auto-analysis, context-size controls, buffered requests, and OpenAI-compatible SSE streaming.
+- Offers manual analysis, a clear-analysis control, optional debounced auto-analysis, context-size controls, cancellation, and bounded buffered responses.
 - Provides a hard output-token slider up to 1,048,576, a provider-default/no-panel-cap mode, and a separate soft visible-answer length instruction.
 - Renders sanitized Markdown through Grafana UI with theme-aware colors, loading state, actionable errors, and configurable typography/layout.
 
-## Secure production mode
+## Secure architecture
 
-Install the companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource), configure its provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**. The panel then stores only the data-source UID and non-secret generation choices. Prompts go through Grafana's authenticated resource API; the decrypted credential never reaches dashboard JSON or browser code.
+The companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource) is a declared plugin dependency. Configure its provider credential in Grafana `secureJsonData`, then select the instance under **AI provider > Secure AI data source**. The panel stores only the data-source UID and non-secret generation choices. Prompts go through Grafana's authenticated resource API; decrypted credentials never reach dashboard JSON or browser code.
 
 HTTPS is required by default. Data-source administrators can explicitly enable **Allow insecure HTTP** when an organizational provider endpoint cannot be classified reliably by hostname or IP range. The override permits HTTP regardless of address classification, so credentials and prompts may be exposed in transit.
 
-Direct provider modes remain available for local LM Studio and restricted development credentials. **Any API key or token entered directly into panel options is serialized into dashboard JSON.** Never use a production credential there or export a dashboard containing one.
+The panel has no API-key, bearer-token, provider-URL, or direct browser transport options. Provider selection, endpoint policy, credentials, and transport security are owned by the companion data source.
 
 See [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) for the panel workflow and the [data-source wiki](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki) for installation, provisioning, reviewer setup, and enforced backend policies.
 
@@ -42,7 +42,7 @@ npm run dev
 docker compose up
 ```
 
-Open <http://localhost:3004>. The integrated Docker environment mounts both sibling plugins and provisions an `Intelligence Gateway Secure AI` data source. Build the companion frontend and Linux backend first; set `OPENAI_API_KEY` in the shell before `docker compose up` to run live OpenAI analysis. Anonymous Admin access is enabled only in this local development container.
+Open <http://localhost:3004>. The integrated Docker environment mounts both sibling plugins, starts a credential-free deterministic mock provider, and provisions an `Intelligence Gateway Secure AI` data source. Build the companion frontend and Linux backend first. Anonymous Admin access is enabled only in this local development container.
 
 The provisioned test dashboard uses [`testdata/datasource.csv`](testdata/datasource.csv). After replacing that file, run `npm run sync:test-data` and restart Grafana. The command embeds the CSV in Grafana TestData's **CSV Content** query and adjusts the dashboard time range to the file's timestamps.
 
@@ -74,36 +74,15 @@ The illustrated setup walkthrough is in [Panel Setup and Configuration](https://
 
 ## Provider configuration
 
-### Secure AI data source (recommended)
+### Secure AI data source (required)
 
 - Install and configure the companion data source.
 - Select it under **Secure AI data source**.
 - Select or enter an administrator-allowed model.
 - Configure temperature and the panel request cap. The backend applies the lower of the panel cap and administrator ceiling.
-- Secure mode is buffered in the current panel integration; direct browser streaming remains available only in direct modes.
+- The panel request is buffered and cancellable. The backend enforces its own timeout, body, model, and token policies.
 
-### OpenAI
-
-- Provider: **OpenAI**
-- Base URL: `https://api.openai.com/v1`
-- Model: an available chat-completions model such as `gpt-4.1-mini`
-- API key: development only in this frontend version
-
-### LM Studio
-
-- Start LM Studio's local server and load a model.
-- Provider: **LM Studio**
-- Base URL: usually `http://localhost:1234/v1`
-- Model: the identifier reported by LM Studio
-- Enable CORS in LM Studio for the Grafana origin. When Grafana runs in Docker, `localhost` in the browser still refers to the user's machine, but network and browser mixed-content policy must permit the request.
-
-### Custom / OpenAI-compatible
-
-Enter the base URL up to `/v1`; the panel appends `/chat/completions`. Configure the model and optional bearer token. The endpoint must accept the OpenAI message schema and permit requests from the Grafana origin.
-
-### Copilot Studio (experimental)
-
-Enter a complete Direct Line or messaging endpoint and optional bearer token. The panel sends a generic message activity with the system prompt in `channelData`. Copilot bot/channel contracts vary, so production integration normally needs a backend token exchange and endpoint-specific adapter. Streaming is not enabled in this mode.
+Configure OpenAI, LM Studio, or a custom OpenAI-compatible endpoint in the companion data source. For LM Studio running outside the Grafana container, use a server-reachable host such as `host.docker.internal`, not browser `localhost`. The data-source Wiki documents HTTPS and the explicit development-only insecure HTTP override.
 
 ## Prompt design
 
@@ -130,7 +109,7 @@ See [Grafana Compatibility and Certification](docs/CERTIFICATION.md) for the cur
 ## Repository map
 
 - `src/components/IntelligenceGatewayPanel.tsx` — runtime UI and analysis lifecycle.
-- `src/utils/aiClient.ts` — provider transports, streaming, response/error normalization.
+- `src/utils/aiClient.ts` — secure data-source resource transport and response/error normalization.
 - `src/utils/dataFrames.ts` — bounded, label-aware DataFrame serialization.
 - `src/utils/prompt.ts` — prompt-template construction.
 - `src/module.ts` — panel option registration.

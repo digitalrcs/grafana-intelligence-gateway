@@ -37,7 +37,7 @@ The source panel can use Prometheus, Loki, SQL, InfluxDB, Elasticsearch, TestDat
    - **Recent rows per frame**: number of newest rows included from each DataFrame.
    - **Maximum context characters**: hard request-size cap.
    - **Source panel title or ID (hint)**: optional text added to the prompt; this does not create the connection.
-9. Configure the AI provider, prompt, and skills context.
+9. Select the required secure AI data source, then configure the model, prompt, and skills context.
 10. Select **Analyze**, then save the dashboard.
 
 ## What the plugin sends
@@ -132,6 +132,6 @@ Check the prompt preview and query inspector. The field may have been removed by
 - The source must be on the same dashboard.
 - The source-title/ID hint is prompt metadata only.
 - The plugin does not use private runtime APIs to scrape other panels.
-- Dashboard data is sent to the selected AI provider; apply your organization's data-handling, retention, and credential policies.
+- Dashboard data is sent through the selected secure AI data source; apply your organization's data-handling, retention, and access policies.
 
 Official Grafana reference: [Share query results with another panel](https://grafana.com/docs/grafana/latest/visualizations/panels-visualizations/query-transform-data/share-query/).

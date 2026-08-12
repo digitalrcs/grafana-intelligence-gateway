@@ -34,8 +34,9 @@ export const SecureDataSourceEditor = ({
           Provider requests use the selected data source. API keys and provider policy remain on the Grafana server.
         </Alert>
       ) : (
-        <Alert severity="warning" title="Direct development mode">
-          Without a secure data source, provider credentials in panel options remain visible in dashboard JSON.
+        <Alert severity="error" title="Secure data source required">
+          Configure and select an Intelligence Gateway Secure AI data source before running analysis. The panel never
+          stores provider credentials.
         </Alert>
       )}
     </Stack>
