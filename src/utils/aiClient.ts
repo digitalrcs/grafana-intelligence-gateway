@@ -34,7 +34,7 @@ export const extractResponseText = (payload: ChatCompletionResponse): string => 
     if (reasoning?.trim()) {
       if (choice?.finish_reason === 'length') {
         throw new Error(
-          'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None or increase Maximum output tokens.'
+          'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None, increase Maximum output tokens, or enable Provider/model default output limit.'
         );
       }
       throw new Error(
@@ -201,7 +201,7 @@ const requestStreaming = async (
   if (!complete.trim()) {
     if (sawReasoning && finishReason === 'length') {
       throw new Error(
-        'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None or increase Maximum output tokens.'
+        'The model used the entire output-token limit for reasoning before producing a visible answer. Set Reasoning effort to None, increase Maximum output tokens, or enable Provider/model default output limit.'
       );
     }
     if (sawReasoning) {
@@ -305,9 +305,11 @@ export const analyzeWithAI = async ({
         { role: 'user', content: prompt.user },
       ],
       temperature: options.temperature,
-      max_tokens: options.maxTokens,
       stream: options.streaming,
     };
+    if (!options.unlimitedOutputTokens) {
+      body.max_tokens = Math.max(1, Math.floor(options.maxTokens));
+    }
     if (options.provider === 'lmstudio') {
       const reasoningEffort = options.reasoningEffort ?? 'none';
       if (reasoningEffort !== 'default') {

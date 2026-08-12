@@ -83,12 +83,32 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       settings: { min: 0, max: 2, step: 0.1 },
       showIf: (options) => options.provider !== 'copilot',
     })
-    .addNumberInput({
+    .addBooleanSwitch({
+      path: 'unlimitedOutputTokens',
+      name: 'Provider/model default output limit',
+      description:
+        'Omits max_tokens from the request. This removes the panel cap but does not bypass the provider, model, context-window, or account limits.',
+      category: ['AI provider'],
+      defaultValue: DEFAULT_OPTIONS.unlimitedOutputTokens,
+      showIf: (options) => options.provider !== 'copilot',
+    })
+    .addSliderInput({
       path: 'maxTokens',
       name: 'Maximum output tokens',
+      description: 'Hard request cap for output and, on many models, hidden reasoning. Supports up to 1,048,576 tokens.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.maxTokens,
-      settings: { min: 64, max: 32768, integer: true },
+      settings: { min: 64, max: 1048576, step: 64 },
+      showIf: (options) => options.provider !== 'copilot' && !options.unlimitedOutputTokens,
+    })
+    .addNumberInput({
+      path: 'responseLengthTokens',
+      name: 'Requested answer max tokens (soft)',
+      description:
+        'Adds a prompt instruction asking for a shorter visible answer. Use 0 for no length instruction. Models may only approximate token counts.',
+      category: ['AI provider'],
+      defaultValue: DEFAULT_OPTIONS.responseLengthTokens,
+      settings: { min: 0, max: 1048576, integer: true },
       showIf: (options) => options.provider !== 'copilot',
     })
     .addSelect({

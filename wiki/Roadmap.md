@@ -2,7 +2,7 @@
 
 ## Near term
 
-- Backend proxy and secure credential storage.
+- Companion data source implementing the documented backend/proxy and `secureJsonData` contract in [Secure Backend and Secret Storage](Secure-Backend-and-Secrets).
 - Continue compatibility testing against supported Grafana releases.
 - Provider-specific endpoint validation and connection testing.
 - Stronger request cancellation, retry policy, and per-provider error guidance.

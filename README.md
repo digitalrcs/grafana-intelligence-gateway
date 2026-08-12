@@ -19,6 +19,7 @@ For the complete setup guide, every panel option, example values, provider-speci
 - Supports `{{data}}`, `{{timeRange}}`, `{{panelTitle}}`, `{{panelId}}`, `{{skills}}`, and `{{sourcePanel}}` prompt variables plus Grafana dashboard variables.
 - Provides system instructions, a user template, reusable skills/context, and a live constructed-prompt preview.
 - Offers manual analysis, a clear-analysis control, optional debounced auto-analysis, context-size controls, buffered requests, and OpenAI-compatible SSE streaming.
+- Provides a hard output-token slider up to 1,048,576, a provider-default/no-panel-cap mode, and a separate soft visible-answer length instruction.
 - Renders sanitized Markdown through Grafana UI with theme-aware colors, loading state, actionable errors, and configurable typography/layout.
 
 ## Security boundary
@@ -26,6 +27,8 @@ For the complete setup guide, every panel option, example values, provider-speci
 This is a frontend-only panel. **Panel options cannot use Grafana `secureJsonData`; any API key or token saved here is serialized into dashboard JSON and may be readable by users with dashboard access.** The editor masks the input but does not make storage secure.
 
 Use only restricted development credentials in panel options. For production, add a Grafana backend/data-source component that owns secrets in `secureJsonData`, allow-lists provider hosts, applies authentication server-side, and proxies requests. Never export or commit dashboards containing real credentials.
+
+The Wiki's [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) page documents why a JSON query result cannot safely carry secrets and provides the proposed companion data source's `jsonData`, `secureJsonData`, and provisioning YAML structures. The companion data source is not included in this panel release, so no nonfunctional secure-data-source selector is shown in the panel.
 
 ## Install for development
 

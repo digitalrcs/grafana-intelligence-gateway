@@ -11,6 +11,8 @@ export interface IntelligenceGatewayOptions {
   copilotToken: string;
   temperature: number;
   maxTokens: number;
+  unlimitedOutputTokens: boolean;
+  responseLengthTokens: number;
   reasoningEffort: ReasoningEffort;
   responseTimeoutSeconds: number;
   streaming: boolean;
@@ -71,6 +73,8 @@ export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
   copilotToken: '',
   temperature: 0.2,
   maxTokens: 1200,
+  unlimitedOutputTokens: false,
+  responseLengthTokens: 0,
   reasoningEffort: 'none',
   responseTimeoutSeconds: 300,
   streaming: false,

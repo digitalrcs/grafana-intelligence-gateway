@@ -18,5 +18,6 @@ Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration). It co
 - Copilot Studio Notes
 - Development and Contributing
 - Security Considerations
+- Secure Backend and Secret Storage
 - Grafana Compatibility and Certification
 - Roadmap

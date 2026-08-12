@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Changed Maximum output tokens to a slider supporting up to 1,048,576 tokens.
+- Added a provider/model-default mode that omits the panel's `max_tokens` request field.
+- Added a separate soft prompt instruction for the requested visible-answer length.
+- Documented the secure companion data-source architecture and `jsonData`/`secureJsonData` provisioning contract.
+
+## Unreleased
+
 - Added a Clear analysis control that removes generated output and errors and cancels an in-progress request without changing panel configuration or source data.
 
 ## 1.0.0 - 2026-08-11
