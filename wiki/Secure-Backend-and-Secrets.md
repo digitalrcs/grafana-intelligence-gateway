@@ -46,15 +46,15 @@ Non-secret `jsonData`:
 }
 ```
 
-| Property | Purpose |
-| --- | --- |
-| `provider` | `openai`, `lmstudio`, or `custom` provider policy. |
-| `baseUrl` | Administrator-controlled provider base URL. Resource requests cannot replace it. |
-| `defaultModel` | Model used when a request does not override it. |
-| `timeoutSeconds` | Server-side provider deadline, from 1 to 600 seconds. |
-| `allowedModels` | Optional allow-list for panel-requested model IDs. |
-| `maxOutputTokens` | Administrator ceiling applied even when the panel omits its cap. |
-| `allowStreaming` | Whether the backend accepts streaming requests. The current panel secure mode is buffered. |
+| Property            | Purpose                                                                                                                                             |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`          | `openai`, `lmstudio`, or `custom` provider policy.                                                                                                  |
+| `baseUrl`           | Administrator-controlled provider base URL. Resource requests cannot replace it.                                                                    |
+| `defaultModel`      | Model used when a request does not override it.                                                                                                     |
+| `timeoutSeconds`    | Server-side provider deadline, from 1 to 600 seconds.                                                                                               |
+| `allowedModels`     | Optional allow-list for panel-requested model IDs.                                                                                                  |
+| `maxOutputTokens`   | Administrator ceiling applied even when the panel omits its cap.                                                                                    |
+| `allowStreaming`    | Whether the backend accepts streaming requests. The current panel secure mode is buffered.                                                          |
 | `allowInsecureHttp` | Explicit administrator override for HTTP provider URLs when organizational DNS/address locality cannot be classified reliably. Defaults to `false`. |
 
 Secret `secureJsonData`:
