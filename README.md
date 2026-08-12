@@ -30,7 +30,7 @@ HTTPS is required by default. Data-source administrators can explicitly enable *
 
 Direct provider modes remain available for local LM Studio and restricted development credentials. **Any API key or token entered directly into panel options is serialized into dashboard JSON.** Never use a production credential there or export a dashboard containing one.
 
-See [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) for installation, provisioning, enforced policies, and request flow.
+See [Secure Backend and Secret Storage](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Secure-Backend-and-Secrets) for the panel workflow and the [data-source wiki](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki) for installation, provisioning, reviewer setup, and enforced backend policies.
 
 ## Install for development
 

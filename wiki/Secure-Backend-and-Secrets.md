@@ -4,6 +4,10 @@
 
 DigitalRCS provides the companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource). Install it beside the panel, create an **Intelligence Gateway Secure AI** data-source instance, store the provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**.
 
+The data source has its own [installation and operations wiki](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki), including a credential-free reviewer environment and troubleshooting.
+
+![Secure data-source selection](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway-datasource/main/src/img/panel-secure-datasource.png)
+
 The panel stores only the data-source UID, requested model, temperature, and output cap. Grafana resolves the instance server-side; the companion backend decrypts the credential, enforces administrator policy, calls the provider, and returns only the answer or sanitized error metadata.
 
 Direct browser modes remain available for local LM Studio and restricted temporary development keys. A key entered directly into panel options is part of dashboard JSON even though the field is masked.
