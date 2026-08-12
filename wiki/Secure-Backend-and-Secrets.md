@@ -37,7 +37,8 @@ Non-secret `jsonData`:
   "timeoutSeconds": 300,
   "allowedModels": ["gpt-4.1-mini", "gpt-4.1"],
   "maxOutputTokens": 256000,
-  "allowStreaming": false
+  "allowStreaming": false,
+  "allowInsecureHttp": false
 }
 ```
 
@@ -50,6 +51,7 @@ Non-secret `jsonData`:
 | `allowedModels` | Optional allow-list for panel-requested model IDs. |
 | `maxOutputTokens` | Administrator ceiling applied even when the panel omits its cap. |
 | `allowStreaming` | Whether the backend accepts streaming requests. The current panel secure mode is buffered. |
+| `allowInsecureHttp` | Explicit administrator override for HTTP provider URLs when organizational DNS/address locality cannot be classified reliably. Defaults to `false`. |
 
 Secret `secureJsonData`:
 
@@ -82,6 +84,7 @@ datasources:
         - gpt-4.1-mini
       maxOutputTokens: 256000
       allowStreaming: false
+      allowInsecureHttp: false
     secureJsonData:
       apiKey: ${OPENAI_API_KEY}
 ```
@@ -91,7 +94,8 @@ Set `OPENAI_API_KEY` in the Grafana server/container secret environment. Never c
 ## Enforced backend policy
 
 - Fixed `/models` and `/chat/completions` upstream paths; panel requests cannot choose an arbitrary host or path.
-- OpenAI is restricted to `api.openai.com`. Custom providers require HTTPS. LM Studio HTTP may use approved local names, loopback IPs, and private LAN addresses. Hostnames used over HTTP must resolve only to loopback or private addresses; public HTTP destinations are rejected.
+- HTTPS is required by default. **Allow insecure HTTP** explicitly overrides that requirement without trying to classify the hostname or IP as local. Enabling it can expose provider credentials and prompts in transit and should be paired with trusted-network and firewall controls.
+- OpenAI remains restricted to `api.openai.com` even when the HTTP override is enabled.
 - Redirects, prohibited network addresses, unsupported message roles, disallowed models, and invalid temperatures are rejected.
 - Request bodies are capped at 1 MiB and buffered responses at 16 MiB.
 - Each instance permits four concurrent calls and 30 calls per minute.

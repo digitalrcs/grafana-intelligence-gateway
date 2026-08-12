@@ -6,7 +6,7 @@
 4. Select **LM Studio** in panel options.
 5. Use `http://localhost:1234/v1` unless LM Studio reports another URL.
 
-With the secure companion data source, the Base URL may also use an HTTP private-network address such as `http://192.168.1.25:1234/v1`. The backend permits LM Studio HTTP only when every resolved address is loopback or private; public HTTP endpoints remain blocked.
+With the secure companion data source, select **Allow insecure HTTP** before using an HTTP Base URL such as `http://models.internal.example:1234/v1`. The explicit administrator override avoids unreliable hostname/IP locality classification on organizational networks. Because credentials and prompts are then unencrypted in transit, enable it only on a trusted network.
 6. Enter the loaded model identifier; an API key is normally unnecessary.
 7. Keep **Reasoning effort** set to **None** unless you deliberately want a reasoning model to spend part of the output-token budget on hidden reasoning. If you enable reasoning, increase **Maximum output tokens** accordingly.
 8. **Response timeout** defaults to 300 seconds. Increase it for large or slow local models. A timeout cancels the browser request and displays a specific timeout message in the panel.

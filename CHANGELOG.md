@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Documented the companion data source's administrator-controlled insecure HTTP override.
+
 - Added selection and runtime use of the `digitalrcs-intelligencegateway-datasource` secure companion.
 - Added secure model discovery and buffered analysis through Grafana backend resources.
 - Added an integrated Docker environment that mounts and provisions both plugins using `OPENAI_API_KEY` from the server environment.

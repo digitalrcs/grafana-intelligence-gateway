@@ -26,7 +26,7 @@ For the complete setup guide, every panel option, example values, provider-speci
 
 Install the companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource), configure its provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**. The panel then stores only the data-source UID and non-secret generation choices. Prompts go through Grafana's authenticated resource API; the decrypted credential never reaches dashboard JSON or browser code.
 
-LM Studio can use HTTP on `localhost`, `host.docker.internal`, loopback IPs, or private LAN addresses through the secure data source. Public HTTP endpoints remain blocked.
+HTTPS is required by default. Data-source administrators can explicitly enable **Allow insecure HTTP** when an organizational provider endpoint cannot be classified reliably by hostname or IP range. The override permits HTTP regardless of address classification, so credentials and prompts may be exposed in transit.
 
 Direct provider modes remain available for local LM Studio and restricted development credentials. **Any API key or token entered directly into panel options is serialized into dashboard JSON.** Never use a production credential there or export a dashboard containing one.
 

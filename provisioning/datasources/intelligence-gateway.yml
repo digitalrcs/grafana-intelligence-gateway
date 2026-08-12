@@ -17,5 +17,6 @@ datasources:
         - gpt-4.1
       maxOutputTokens: 256000
       allowStreaming: false
+      allowInsecureHttp: false
     secureJsonData:
       apiKey: ${OPENAI_API_KEY}
