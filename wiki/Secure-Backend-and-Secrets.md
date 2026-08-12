@@ -91,7 +91,7 @@ Set `OPENAI_API_KEY` in the Grafana server/container secret environment. Never c
 ## Enforced backend policy
 
 - Fixed `/models` and `/chat/completions` upstream paths; panel requests cannot choose an arbitrary host or path.
-- OpenAI is restricted to `api.openai.com`. Custom providers require HTTPS. LM Studio HTTP is limited to approved local hosts/loopback addresses.
+- OpenAI is restricted to `api.openai.com`. Custom providers require HTTPS. LM Studio HTTP may use approved local names, loopback IPs, and private LAN addresses. Hostnames used over HTTP must resolve only to loopback or private addresses; public HTTP destinations are rejected.
 - Redirects, prohibited network addresses, unsupported message roles, disallowed models, and invalid temperatures are rejected.
 - Request bodies are capped at 1 MiB and buffered responses at 16 MiB.
 - Each instance permits four concurrent calls and 30 calls per minute.
