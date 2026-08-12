@@ -37,7 +37,9 @@ npm run dev
 docker compose up
 ```
 
-Open <http://localhost:3000> and sign in with `admin` / `admin`. The development compose file enables loading the unsigned plugin.
+Open <http://localhost:3004>. Anonymous Admin access is enabled only in this local development container, and the compose file permits the unsigned plugin.
+
+The provisioned test dashboard uses [`testdata/datasource.csv`](testdata/datasource.csv). After replacing that file, run `npm run sync:test-data` and restart Grafana. The command embeds the CSV in Grafana TestData's **CSV Content** query and adjusts the dashboard time range to the file's timestamps.
 
 Production build:
 

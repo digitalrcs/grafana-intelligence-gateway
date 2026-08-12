@@ -6,6 +6,7 @@
     "dev": "webpack -w -c ./.config/webpack/webpack.config.ts --env development",
     "test": "jest --watch --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4",
+    "sync:test-data": "node scripts/sync-test-data.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --cache .",
     "lint:fix": "npm run lint -- --fix && prettier --write --list-different .",

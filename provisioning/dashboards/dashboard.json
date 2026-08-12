@@ -1,24 +1,8 @@
 {
-  "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
-        },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
-  },
+  "annotations": { "list": [] },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -27,30 +11,63 @@
         "type": "grafana-testdata-datasource",
         "uid": "trlxrdZVk"
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "options": {
-        "seriesCountSize": "sm",
-        "showSeriesCount": false,
-        "text": "Default value of text input option"
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" }
       },
       "targets": [
         {
+          "csvContent": "Time,DC1,DC2\n2026-06-30T20:00:00.000-04:00,653130,816504\n2026-07-01T20:00:00.000-04:00,812372,931776\n2026-07-02T20:00:00.000-04:00,739799,949517\n2026-07-03T20:00:00.000-04:00,819029,970735\n2026-07-04T20:00:00.000-04:00,668637,1034968\n2026-07-05T20:00:00.000-04:00,837093,987425\n2026-07-06T20:00:00.000-04:00,839686,958639\n2026-07-07T20:00:00.000-04:00,866549,904600\n2026-07-08T20:00:00.000-04:00,879176,958610\n2026-07-09T20:00:00.000-04:00,887045,954409\n2026-07-10T20:00:00.000-04:00,609903,976903\n2026-07-11T20:00:00.000-04:00,611821,1047850\n2026-07-12T20:00:00.000-04:00,1352325,1026036\n2026-07-13T20:00:00.000-04:00,1193045,950709\n2026-07-14T20:00:00.000-04:00,1018629,907030\n2026-07-15T20:00:00.000-04:00,842318,1029228\n2026-07-16T20:00:00.000-04:00,851573,972827\n2026-07-17T20:00:00.000-04:00,631093,947732\n2026-07-18T20:00:00.000-04:00,605705,1117082\n2026-07-19T20:00:00.000-04:00,590577,1130838\n2026-07-20T20:00:00.000-04:00,603138,1215726\n2026-07-21T20:00:00.000-04:00,650940,1013213\n2026-07-22T20:00:00.000-04:00,605048,1063391\n2026-07-23T20:00:00.000-04:00,652963,1164365\n2026-07-24T20:00:00.000-04:00,823530,624441\n2026-07-25T20:00:00.000-04:00,1037699,543501\n2026-07-26T20:00:00.000-04:00,1317304,488135\n2026-07-27T20:00:00.000-04:00,1309411,512686\n2026-07-28T20:00:00.000-04:00,1355035,527332\n2026-07-29T20:00:00.000-04:00,1235773,516427\n2026-07-30T20:00:00.000-04:00,1185469,525831\n2026-07-31T20:00:00.000-04:00,1291222,859304\n2026-08-01T20:00:00.000-04:00,1029880,673217\n2026-08-02T20:00:00.000-04:00,1152060,510825\n2026-08-03T20:00:00.000-04:00,995271,397246",
           "datasource": {
             "type": "grafana-testdata-datasource",
-            "uid": "db84e60d-b92a-4089-82cb-34842fb1754b"
+            "uid": "trlxrdZVk"
           },
+          "dropPercent": 0,
           "refId": "A",
-          "scenarioId": "raw_frame",
-          "rawFrameContent": "[\n  {\n    \"columns\": [\n      {\n        \"text\": \"Time\",\n        \"type\": \"time\"\n      },\n      {\n        \"text\": \"Label\",\n        \"type\": \"string\"\n      },\n      {\n        \"text\": \"Value\",\n        \"type\": \"number\"\n      }\n    ],\n    \"rows\": [\n      [1609459200000, \"A\", 10],\n      [1609462800000, \"B\", 20],\n      [1609466400000, \"C\", 15],\n      [1609470000000, \"D\", 25],\n      [1609473600000, \"E\", 30]\n    ]\n  },\n{\n    \"columns\": [\n      {\n        \"text\": \"Time\",\n        \"type\": \"time\"\n      },\n      {\n        \"text\": \"Label\",\n        \"type\": \"string\"\n      },\n      {\n        \"text\": \"Value\",\n        \"type\": \"number\"\n      }\n    ],\n    \"rows\": [\n      [1609459200000, \"A\", 40],\n      [1609462800000, \"B\", 50],\n      [1609466400000, \"C\", 45],\n      [1609470000000, \"D\", 55],\n      [1609473600000, \"E\", 60]\n    ]\n  }\n]"
+          "scenarioId": "csv_content"
         }
       ],
-      "title": "Sample Panel Title",
+      "title": "CSV source data",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "datasource", "uid": "-- Dashboard --" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 8 },
+      "id": 2,
+      "options": {
+        "provider": "lmstudio",
+        "baseUrl": "http://localhost:1234/v1",
+        "model": "replace-with-your-model-id",
+        "sourcePanelHint": "CSV source data (panel 1; fields DC1 and DC2)",
+        "maxRows": 50,
+        "maxContextChars": 24000,
+        "showAnalyzeButton": true,
+        "autoAnalyze": false,
+        "emptyDataBehavior": "warn",
+        "responseTitle": "CSV data assessment",
+        "backgroundColor": "transparent",
+        "textColor": "",
+        "fontSize": 14,
+        "padding": 16,
+        "alignment": "left"
+      },
+      "targets": [
+        {
+          "datasource": { "type": "datasource", "uid": "-- Dashboard --" },
+          "panelId": 1,
+          "withTransforms": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Grafana Intelligence Gateway: CSV analysis",
       "type": "digitalrcs-intelligencegateway-panel"
     },
     {
@@ -58,47 +75,35 @@
         "type": "grafana-testdata-datasource",
         "uid": "trlxrdZVk"
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "seriesCountSize": "sm",
-        "showSeriesCount": false,
-        "text": "Default value of text input option"
-      },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 18 },
+      "id": 3,
+      "options": { "emptyDataBehavior": "warn", "showAnalyzeButton": true },
       "targets": [
         {
-          "alias": "",
           "datasource": {
             "type": "grafana-testdata-datasource",
-            "uid": "db84e60d-b92a-4089-82cb-34842fb1754b"
+            "uid": "trlxrdZVk"
           },
           "refId": "A",
           "scenarioId": "no_data_points"
         }
       ],
-      "title": "Sample Panel Title",
+      "title": "Empty-data behavior test",
       "type": "digitalrcs-intelligencegateway-panel"
     }
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": [],
-  "templating": {
-    "list": []
-  },
+  "tags": ["ai", "csv", "digitalrcs"],
+  "templating": { "list": [] },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2026-06-30T12:00:00.000Z",
+    "to": "2026-08-04T12:00:00.000Z"
   },
   "timepicker": {},
-  "timezone": "",
-  "title": "Provisioned intelligencegateway dashboard",
+  "timezone": "browser",
+  "title": "Provisioned Intelligence Gateway CSV dashboard",
   "uid": "a538aeff-5a8a-42a5-901c-938d896fdd6f",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
