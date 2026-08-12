@@ -193,6 +193,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: companion-datasource/go.mod
+          cache-dependency-path: companion-datasource/go.sum
 
       - name: Install dev dependencies
         run: npm ci
@@ -201,7 +202,8 @@ jobs:
         run: |
           npm ci --prefix companion-datasource
           npm run build --prefix companion-datasource
-          go run github.com/magefile/mage@v1.15.0 -d companion-datasource buildAll
+          cd companion-datasource
+          go run github.com/magefile/mage@v1.15.0 buildAll
 
       - name: Start Grafana
         run: |
