@@ -8,15 +8,11 @@ datasources:
     isDefault: false
     editable: true
     jsonData:
-      provider: openai
-      baseUrl: https://api.openai.com/v1
-      defaultModel: gpt-4.1-mini
+      provider: custom
+      baseUrl: http://mock-ai:8080/v1
+      defaultModel: review-model
       timeoutSeconds: 300
       allowedModels:
-        - gpt-4.1-mini
-        - gpt-4.1
+        - review-model
       maxOutputTokens: 256000
-      allowStreaming: false
-      allowInsecureHttp: false
-    secureJsonData:
-      apiKey: ${OPENAI_API_KEY}
+      allowInsecureHttp: true

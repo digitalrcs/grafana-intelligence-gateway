@@ -1,22 +1,13 @@
-export type AIProvider = 'openai' | 'lmstudio' | 'custom' | 'copilot';
 export type TextAlignment = 'left' | 'center' | 'right';
-export type ReasoningEffort = 'default' | 'none' | 'low' | 'medium' | 'high';
 
 export interface IntelligenceGatewayOptions {
   secureDataSourceUid: string;
-  provider: AIProvider;
-  apiKey: string;
-  baseUrl: string;
   model: string;
-  copilotEndpoint: string;
-  copilotToken: string;
   temperature: number;
   maxTokens: number;
   unlimitedOutputTokens: boolean;
   responseLengthTokens: number;
-  reasoningEffort: ReasoningEffort;
   responseTimeoutSeconds: number;
-  streaming: boolean;
   systemPrompt: string;
   userPromptTemplate: string;
   skillsContext: string;
@@ -67,19 +58,12 @@ Dashboard data:
 
 export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
   secureDataSourceUid: '',
-  provider: 'openai',
-  apiKey: '',
-  baseUrl: 'https://api.openai.com/v1',
   model: 'gpt-4.1-mini',
-  copilotEndpoint: '',
-  copilotToken: '',
   temperature: 0.2,
   maxTokens: 1200,
   unlimitedOutputTokens: false,
   responseLengthTokens: 0,
-  reasoningEffort: 'none',
   responseTimeoutSeconds: 300,
-  streaming: false,
   systemPrompt: DEFAULT_SYSTEM_PROMPT,
   userPromptTemplate: DEFAULT_USER_PROMPT,
   skillsContext: '',

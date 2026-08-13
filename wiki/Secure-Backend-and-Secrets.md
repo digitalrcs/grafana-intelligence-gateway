@@ -10,7 +10,7 @@ The data source has its own [installation and operations wiki](https://github.co
 
 The panel stores only the data-source UID, requested model, temperature, and output cap. Grafana resolves the instance server-side; the companion backend decrypts the credential, enforces administrator policy, calls the provider, and returns only the answer or sanitized error metadata.
 
-Direct browser modes remain available for local LM Studio and restricted temporary development keys. A key entered directly into panel options is part of dashboard JSON even though the field is masked.
+The panel has no direct browser credential or provider-URL mode. The companion data source is declared as a required plugin dependency and is the only provider transport.
 
 Official references:
 
@@ -41,7 +41,6 @@ Non-secret `jsonData`:
   "timeoutSeconds": 300,
   "allowedModels": ["gpt-4.1-mini", "gpt-4.1"],
   "maxOutputTokens": 256000,
-  "allowStreaming": false,
   "allowInsecureHttp": false
 }
 ```
@@ -52,9 +51,8 @@ Non-secret `jsonData`:
 | `baseUrl`           | Administrator-controlled provider base URL. Resource requests cannot replace it.                                                                    |
 | `defaultModel`      | Model used when a request does not override it.                                                                                                     |
 | `timeoutSeconds`    | Server-side provider deadline, from 1 to 600 seconds.                                                                                               |
-| `allowedModels`     | Optional allow-list for panel-requested model IDs.                                                                                                  |
+| `allowedModels`     | Administrator allow-list for panel-requested model IDs. The default model must be included; when empty, only the default model is permitted.       |
 | `maxOutputTokens`   | Administrator ceiling applied even when the panel omits its cap.                                                                                    |
-| `allowStreaming`    | Whether the backend accepts streaming requests. The current panel secure mode is buffered.                                                          |
 | `allowInsecureHttp` | Explicit administrator override for HTTP provider URLs when organizational DNS/address locality cannot be classified reliably. Defaults to `false`. |
 
 Secret `secureJsonData`:
@@ -62,12 +60,11 @@ Secret `secureJsonData`:
 ```json
 {
   "apiKey": "provider-key-written-only-during-save",
-  "bearerToken": "optional-provider-token",
-  "clientSecret": "reserved-oauth-client-secret"
+  "bearerToken": "optional-provider-token"
 }
 ```
 
-The browser later receives configured/reset flags through `secureJsonFields`, never the decrypted values. A bearer token takes precedence over an API key. The client-secret field is reserved; OAuth client-credentials exchange requires a future token URL/client ID contract.
+The browser later receives configured/reset flags through `secureJsonFields`, never the decrypted values. Configure only one credential; a bearer token takes precedence over an API key.
 
 ## Provisioning
 
@@ -87,7 +84,6 @@ datasources:
       allowedModels:
         - gpt-4.1-mini
       maxOutputTokens: 256000
-      allowStreaming: false
       allowInsecureHttp: false
     secureJsonData:
       apiKey: ${OPENAI_API_KEY}
@@ -100,7 +96,7 @@ Set `OPENAI_API_KEY` in the Grafana server/container secret environment. Never c
 - Fixed `/models` and `/chat/completions` upstream paths; panel requests cannot choose an arbitrary host or path.
 - HTTPS is required by default. **Allow insecure HTTP** explicitly overrides that requirement without trying to classify the hostname or IP as local. Enabling it can expose provider credentials and prompts in transit and should be paired with trusted-network and firewall controls.
 - OpenAI remains restricted to `api.openai.com` even when the HTTP override is enabled.
-- Redirects, prohibited network addresses, unsupported message roles, disallowed models, and invalid temperatures are rejected.
+- Redirects, prohibited network addresses, unsupported message roles, disallowed models, and invalid temperatures are rejected. Model discovery returns only administrator-approved IDs.
 - Request bodies are capped at 1 MiB and buffered responses at 16 MiB.
 - Each instance permits four concurrent calls and 30 calls per minute.
 - Provider error bodies, prompts, answers, and credentials are not logged by default.

@@ -44,7 +44,7 @@
       "id": 2,
       "options": {
         "secureDataSourceUid": "intelligence-gateway-secure",
-        "model": "gpt-4.1-mini",
+        "model": "review-model",
         "sourcePanelHint": "CSV source data (panel 1; fields DC1 and DC2)",
         "maxRows": 50,
         "maxContextChars": 24000,
@@ -103,6 +103,6 @@
   "timezone": "browser",
   "title": "Provisioned Intelligence Gateway CSV dashboard",
   "uid": "a538aeff-5a8a-42a5-901c-938d896fdd6f",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }

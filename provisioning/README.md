@@ -16,10 +16,8 @@ go run github.com/magefile/mage@v1.17.2 -v build:linux
 
 cd C:\Data\GrafanaAIPlugin\digitalrcs-intelligencegateway-panel
 npm run build
-$env:OPENAI_API_KEY = "your-development-test-key"
 docker compose up --build
 ```
 
-Open <http://localhost:3004>. The secret is expanded into `secureJsonData` by Grafana provisioning and is not stored in
-the dashboard or repository. If `OPENAI_API_KEY` is unset, Grafana and the selector still load, but live analysis and the
-data-source health check report that provider authentication is missing.
+Open <http://localhost:3004>. Compose starts a deterministic mock provider, so model discovery, health checks, and live
+analysis work without an external account or credential. This environment is for review and automated testing only.

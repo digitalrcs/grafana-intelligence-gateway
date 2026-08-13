@@ -5,7 +5,7 @@
   "id": "digitalrcs-intelligencegateway-panel",
   "info": {
     "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "panel"],
-    "description": "AI-assisted assessments of Grafana dashboard data using OpenAI, LM Studio, compatible APIs, or experimental Copilot messaging endpoints.",
+    "description": "AI-assisted assessments of Grafana dashboard data through the required DigitalRCS secure AI data source.",
     "author": {
       "name": "DigitalRCS",
       "url": "https://www.digitalrcs.com"
@@ -21,14 +21,20 @@
       { "name": "Issues", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues" }
     ],
     "screenshots": [
-      { "name": "AI assessment and model controls", "path": "img/panel-assessment.png" },
-      { "name": "AI provider configuration", "path": "img/configuration-ai-provider.png" }
+      { "name": "AI assessment and model controls", "path": "img/panel-assessment.jpg" },
+      { "name": "AI provider configuration", "path": "img/configuration-ai-provider.jpg" }
     ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
   "dependencies": {
     "grafanaDependency": ">=11.6.0",
-    "plugins": []
+    "plugins": [
+      {
+        "id": "digitalrcs-intelligencegateway-datasource",
+        "type": "datasource",
+        "name": "Intelligence Gateway Secure AI"
+      }
+    ]
   }
 }

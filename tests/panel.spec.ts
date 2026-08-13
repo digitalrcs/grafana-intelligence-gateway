@@ -45,3 +45,17 @@ test('uses the provisioned secure AI data source', async ({ gotoPanelEditPage, r
   await expect(page.getByText('Server-side credentials enabled')).toBeVisible();
   await expect(page.getByText(/API keys and provider policy remain on the Grafana server/)).toBeVisible();
 });
+
+test('completes analysis through the secure backend and deterministic provider', async ({
+  gotoPanelEditPage,
+  readProvisionedDashboard,
+  page,
+}) => {
+  const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
+  const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
+  await page.getByTestId('intelligence-gateway-panel').waitFor({ state: 'visible' });
+  await page.getByRole('button', { name: 'Analyze' }).click();
+  await expect(panelEditPage.panel.locator).toContainText(
+    'Review environment response: the secure backend analysis completed successfully.'
+  );
+});

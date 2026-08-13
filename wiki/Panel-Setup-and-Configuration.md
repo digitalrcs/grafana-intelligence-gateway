@@ -1,153 +1,112 @@
 # Panel Setup and Configuration
 
-This guide configures Grafana Intelligence Gateway to analyze query results from another panel. The recommended design uses Grafana's built-in **Dashboard** data source, which passes normal Grafana DataFrames to the plugin without duplicating the source query.
+Grafana Intelligence Gateway analyzes normal Grafana DataFrames. The recommended source is Grafana's built-in **Dashboard** data source, which reuses another panel's query results without private dashboard APIs or duplicated queries.
 
-## 1. Add the source panel
+## 1. Configure the required secure data source
 
-Create or identify a source panel that already returns the data to analyze. Give it a clear title such as `My Data`, `API latency`, or `Production error rate`.
+Install `digitalrcs-intelligencegateway-datasource`, then create an **Intelligence Gateway Secure AI** data-source instance.
 
-The source can be a time series, table, logs result, or any other query that Grafana exposes as DataFrames. Confirm it returns data for the active dashboard time range before configuring the AI panel.
+1. Select the provider: OpenAI, LM Studio, or Custom/OpenAI-compatible.
+2. Configure the administrator-controlled base URL.
+3. Set a default model and include it in **Allowed models**. If the list is empty, only the default model is permitted.
+4. Set the backend timeout and maximum output-token ceiling.
+5. Store an API key or bearer token only in its `secureJsonData` field. LM Studio may need neither.
+6. Keep HTTPS enabled. Use **Allow insecure HTTP** only for a trusted local development network.
+7. Select **Save & test**.
 
-## 2. Add the Intelligence Gateway panel
+See [Secure Backend and Secret Storage](Secure-Backend-and-Secrets) for provisioning and policy details.
 
-1. Select **Add visualization** on the dashboard.
+## 2. Add the source panel
+
+Create or identify a panel that returns the data to analyze. Time series, tables, logs, and other query results are accepted when Grafana exposes them as DataFrames. Confirm that the source returns data for the active dashboard time range.
+
+## 3. Add the Intelligence Gateway panel
+
+1. Select **Add visualization**.
 2. Choose **Grafana Intelligence Gateway**.
-3. In **Queries**, choose the `-- Dashboard --` data source.
+3. In **Queries**, select the `-- Dashboard --` data source.
 4. Under **Source panel**, select the panel whose results should be analyzed.
-5. Choose **All data** unless the use case specifically needs annotations.
+5. Choose **All data** unless annotations are specifically required.
 6. Save the dashboard.
 
-The **Source panel title or ID (hint)** option is only descriptive prompt metadata. It does not retrieve panel data; the Dashboard data source does that.
+The **Source panel title or ID (hint)** is descriptive prompt metadata only. The Dashboard data source performs the actual connection.
 
-![Dashboard data source and source panel selection](images/configuration-data-context.png)
+![Dashboard data source and source panel selection](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/configuration-data-context.png)
 
-## 3. Configure the secure AI data source
+## 4. Configure AI generation
 
-The provider settings appear under **AI provider** in the panel options.
+| Option | Purpose | Example | Guidance |
+| --- | --- | --- | --- |
+| **Secure AI data source** | Selects the backend instance by UID. | `Intelligence Gateway Secure AI` | Required. The panel stores only the UID. |
+| **Model** | Chooses an administrator-approved model. | `review-model` | Use **Load models securely** or enter an allowed ID. |
+| **Temperature** | Controls response randomness. | `0.2` | Use 0–0.3 for repeatable operational analysis. |
+| **Provider/model default output limit** | Omits the panel request cap. | Off | The backend administrator ceiling and provider limits still apply. |
+| **Maximum output tokens** | Hard panel request cap. | `1200` | Slider range is 64–1,048,576; the backend applies the lower panel/admin cap. |
+| **Requested answer max tokens (soft)** | Adds a concision instruction. | `0` | Zero disables it. Models cannot guarantee exact token counts. |
+| **Response timeout** | Cancels the panel wait. | `300` | Range is 10–600 seconds. Align it with the backend timeout. |
 
-![Provider and credential controls](images/configuration-provider-access.png)
+The panel is buffered and cancellable. Provider credentials, URLs, authentication headers, and provider error bodies never enter panel options.
 
-For production, install and configure `digitalrcs-intelligencegateway-datasource`, then select it under **Secure AI data source**. This hides the direct provider credential fields and routes model discovery and analysis through Grafana's backend.
+![Secure data source, model, and generation controls](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/configuration-model-generation.png)
 
-| Option | What it does | Guidance |
+After analysis, the generated assessment appears in the panel together with **Clear analysis** and **Refresh assessment**. **Clear analysis** cancels an active request and removes the generated answer or error without modifying the dashboard query or source data.
+
+![Completed secure-backend analysis and runtime controls](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/production-secure-analysis.png)
+
+## 5. Configure prompts and skills
+
+| Option | Purpose | Example |
 | --- | --- | --- |
-| **Secure AI data source** | Selects a configured companion instance by UID. | Recommended for production. The panel stores the UID, not the credential. |
-| **Model** | Requests a model permitted by the administrator allow-list. | Select **Load models securely** or enter an allowed ID. |
-| **Temperature** | Sets output randomness. | Use `0`â€“`0.3` for repeatable operational analysis. |
-| **Maximum output tokens** | Supplies the panel request cap. | The backend applies the lower of this value and its administrator ceiling. |
-| **Provider/model default output limit** | Omits the panel cap. | The backend administrator ceiling and provider limits still apply. |
+| **System / backend prompt** | Defines the model's role, evidence rules, safety rules, and response format. | `You are an SRE analyst. Separate observations from hypotheses.` |
+| **User message template** | Defines the task and injects runtime variables. | `Assess {{panelTitle}} for {{timeRange}} using {{data}}.` |
+| **Skills / additional context** | Adds thresholds, runbooks, ownership, and domain definitions. | `p95 latency critical: 1000 ms.` |
+| **Constructed prompt preview** | Shows assembled messages before live data is injected. | Read-only preview |
 
-Secure mode is buffered in the current panel integration. Direct browser streaming is hidden while a secure data source is selected.
+Supported variables:
 
-### Direct development options
+| Variable | Runtime value |
+| --- | --- |
+| `{{data}}` | Bounded JSON serialization of every received DataFrame. |
+| `{{timeRange}}` | Current dashboard start/end timestamps. |
+| `{{panelTitle}}` | Intelligence Gateway panel title. |
+| `{{panelId}}` | Numeric Grafana panel ID. |
+| `{{skills}}` | Skills/additional context. |
+| `{{sourcePanel}}` | Descriptive source-panel hint. |
 
-| Option                 | What it does                                                               | Example value                                                                            | Guidance                                                                                                                             |
-| ---------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **Provider**           | Selects the request adapter and provider-specific fields.                  | `LM Studio`                                                                              | Available values: OpenAI, LM Studio, Custom/OpenAI-compatible, and Copilot Studio (experimental).                                    |
-| **API key**            | Sends a bearer token with OpenAI-compatible requests.                      | `your-restricted-development-key`                                                        | Required for OpenAI, usually blank for LM Studio, and provider-dependent for custom endpoints. Panel options are not secure storage. |
-| **Base URL**           | Base of the OpenAI-compatible API. The plugin appends `/chat/completions`. | `http://localhost:1234/v1`                                                               | OpenAI uses `https://api.openai.com/v1`. Do not include `/chat/completions` here.                                                    |
-| **Messaging endpoint** | Complete Copilot/Direct Line-compatible message endpoint.                  | `https://example.directline.botframework.com/v3/directline/conversations/.../activities` | Only shown for Copilot Studio. The current adapter is experimental.                                                                  |
-| **Bearer token**       | Authorizes the Copilot messaging request.                                  | `short-lived-development-token`                                                          | Do not store production tokens in a panel. Use a backend token exchange.                                                             |
+Treat dashboard field names, labels, values, and logs as untrusted evidence rather than instructions.
 
-The API-key warning is intentional: direct panel options are serialized into dashboard JSON. Use restricted development credentials only. Select the companion secure data source for production.
+## 6. Bound data and behavior
 
-### Model and generation options
+| Option | Purpose | Default |
+| --- | --- | --- |
+| **Recent rows per frame** | Includes only the newest rows in each frame. | `50` |
+| **Maximum context characters** | Hard-caps serialized DataFrame JSON. | `24000` |
+| **When no data arrives** | Allows, warns, or blocks analysis without frames. | `Warn` |
+| **Analyze automatically** | Runs after data/prompt changes with debounce. | Off |
+| **Show Analyze button** | Keeps manual analysis available. | On |
+| **Clear analysis** | Cancels an active request and removes response/error state. | Runtime button |
 
-![Model and generation controls](images/configuration-model-generation.png)
+Start with manual analysis. Enable automatic analysis only after provider budgets, prompt behavior, and data limits are understood.
 
-| Option                         | What it does                                                                  | Example value   | Guidance                                                                                                                    |
-| ------------------------------ | ----------------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Model**                      | Model identifier sent to the provider.                                        | `qwen/qwen3-8b` | Enter an ID or select **Load available models** after setting the base URL and key. Use an ID returned by `/v1/models`.     |
-| **Load available models**      | Calls the secure data source's `/models` resource or the direct `<base URL>/models` endpoint. | Button action   | In secure mode, verify data-source health, credentials, and model policy. In direct mode, verify the base URL, key, and CORS. |
-| **Temperature**                | Controls output randomness.                                                   | `0.2`           | Use `0`–`0.3` for repeatable operational analysis; raise it only when varied wording is useful.                             |
-| **Provider/model default output limit** | Omits `max_tokens` from the provider request. | `Off` | Turn on for no panel-imposed cap. This is not truly unlimited: provider, model, context-window, server, and account limits still apply. |
-| **Maximum output tokens**      | Hard request cap for completion tokens, including reasoning tokens for many models. | `1200`          | Slider range: 64–1,048,576. Use only values supported by the selected model/provider. |
-| **Requested answer max tokens (soft)** | Adds a system instruction asking the model to keep its visible final answer under an approximate length. | `0` | `0` means no instruction. This improves concision but cannot guarantee an exact token count. Keep it at or below the hard cap when one is enabled. |
-| **Reasoning effort**           | Controls LM Studio reasoning behavior.                                        | `None`          | `None` reserves the budget for visible output. Low/Medium/High may improve complex analysis but require a larger token cap. |
-| **Response timeout (seconds)** | Cancels a request that does not finish in time.                               | `300`           | Use 300–900 seconds for large local models. The allowed range is 10–3600.                                                   |
-| **Stream response**            | Displays OpenAI-compatible SSE content as it arrives.                         | `Off`           | Enable only when the endpoint supports SSE and CORS permits direct browser streaming. Copilot mode remains buffered.        |
+## 7. Verify
 
-If a reasoning model consumes the entire completion budget before producing visible text, the panel reports that condition and recommends disabling reasoning, increasing the token limit, or using the provider/model default. A separate timeout message explains when generation exceeds the configured response time.
-
-## 4. Configure prompts and skills
-
-![System prompt control](images/configuration-prompt-skills.png)
-
-![User template and skills controls](images/configuration-user-template.png)
-
-| Option                          | What it does                                                                            | Example value                                                                                        |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **System / backend prompt**     | Defines the model's stable role, evidence rules, safety rules, and response format.     | `You are an SRE analyst. Separate observations from hypotheses and end with prioritized next steps.` |
-| **User message template**       | Defines the task and injects runtime variables.                                         | `Assess {{panelTitle}} for {{timeRange}}. Use {{data}} and apply {{skills}}.`                        |
-| **Skills / additional context** | Adds domain definitions, thresholds, runbooks, ownership, or response requirements.     | `p95 latency warning: 500 ms; critical: 1000 ms. Checkout API owner: Platform Team.`                 |
-| **Constructed prompt preview**  | Shows the assembled system and user messages before live DataFrame values are injected. | Read-only preview                                                                                    |
-
-Supported template variables:
-
-| Variable          | Runtime value                                                         |
-| ----------------- | --------------------------------------------------------------------- |
-| `{{data}}`        | Bounded JSON serialization of every DataFrame received by this panel. |
-| `{{timeRange}}`   | Current dashboard start and end timestamps.                           |
-| `{{panelTitle}}`  | Intelligence Gateway panel title.                                     |
-| `{{panelId}}`     | Numeric Grafana panel ID.                                             |
-| `{{skills}}`      | Skills/additional-context option, or a no-context marker.             |
-| `{{sourcePanel}}` | Source-panel hint text.                                               |
-
-Grafana dashboard variables are interpolated after these plugin variables. Treat all dashboard field names, labels, and values as untrusted evidence rather than instructions.
-
-## 5. Bound the data context
-
-![Data context controls](images/configuration-data-context.png)
-
-| Option                              | What it does                                                                       | Example value | Guidance                                                                                          |
-| ----------------------------------- | ---------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
-| **Recent rows per frame**           | Includes only the newest rows from each DataFrame.                                 | `50`          | Raise it for longer history; lower it for logs or wide tables. Allowed range: 1–1000.             |
-| **Maximum context characters**      | Hard-caps the serialized DataFrame JSON.                                           | `24000`       | Lower it to reduce cost/latency. Raise it only when the model context window can accept the data. |
-| **Source panel title or ID (hint)** | Adds a human-readable source label to the prompt.                                  | `My Data`     | This is not a data connection. Use the Dashboard data source for the real connection.             |
-| **When no data arrives**            | Chooses whether analysis is allowed, warned, or blocked when no DataFrames arrive. | `Warn`        | Use `Block` for production dashboards where an empty assessment would be misleading.              |
-
-Each serialized frame includes its name, query reference ID, field names and types, labels, units, descriptions, row count, included rows, and the dashboard time range.
-
-## 6. Configure behavior and display
-
-![Behavior and display controls](images/configuration-data-behavior.png)
-
-| Option                          | What it does                                                                                                                                                                   | Example value                                          |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| **Analyze automatically**       | Runs analysis after data, time range, or prompt changes.                                                                                                                       | `Off` initially                                        |
-| **Auto-analysis debounce (ms)** | Waits before an automatic run to combine rapid updates.                                                                                                                        | `1200`                                                 |
-| **Show Analyze button**         | Shows the manual Analyze/Refresh assessment button.                                                                                                                            | `On`                                                   |
-| **Clear analysis**              | Removes the current response or error and cancels an in-progress request without changing panel settings or source data. This button appears when there is something to clear. | Select after reviewing or before sharing the dashboard |
-| **Assessment title**            | Heading rendered above the AI response.                                                                                                                                        | `Intelligence assessment`                              |
-| **Description**                 | Optional explanatory text below the heading.                                                                                                                                   | `AI review of the selected production metrics`         |
-| **Background color**            | Panel response background.                                                                                                                                                     | `transparent` or `#111827`                             |
-| **Text color**                  | Explicit response text color. Blank follows the Grafana theme.                                                                                                                 | blank or `#E5E7EB`                                     |
-| **Font size**                   | Response font size in pixels.                                                                                                                                                  | `14`                                                   |
-| **Padding**                     | Inner panel spacing in pixels.                                                                                                                                                 | `16`                                                   |
-| **Alignment**                   | Left, center, or right text alignment.                                                                                                                                         | `Left`                                                 |
-
-Start with manual analysis. Enable automatic analysis only after the provider, prompt, data limits, and rate/cost behavior are understood.
-
-## 7. Run and verify
-
-1. Select **Analyze**.
-2. Confirm the companion data-source backend or direct development provider receives the request.
-3. Confirm the response appears as formatted Markdown.
-4. Verify cited timestamps, series names, and values against the source panel.
-5. Select **Clear analysis** to confirm the response is removed without changing the configuration.
+1. Select **Load models securely** and confirm only approved models appear.
+2. Select **Analyze**.
+3. Confirm the Markdown assessment renders.
+4. Compare cited fields, values, and timestamps with the source panel.
+5. Select **Clear analysis** and confirm only generated state is removed.
 6. Save the dashboard.
-
-![Completed AI assessment](images/panel-assessment.png)
 
 ## Troubleshooting
 
-| Symptom                                             | Likely cause                                                     | Corrective action                                                                                     |
-| --------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| No models load                                      | Data-source health/model policy failure, or direct base URL/key/CORS failure. | In secure mode, use **Save & test** on the data source. In direct mode, verify `<base URL>/models`. |
-| Provider starts but panel reports no visible answer | Reasoning consumed the token budget.                             | Set Reasoning effort to None, increase Maximum output tokens, or enable Provider/model default output limit. |
-| Request times out                                   | Model loading or generation exceeded the configured duration.    | Increase Response timeout, reduce context, or use a faster/smaller model.                             |
-| Browser reports CORS or network failure             | A direct provider does not allow the Grafana origin.             | Select the secure data source, or configure CORS only for a deliberate direct development setup.     |
-| HTTPS Grafana cannot call HTTP LM Studio            | Browser mixed-content policy blocked the request.                | Put LM Studio behind local TLS or a backend proxy.                                                    |
-| No source data                                      | Dashboard data source is not connected or source panel is empty. | Re-select `-- Dashboard --`, choose the source panel, and inspect its data for the active time range. |
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| No secure data source appears | Companion plugin is missing or no instance exists. | Install it, restart Grafana, configure an instance, and reload the editor. |
+| Save & test fails | Endpoint, HTTPS policy, credential, model, or network error. | Correct the data-source configuration; provider details remain server-side. |
+| No models load | Provider `/models` failed or no approved model was returned. | Verify data-source health and ensure the default/allowed IDs exist upstream. |
+| Requested model is rejected | It is outside the administrator allow-list. | Select an approved ID or ask the administrator to update policy. |
+| No visible answer | Reasoning consumed the output ceiling. | Increase both relevant caps or use a non-reasoning model. |
+| Request times out | Model generation exceeded a panel or backend deadline. | Reduce context, use a faster model, or align/increase both timeouts within 600 seconds. |
+| No source data | Dashboard data source is disconnected or source panel is empty. | Re-select `-- Dashboard --`, choose the source panel, and inspect its active-range data. |
 
-See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels) for transformations, repeated panels, multiple frames, and query-inspector guidance.
+See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels) for transformations and multi-frame behavior.

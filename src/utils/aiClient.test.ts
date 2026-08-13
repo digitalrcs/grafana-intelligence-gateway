@@ -14,10 +14,6 @@ describe('extractResponseText', () => {
     expect(extractResponseText({ choices: [{ message: { content: ' Assessment ' } }] })).toBe('Assessment');
   });
 
-  it('reads a messaging activity response', () => {
-    expect(extractResponseText({ activities: [{ text: 'Copilot response' }] })).toBe('Copilot response');
-  });
-
   it('rejects empty provider responses', () => {
     expect(() => extractResponseText({ choices: [] })).toThrow('no text content');
   });
@@ -71,7 +67,7 @@ describe('secure data source transport', () => {
     getResource.mockResolvedValue({ data: [{ id: 'secure-model' }] });
 
     await expect(
-      fetchAvailableModels({ secureDataSourceUid: 'secure-uid', baseUrl: '', apiKey: '' })
+      fetchAvailableModels({ secureDataSourceUid: 'secure-uid' })
     ).resolves.toEqual(['secure-model']);
     expect(getResource).toHaveBeenCalledWith('models');
   });
@@ -96,5 +92,14 @@ describe('secure data source transport', () => {
       }),
       expect.objectContaining({ abortSignal: expect.any(AbortSignal) })
     );
+  });
+
+  it('requires a secure data source', async () => {
+    await expect(
+      analyzeWithAI({
+        options: { ...DEFAULT_OPTIONS, secureDataSourceUid: '' },
+        prompt: { system: 'system', user: 'user' },
+      })
+    ).rejects.toThrow('Select an Intelligence Gateway Secure AI data source');
   });
 });

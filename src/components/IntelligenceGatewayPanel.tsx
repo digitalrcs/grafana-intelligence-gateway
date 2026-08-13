@@ -89,19 +89,11 @@ export const IntelligenceGatewayPanel = ({
     abortController.current = controller;
     setLoading(true);
     setError('');
-    if (options.streaming) {
-      setResponse('');
-    }
     try {
       const result = await analyzeWithAI({
         options,
         prompt,
         signal: controller.signal,
-        onChunk: (chunk) => {
-          if (requestSequence.current === sequence) {
-            setResponse(chunk);
-          }
-        },
       });
       if (requestSequence.current === sequence) {
         setResponse(result);
