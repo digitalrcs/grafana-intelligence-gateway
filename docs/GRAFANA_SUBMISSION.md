@@ -1,6 +1,6 @@
 # Grafana catalog submission - version 1.0.0
 
-This page is the release handoff for the first public review of `digitalrcs-intelligencegateway-panel`. Replace the three `PENDING RELEASE WORKFLOW` values only with outputs from the successful tagged GitHub Release workflow.
+This page is the release handoff for the first public review of `digitalrcs-intelligencegateway-panel`. These values were verified against the published GitHub release artifact generated from tag `v1.0.0` at commit `aeaabab797742719a21fc9dfaf0ed6fd60d85797`.
 
 ## Submission form values
 
@@ -10,14 +10,14 @@ This page is the release handoff for the first public review of `digitalrcs-inte
 | Version | `1.0.0` |
 | Plugin type | Panel |
 | OS & Architecture | Single (frontend-only archive; no native binaries) |
-| Archive URL | `PENDING RELEASE WORKFLOW` |
-| SHA1 | `PENDING RELEASE WORKFLOW` |
+| Archive URL | `https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.0.0/digitalrcs-intelligencegateway-panel-1.0.0.zip` |
+| SHA1 | `351958ae1c638107c85bc7c875ae1fd40cb343fb` |
 | Source code URL | `https://github.com/DigitalRCS/grafana-intelligence-gateway` |
 | Provisioning provided | Yes |
 | Minimum Grafana version | `11.6.0` |
 | License | Apache-2.0 |
 | Required plugin | `digitalrcs-intelligencegateway-datasource` |
-| Provenance attestation | `PENDING RELEASE WORKFLOW` |
+| Provenance attestation | `https://github.com/digitalrcs/grafana-intelligence-gateway/attestations/40535491` |
 
 Use the public repository URL above for **Source code URL**. Do not use a local path, branch archive, Wiki URL, or release asset URL in that field. The archive URL must point directly to `digitalrcs-intelligencegateway-panel-1.0.0.zip` attached to the published GitHub release.
 
@@ -50,6 +50,10 @@ gh attestation verify digitalrcs-intelligencegateway-panel-1.0.0.zip \
 ```
 
 The SHA1 must match the `.sha1` release asset. The SHA256 verified by `gh attestation verify` must match the downloaded ZIP. Record the attestation URL shown by GitHub in the submission table.
+
+Verified release SHA256: `736e9060dbd84626c31dd2bc9db3de44f8799399fd7ff2dfab6a24bfee8c8a90`.
+
+Release workflow: `https://github.com/digitalrcs/grafana-intelligence-gateway/actions/runs/31715903368`.
 
 ## Final compliance gate
 
