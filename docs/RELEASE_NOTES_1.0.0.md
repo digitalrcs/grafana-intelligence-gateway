@@ -28,3 +28,10 @@ The required `digitalrcs-intelligencegateway-datasource` companion owns provider
 - The first public-review archive is intentionally unsigned. Grafana assigns the public signature level after review.
 
 See [Grafana submission information](GRAFANA_SUBMISSION.md) and [certification readiness](CERTIFICATION.md) for the exact release evidence and review instructions.
+
+## Release evidence
+
+- [Published v1.0.0 release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.0.0)
+- [Build provenance attestation](https://github.com/digitalrcs/grafana-intelligence-gateway/attestations/40535491)
+- SHA1: `351958ae1c638107c85bc7c875ae1fd40cb343fb`
+- SHA256: `736e9060dbd84626c31dd2bc9db3de44f8799399fd7ff2dfab6a24bfee8c8a90`
