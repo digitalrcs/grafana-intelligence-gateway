@@ -1,6 +1,7 @@
 import { PanelPlugin } from '@grafana/data';
 import { IntelligenceGatewayPanel } from './components/IntelligenceGatewayPanel';
 import { ModelEditor } from './components/ModelEditor';
+import { WideNumberEditor, WideSliderEditor } from './components/NumericEditors';
 import { PromptPreviewEditor } from './components/PromptPreviewEditor';
 import { SecureDataSourceEditor } from './components/SecureDataSourceEditor';
 import { DEFAULT_OPTIONS, IntelligenceGatewayOptions } from './types';
@@ -26,12 +27,14 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       editor: ModelEditor,
       defaultValue: DEFAULT_OPTIONS.model,
     })
-    .addSliderInput({
+    .addCustomEditor({
+      id: 'temperature',
       path: 'temperature',
       name: 'Temperature',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.temperature,
       settings: { min: 0, max: 2, step: 0.1 },
+      editor: WideSliderEditor,
     })
     .addBooleanSwitch({
       path: 'unlimitedOutputTokens',
@@ -41,16 +44,19 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.unlimitedOutputTokens,
     })
-    .addSliderInput({
+    .addCustomEditor({
+      id: 'maxTokens',
       path: 'maxTokens',
       name: 'Maximum output tokens',
       description: 'Hard request cap for output and, on many models, hidden reasoning. Supports up to 1,048,576 tokens.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.maxTokens,
       settings: { min: 64, max: 1048576, step: 64 },
+      editor: WideSliderEditor,
       showIf: (options) => !options.unlimitedOutputTokens,
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'responseLengthTokens',
       path: 'responseLengthTokens',
       name: 'Requested answer max tokens (soft)',
       description:
@@ -58,14 +64,17 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.responseLengthTokens,
       settings: { min: 0, max: 1048576, integer: true },
+      editor: WideNumberEditor,
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'responseTimeoutSeconds',
       path: 'responseTimeoutSeconds',
       name: 'Response timeout (seconds)',
       description: 'Stops an analysis that does not complete within this time. Local models may need several minutes.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.responseTimeoutSeconds,
       settings: { min: 10, max: 600, integer: true },
+      editor: WideNumberEditor,
     })
     .addTextInput({
       path: 'systemPrompt',
@@ -101,21 +110,25 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       editor: PromptPreviewEditor,
       defaultValue: '',
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'maxRows',
       path: 'maxRows',
       name: 'Recent rows per frame',
       description: 'Serializes the most recent rows from every DataFrame.',
       category: ['Data context'],
       defaultValue: DEFAULT_OPTIONS.maxRows,
       settings: { min: 1, max: 1000, integer: true },
+      editor: WideNumberEditor,
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'maxContextChars',
       path: 'maxContextChars',
       name: 'Maximum context characters',
       description: 'Hard cap for serialized dashboard data to control request size and cost.',
       category: ['Data context'],
       defaultValue: DEFAULT_OPTIONS.maxContextChars,
       settings: { min: 1000, max: 200000, integer: true },
+      editor: WideNumberEditor,
     })
     .addTextInput({
       path: 'sourcePanelHint',
@@ -145,12 +158,14 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['Behavior'],
       defaultValue: DEFAULT_OPTIONS.autoAnalyze,
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'autoAnalyzeDelayMs',
       path: 'autoAnalyzeDelayMs',
       name: 'Auto-analysis debounce (ms)',
       category: ['Behavior'],
       defaultValue: DEFAULT_OPTIONS.autoAnalyzeDelayMs,
       settings: { min: 300, max: 30000, integer: true },
+      editor: WideNumberEditor,
       showIf: (options) => options.autoAnalyze,
     })
     .addBooleanSwitch({
@@ -184,19 +199,23 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       category: ['Display'],
       defaultValue: DEFAULT_OPTIONS.textColor,
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'fontSize',
       path: 'fontSize',
       name: 'Font size',
       category: ['Display'],
       defaultValue: DEFAULT_OPTIONS.fontSize,
       settings: { min: 10, max: 48, integer: true },
+      editor: WideNumberEditor,
     })
-    .addNumberInput({
+    .addCustomEditor({
+      id: 'padding',
       path: 'padding',
       name: 'Padding',
       category: ['Display'],
       defaultValue: DEFAULT_OPTIONS.padding,
       settings: { min: 0, max: 64, integer: true },
+      editor: WideNumberEditor,
     })
     .addRadio({
       path: 'alignment',

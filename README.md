@@ -105,6 +105,7 @@ npm run sign -- --rootUrls https://grafana.example.com/
 For community catalog signing, ensure the `digitalrcs` prefix matches the Grafana Cloud organization slug, configure the `GRAFANA_ACCESS_POLICY_TOKEN` GitHub secret after Grafana grants a public signature level, create a GitHub release from the exact source tag, and submit the artifact through Grafana's plugin submission process. Restart Grafana after any `plugin.json` change.
 
 See [Grafana Compatibility and Certification](docs/CERTIFICATION.md) for the current readiness checklist and the exact submission fields.
+The version 1.0.0 handoff is in [Grafana Catalog Submission](docs/GRAFANA_SUBMISSION.md), with paste-ready [release notes](docs/RELEASE_NOTES_1.0.0.md) and provenance verification commands.
 
 ## Repository map
 

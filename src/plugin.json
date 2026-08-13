@@ -21,8 +21,8 @@
       { "name": "Issues", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues" }
     ],
     "screenshots": [
-      { "name": "AI assessment and model controls", "path": "img/panel-assessment.png" },
-      { "name": "AI provider configuration", "path": "img/configuration-ai-provider.png" }
+      { "name": "AI assessment and model controls", "path": "img/panel-assessment.jpg" },
+      { "name": "AI provider configuration", "path": "img/configuration-ai-provider.jpg" }
     ],
     "version": "%VERSION%",
     "updated": "%TODAY%"

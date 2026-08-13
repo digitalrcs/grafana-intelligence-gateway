@@ -22,7 +22,7 @@ The CI matrix builds, lints, type-checks, unit-tests, packages, validates metada
 | Valid plugin ID/type and metadata                 | `src/plugin.json`                                                        | Ready                          |
 | Required plugin dependency declared               | `dependencies.plugins` in `src/plugin.json`                              | Ready; publish data source first |
 | Clear description, keywords, author, links, logos | `src/plugin.json`                                                        | Ready                          |
-| Catalog screenshots                               | `src/img/panel-assessment.png`, `src/img/configuration-ai-provider.png`; secure flow evidence in `docs/images/production-secure-analysis.png` | Ready |
+| Catalog screenshots                               | `src/img/panel-assessment.jpg`, `src/img/configuration-ai-provider.jpg`; secure flow evidence in `docs/images/production-secure-analysis.png` | Ready |
 | README and setup guidance                         | `README.md` and this Wiki                                                | Ready                          |
 | License                                           | `LICENSE` (Apache-2.0)                                                   | Ready                          |
 | Versioned changelog                               | `CHANGELOG.md`                                                           | Ready                          |
@@ -48,6 +48,8 @@ npm run e2e
 ```
 
 The release workflow is triggered by tags matching `v*`. It uses Grafana's `build-plugin` action to build, package, validate, optionally sign, and attest the release artifact.
+
+The exact version 1.0.0 submission table, release gate, checksum commands, and provenance verification commands are maintained in [`docs/GRAFANA_SUBMISSION.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/GRAFANA_SUBMISSION.md). Release notes ready for the GitHub release description are in [`docs/RELEASE_NOTES_1.0.0.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.0.0.md).
 
 Do not add public-signing settings until Grafana assigns the plugin a public signature level. When Grafana provides the access policy, save it as the repository secret `GRAFANA_ACCESS_POLICY_TOKEN`; never commit it.
 
