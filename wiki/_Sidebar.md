@@ -1,6 +1,7 @@
 # Grafana Intelligence Gateway
 
 - [Home](Home)
+- [Reviewer Walkthrough](Reviewer-Walkthrough)
 - [Panel Setup and Configuration](Panel-Setup-and-Configuration)
 - [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels)
 - [Configuration: AI Providers](Configuration-AI-Providers)

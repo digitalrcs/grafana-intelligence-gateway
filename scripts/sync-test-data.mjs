@@ -4,13 +4,13 @@ import path from 'node:path';
 import { format } from 'prettier';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const csvPath = path.join(root, 'testdata', 'datasource.csv');
+const csvPath = path.join(root, 'testdata', 'reviewer-traffic.csv');
 const dashboardPath = path.join(root, 'provisioning', 'dashboards', 'dashboard.json');
 const csvContent = (await readFile(csvPath, 'utf8')).trim();
 const lines = csvContent.split(/\r?\n/);
 
 if (lines[0] !== 'time,DC1,DC2' || lines.length < 2) {
-  throw new Error('testdata/datasource.csv must contain the time,DC1,DC2 header and at least one data row.');
+  throw new Error('testdata/reviewer-traffic.csv must contain the time,DC1,DC2 header and at least one data row.');
 }
 
 const timestamps = lines.slice(1).map((line, index) => {
@@ -34,8 +34,8 @@ if (!sourcePanel?.targets?.[0]) {
 
 sourcePanel.targets[0].csvContent = grafanaCsvContent;
 dashboard.time = {
-  from: new Date(Math.min(...timestamps) - 12 * 60 * 60 * 1000).toISOString(),
-  to: new Date(Math.max(...timestamps) + 12 * 60 * 60 * 1000).toISOString(),
+  from: new Date(Math.min(...timestamps) - 60 * 1000).toISOString(),
+  to: new Date(Math.max(...timestamps) + 60 * 1000).toISOString(),
 };
 
 await writeFile(dashboardPath, await format(JSON.stringify(dashboard), { parser: 'json' }));

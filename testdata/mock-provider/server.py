@@ -32,7 +32,13 @@ class Handler(BaseHTTPRequestHandler):
                         "index": 0,
                         "message": {
                             "role": "assistant",
-                            "content": "Review environment response: the secure backend analysis completed successfully.",
+                            "content": (
+                                "**MOCK MODE — no AI inference performed.**\n\n"
+                                "The request reached the test provider through Grafana's secure data source. "
+                                "This fixed receipt does not analyze your data and will not change when the data changes.\n\n"
+                                "To assess the traffic shift, follow the Reviewer Walkthrough, select a real provider "
+                                "and its loaded model, then choose Analyze again."
+                            ),
                         },
                         "finish_reason": "stop",
                     }

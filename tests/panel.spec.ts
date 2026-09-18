@@ -13,7 +13,7 @@ test('loads the provisioned DC1 and DC2 CSV data', async ({ gotoDashboardPage, r
   const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
   const dashboardPage = await gotoDashboardPage({ uid: dashboard.uid });
   await dashboardPage.waitForPanelsQueriesToComplete({ timeout: 15000 });
-  const sourcePanel = dashboardPage.getPanelByTitle('CSV source data');
+  const sourcePanel = dashboardPage.getPanelByTitle('Synthetic traffic: requests/minute by data center');
   await expect(sourcePanel.locator).toContainText('DC1');
   await expect(sourcePanel.locator).toContainText('DC2');
 });
@@ -55,7 +55,6 @@ test('completes analysis through the secure backend and deterministic provider',
   const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
   await page.getByTestId('intelligence-gateway-panel').waitFor({ state: 'visible' });
   await page.getByRole('button', { name: 'Analyze' }).click();
-  await expect(panelEditPage.panel.locator).toContainText(
-    'Review environment response: the secure backend analysis completed successfully.'
-  );
+  await expect(panelEditPage.panel.locator).toContainText('MOCK MODE — no AI inference performed.');
+  await expect(panelEditPage.panel.locator).toContainText('does not analyze your data');
 });

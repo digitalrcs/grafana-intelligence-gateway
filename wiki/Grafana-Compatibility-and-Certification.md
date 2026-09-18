@@ -16,23 +16,23 @@ The CI matrix builds, lints, type-checks, unit-tests, packages, validates metada
 
 ## Repository readiness
 
-| Requirement                                       | Repository evidence                                                      | Status                         |
-| ------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------ |
-| Public source repository                          | `https://github.com/digitalrcs/grafana-intelligence-gateway`             | Ready                          |
-| Valid plugin ID/type and metadata                 | `src/plugin.json`                                                        | Ready                          |
-| Required plugin dependency declared               | `dependencies.plugins` in `src/plugin.json`                              | Ready; publish data source first |
-| Clear description, keywords, author, links, logos | `src/plugin.json`                                                        | Ready                          |
-| Catalog screenshots                               | `src/img/panel-assessment.jpg`, `src/img/configuration-ai-provider.jpg`; secure flow evidence in `docs/images/production-secure-analysis.png` | Ready |
-| README and setup guidance                         | `README.md` and this Wiki                                                | Ready                          |
-| License                                           | `LICENSE` (Apache-2.0)                                                   | Ready                          |
-| Versioned changelog                               | `CHANGELOG.md`                                                           | Ready                          |
-| Provisioned deterministic test environment        | `provisioning/`, `testdata/mock-provider/`, and `docker-compose.yaml`     | Ready; no external credential required |
-| Unit and E2E tests                                | `src/**/*.test.ts` and `tests/panel.spec.ts`                             | Ready                          |
-| Multi-version compatibility CI                    | `.github/workflows/ci.yml`                                               | Configured; verify per release |
-| Release packaging workflow                        | `.github/workflows/release.yml`                                          | Ready                          |
-| Build provenance attestation                      | Release workflow has `id-token`, `attestations`, and `attestation: true` | Ready when a tag is released   |
-| Public plugin signature                           | Requires Grafana review/signature assignment and repository secret       | External/manual step           |
-| Grafana submission                                | Requires released ZIP URL, SHA1, source URL, and testing guidance        | External/manual step           |
+| Requirement                                       | Repository evidence                                                                                                                           | Status                                 |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Public source repository                          | `https://github.com/digitalrcs/grafana-intelligence-gateway`                                                                                  | Ready                                  |
+| Valid plugin ID/type and metadata                 | `src/plugin.json`                                                                                                                             | Ready                                  |
+| Required plugin dependency declared               | `dependencies.plugins` in `src/plugin.json`                                                                                                   | Ready; publish data source first       |
+| Clear description, keywords, author, links, logos | `src/plugin.json`                                                                                                                             | Ready                                  |
+| Catalog screenshots                               | `src/img/panel-assessment.jpg`, `src/img/configuration-ai-provider.jpg`; secure flow evidence in `docs/images/production-secure-analysis.png` | Ready                                  |
+| README and setup guidance                         | `README.md` and this Wiki                                                                                                                     | Ready                                  |
+| License                                           | `LICENSE` (Apache-2.0)                                                                                                                        | Ready                                  |
+| Versioned changelog                               | `CHANGELOG.md`                                                                                                                                | Ready                                  |
+| Provisioned deterministic test environment        | `provisioning/`, `testdata/mock-provider/`, and `docker-compose.yaml`                                                                         | Ready; no external credential required |
+| Unit and E2E tests                                | `src/**/*.test.ts` and `tests/panel.spec.ts`                                                                                                  | Ready                                  |
+| Multi-version compatibility CI                    | `.github/workflows/ci.yml`                                                                                                                    | Configured; verify per release         |
+| Release packaging workflow                        | `.github/workflows/release.yml`                                                                                                               | Ready                                  |
+| Build provenance attestation                      | Release workflow has `id-token`, `attestations`, and `attestation: true`                                                                      | Ready when a tag is released           |
+| Public plugin signature                           | Requires Grafana review/signature assignment and repository secret                                                                            | External/manual step                   |
+| Grafana submission                                | Requires released ZIP URL, SHA1, source URL, and testing guidance                                                                             | External/manual step                   |
 
 ## Release and validation procedure
 
@@ -68,7 +68,7 @@ Use these values in Grafana's **Submit New Plugin** form after publishing the Gi
 
 Suggested testing guidance:
 
-> Install/build the required `digitalrcs-intelligencegateway-datasource` sibling plugin, then run `docker compose up --build` from the panel repository. Open the provisioned Intelligence Gateway CSV dashboard at `http://localhost:3004`. The environment starts a deterministic credential-free mock provider and provisions the secure data-source UID `intelligence-gateway-secure`. Edit panel 2, confirm **Server-side credentials enabled**, load `review-model`, and select **Analyze**. Verify the response begins `Review environment response:` and the CSV source contains DC1 and DC2. No external API account or credential is required.
+> Install/build the required `digitalrcs-intelligencegateway-datasource` sibling plugin, then run `docker compose up --build` from the panel repository. At `http://localhost:3004`, open **Intelligence Gateway: traffic-shift walkthrough**. Read the introduction and inspect the synthetic DC1/DC2 rates. Select **Analyze** and verify **MOCK MODE — no AI inference performed**. This proves connectivity and rendering only. Follow the [Reviewer Walkthrough](Reviewer-Walkthrough) to connect a separate real model, evaluate the assessment, and verify changed input. The mock requires no external account or credential; genuine inference requires a configured provider.
 
 ## Packaging requirements
 

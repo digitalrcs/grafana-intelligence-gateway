@@ -12,6 +12,12 @@ Grafana: `>=11.6.0` (the multi-version GitHub Actions E2E matrix is the compatib
 
 For the complete setup guide, every panel option, example values, provider-specific instructions, and troubleshooting, use the [GitHub Wiki](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki).
 
+## Review the use case
+
+Start with the [traffic-shift reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough). It explains why the two plugins exist, the synthetic DC1/DC2 scenario, what the mock can verify, and how to obtain a genuine assessment from a real model.
+
+**The default provisioned provider is a mock, not an AI model.** Its fixed receipt verifies connectivity only. It cannot analyze the supplied data.
+
 ## Features
 
 - Reads time-series and table query results from `PanelProps.data.series`.
@@ -44,7 +50,7 @@ docker compose up
 
 Open <http://localhost:3004>. The integrated Docker environment mounts both sibling plugins, starts a credential-free deterministic mock provider, and provisions an `Intelligence Gateway Secure AI` data source. Build the companion frontend and Linux backend first. Anonymous Admin access is enabled only in this local development container.
 
-The provisioned test dashboard uses [`testdata/datasource.csv`](testdata/datasource.csv). After replacing that file, run `npm run sync:test-data` and restart Grafana. The command embeds the CSV in Grafana TestData's **CSV Content** query and adjusts the dashboard time range to the file's timestamps.
+The provisioned test dashboard uses the invented traffic-shift fixture [`testdata/reviewer-traffic.csv`](testdata/reviewer-traffic.csv). After replacing that file, run `npm run sync:test-data` and restart Grafana. The command embeds the CSV in Grafana TestData's **CSV Content** query and adjusts the dashboard time range to the file's timestamps. The original `testdata/datasource.csv` is preserved separately.
 
 Production build:
 

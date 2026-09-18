@@ -4,6 +4,8 @@ AI-assisted assessment panel for Grafana DataFrames. Configure the required Inte
 
 For another panel's data, use Grafana's built-in **Dashboard** data source. The panel reads only its own official `data.series` input.
 
+Use cases include comparing traffic across sites, drafting incident handovers, and suggesting checks from supplied metrics and operational context. The [Reviewer Walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) demonstrates a synthetic traffic shift and real-provider setup. The default Docker mock only verifies connectivity; it does not perform AI inference. All generated assessments require human verification.
+
 ## Important security note
 
 This panel never accepts or stores provider credentials. All provider traffic uses the required `digitalrcs-intelligencegateway-datasource`, which owns `secureJsonData` and server-side policy.
