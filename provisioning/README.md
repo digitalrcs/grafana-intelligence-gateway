@@ -19,5 +19,6 @@ npm run build
 docker compose up --build
 ```
 
-Open <http://localhost:3004>. Compose starts a deterministic mock provider, so model discovery, health checks, and live
-analysis work without an external account or credential. This environment is for review and automated testing only.
+Open <http://localhost:3004> and choose **Intelligence Gateway: traffic-shift walkthrough**. Compose starts a deterministic mock provider: model discovery, health checks, and the request/response path work without an external account or credential, but **no AI inference or data analysis occurs**. The response explicitly says **MOCK MODE**.
+
+Follow the [Reviewer Walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) to connect a separate real provider, assess the synthetic traffic, and test changed input. This environment is for review and automated testing only.

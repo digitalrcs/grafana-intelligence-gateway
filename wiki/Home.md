@@ -10,6 +10,7 @@ Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration). It co
 
 ## Pages
 
+- [Reviewer Walkthrough: purpose, mock versus real inference, and a worked traffic assessment](Reviewer-Walkthrough)
 - Installation
 - Panel Setup and Configuration
 - Configuration (AI Providers)
