@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Documentation
+
+- Refresh the catalog and repository overview with local and hosted AI use cases, panel-data setup, and DigitalRCS branding.
+- Replace outdated catalog screenshots with a genuine LM Studio assessment of synthetic dashboard data.
+- Clarify the separate data and AI connections, data handling, and analysis controls.
+
 ## 1.0.0 - 2026-08-13
 
 ### Security

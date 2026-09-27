@@ -5,7 +5,7 @@
   "id": "digitalrcs-intelligencegateway-panel",
   "info": {
     "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "panel"],
-    "description": "AI-assisted assessments of Grafana dashboard data through the required DigitalRCS secure AI data source.",
+    "description": "Analyze panel query data with local or hosted AI models and display assessments alongside your charts. Connect through the DigitalRCS secure AI data source.",
     "author": {
       "name": "DigitalRCS",
       "url": "https://www.digitalrcs.com"
@@ -17,12 +17,11 @@
     "links": [
       { "name": "DigitalRCS", "url": "https://www.digitalrcs.com" },
       { "name": "Source", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway" },
-      { "name": "Documentation", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway" },
+      { "name": "Documentation", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/wiki" },
       { "name": "Issues", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues" }
     ],
     "screenshots": [
-      { "name": "AI assessment and model controls", "path": "img/panel-assessment.jpg" },
-      { "name": "AI provider configuration", "path": "img/configuration-ai-provider.jpg" }
+      { "name": "Local AI analysis of synthetic panel data with LM Studio", "path": "img/panel-analysis.png" }
     ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
