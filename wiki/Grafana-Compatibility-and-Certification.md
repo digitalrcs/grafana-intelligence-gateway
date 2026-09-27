@@ -16,23 +16,23 @@ The CI matrix builds, lints, type-checks, unit-tests, packages, validates metada
 
 ## Repository readiness
 
-| Requirement                                       | Repository evidence                                                                                                                           | Status                                 |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Public source repository                          | `https://github.com/digitalrcs/grafana-intelligence-gateway`                                                                                  | Ready                                  |
-| Valid plugin ID/type and metadata                 | `src/plugin.json`                                                                                                                             | Ready                                  |
-| Required plugin dependency declared               | `dependencies.plugins` in `src/plugin.json`                                                                                                   | Ready; publish data source first       |
-| Clear description, keywords, author, links, logos | `src/plugin.json`                                                                                                                             | Ready                                  |
-| Catalog screenshots                               | `src/img/panel-assessment.jpg`, `src/img/configuration-ai-provider.jpg`; secure flow evidence in `docs/images/production-secure-analysis.png` | Ready                                  |
-| README and setup guidance                         | `README.md` and this Wiki                                                                                                                     | Ready                                  |
-| License                                           | `LICENSE` (Apache-2.0)                                                                                                                        | Ready                                  |
-| Versioned changelog                               | `CHANGELOG.md`                                                                                                                                | Ready                                  |
-| Provisioned deterministic test environment        | `provisioning/`, `testdata/mock-provider/`, and `docker-compose.yaml`                                                                         | Ready; no external credential required |
-| Unit and E2E tests                                | `src/**/*.test.ts` and `tests/panel.spec.ts`                                                                                                  | Ready                                  |
-| Multi-version compatibility CI                    | `.github/workflows/ci.yml`                                                                                                                    | Configured; verify per release         |
-| Release packaging workflow                        | `.github/workflows/release.yml`                                                                                                               | Ready                                  |
-| Build provenance attestation                      | Release workflow has `id-token`, `attestations`, and `attestation: true`                                                                      | Ready when a tag is released           |
-| Public plugin signature                           | Requires Grafana review/signature assignment and repository secret                                                                            | External/manual step                   |
-| Grafana submission                                | Requires released ZIP URL, SHA1, source URL, and testing guidance                                                                             | External/manual step                   |
+| Requirement                                       | Repository evidence                                                             | Status                                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------- |
+| Public source repository                          | `https://github.com/digitalrcs/grafana-intelligence-gateway`                    | Ready                                  |
+| Valid plugin ID/type and metadata                 | `src/plugin.json`                                                               | Ready                                  |
+| Required plugin dependency declared               | `dependencies.plugins` in `src/plugin.json`                                     | Ready; publish data source first       |
+| Clear description, keywords, author, links, logos | `src/plugin.json`                                                               | Ready                                  |
+| Catalog screenshots                               | `src/img/panel-analysis.png`; real LM Studio assessment of synthetic query data | Ready                                  |
+| README and setup guidance                         | `README.md` and this Wiki                                                       | Ready                                  |
+| License                                           | `LICENSE` (Apache-2.0)                                                          | Ready                                  |
+| Versioned changelog                               | `CHANGELOG.md`                                                                  | Ready                                  |
+| Provisioned deterministic test environment        | `provisioning/`, `testdata/mock-provider/`, and `docker-compose.yaml`           | Ready; no external credential required |
+| Unit and E2E tests                                | `src/**/*.test.ts` and `tests/panel.spec.ts`                                    | Ready                                  |
+| Multi-version compatibility CI                    | `.github/workflows/ci.yml`                                                      | Configured; verify per release         |
+| Release packaging workflow                        | `.github/workflows/release.yml`                                                 | Ready                                  |
+| Build provenance attestation                      | Release workflow has `id-token`, `attestations`, and `attestation: true`        | Ready when a tag is released           |
+| Public plugin signature                           | Requires Grafana review/signature assignment and repository secret              | External/manual step                   |
+| Grafana submission                                | Requires released ZIP URL, SHA1, source URL, and testing guidance               | External/manual step                   |
 
 ## Release and validation procedure
 
@@ -49,7 +49,7 @@ npm run e2e
 
 The release workflow is triggered by tags matching `v*`. It uses Grafana's `build-plugin` action to build, package, validate, optionally sign, and attest the release artifact.
 
-The exact version 1.0.0 submission table, release gate, checksum commands, and provenance verification commands are maintained in [`docs/GRAFANA_SUBMISSION.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/GRAFANA_SUBMISSION.md). Release notes ready for the GitHub release description are in [`docs/RELEASE_NOTES_1.0.0.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.0.0.md).
+The current version 1.0.1 submission values and provenance verification commands are maintained in [`docs/GRAFANA_SUBMISSION.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/GRAFANA_SUBMISSION.md). Release notes are in [`docs/RELEASE_NOTES_1.0.1.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.0.1.md).
 
 Do not add public-signing settings until Grafana assigns the plugin a public signature level. When Grafana provides the access policy, save it as the repository secret `GRAFANA_ACCESS_POLICY_TOKEN`; never commit it.
 
@@ -57,14 +57,14 @@ Do not add public-signing settings until Grafana assigns the plugin a public sig
 
 Use these values in Grafana's **Submit New Plugin** form after publishing the GitHub draft release:
 
-| Form field            | Value/source                                                           |
-| --------------------- | ---------------------------------------------------------------------- |
-| OS & Architecture     | Single; this is a frontend-only plugin with no platform binaries.      |
-| URL                   | Direct URL of the packaged plugin ZIP from the GitHub release.         |
-| Source code URL       | `https://github.com/digitalrcs/grafana-intelligence-gateway`           |
-| SHA1                  | SHA1 asset generated with the release, matching the submitted ZIP.     |
-| Testing guidance      | Use the text below and link this Wiki.                                 |
-| Provisioning provided | Yes; `docker compose up` loads the dashboard and TestData data source. |
+| Form field            | Value/source                                                             |
+| --------------------- | ------------------------------------------------------------------------ |
+| OS & Architecture     | Single; this is a frontend-only plugin with no platform binaries.        |
+| URL                   | Direct URL of the packaged plugin ZIP from the GitHub release.           |
+| Source code URL       | `https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.0.1` |
+| SHA1                  | SHA1 asset generated with the release, matching the submitted ZIP.       |
+| Testing guidance      | Use the text below and link this Wiki.                                   |
+| Provisioning provided | Yes; `docker compose up` loads the dashboard and TestData data source.   |
 
 Suggested testing guidance:
 
@@ -82,7 +82,7 @@ On Windows, create the ZIP with a tool that stores portable forward-slash entry 
 2. Submit and publish the required data source first; the panel declares it as an external plugin dependency.
 3. Confirm catalog screenshots and all metadata links render from the built plugin.
 4. Add `GRAFANA_ACCESS_POLICY_TOKEN` only after Grafana grants a public signature level.
-5. Create and push the semantic-version tag, for example `v1.0.0`.
+5. Create and push the semantic-version tag, for example `v1.0.1`.
 6. Wait for the release workflow and inspect the draft release assets and provenance attestation.
 7. Validate the release ZIP and its SHA1.
 8. Publish the GitHub release.

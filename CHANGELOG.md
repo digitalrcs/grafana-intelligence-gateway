@@ -2,11 +2,19 @@
 
 ## Unreleased
 
+## 1.0.1 - 2026-09-27
+
 ### Documentation
 
 - Refresh the catalog and repository overview with local and hosted AI use cases, panel-data setup, and DigitalRCS branding.
 - Replace outdated catalog screenshots with a genuine LM Studio assessment of synthetic dashboard data.
 - Clarify the separate data and AI connections, data handling, and analysis controls.
+
+### Maintenance
+
+- Update Grafana E2E tooling for the Grafana 13.2 panel editor.
+- Add a synthetic traffic-shift example and recorded LM Studio assessment; clearly identify the deterministic mock provider.
+- Update affected transitive dependencies and use Node.js 22 in the release workflow.
 
 ## 1.0.0 - 2026-08-13
 

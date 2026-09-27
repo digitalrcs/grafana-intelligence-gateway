@@ -1,71 +1,44 @@
-# Grafana catalog submission - version 1.0.0
+# Grafana catalog submission - version 1.0.1
 
-This page is the release handoff for the first public review of `digitalrcs-intelligencegateway-panel`. These values were verified against the published GitHub release artifact generated from tag `v1.0.0` at commit `aeaabab797742719a21fc9dfaf0ed6fd60d85797`.
+Use the published, tagged release assets below to update the Grafana submission. This release includes the refreshed catalog README, DigitalRCS branding, and a genuine LM Studio assessment screenshot. The panel still requires the separately distributed Intelligence Gateway Secure AI data source.
 
-## Submission form values
+## Submission values
 
-| Grafana field | Value |
-| --- | --- |
-| Plugin ID | `digitalrcs-intelligencegateway-panel` |
-| Version | `1.0.0` |
-| Plugin type | Panel |
-| OS & Architecture | Single (frontend-only archive; no native binaries) |
-| Archive URL | `https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.0.0/digitalrcs-intelligencegateway-panel-1.0.0.zip` |
-| SHA1 | `351958ae1c638107c85bc7c875ae1fd40cb343fb` |
-| Source code URL | `https://github.com/DigitalRCS/grafana-intelligence-gateway` |
-| Provisioning provided | Yes |
-| Minimum Grafana version | `11.6.0` |
-| License | Apache-2.0 |
-| Required plugin | `digitalrcs-intelligencegateway-datasource` |
-| Provenance attestation | `https://github.com/digitalrcs/grafana-intelligence-gateway/attestations/40535491` |
+| Grafana field           | Value                                                                                                                                     |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Plugin ID               | `digitalrcs-intelligencegateway-panel`                                                                                                    |
+| Version                 | `1.0.1`                                                                                                                                   |
+| Plugin type             | Panel                                                                                                                                     |
+| OS & Architecture       | Single (frontend-only archive; no native binaries)                                                                                        |
+| Archive URL             | `https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.0.1/digitalrcs-intelligencegateway-panel-1.0.1.zip`      |
+| SHA1 checksum file      | `https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.0.1/digitalrcs-intelligencegateway-panel-1.0.1.zip.sha1` |
+| Source code URL         | `https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.0.1`                                                                  |
+| Provisioning provided   | Yes                                                                                                                                       |
+| Minimum Grafana version | `11.6.0`                                                                                                                                  |
+| License                 | Apache-2.0                                                                                                                                |
+| Required plugin         | `digitalrcs-intelligencegateway-datasource`                                                                                               |
 
-Use the public repository URL above for **Source code URL**. Do not use a local path, branch archive, Wiki URL, or release asset URL in that field. The archive URL must point directly to `digitalrcs-intelligencegateway-panel-1.0.0.zip` attached to the published GitHub release.
+Copy the checksum value from the SHA1 file if the form expects a hash rather than a checksum-file URL. Use the plain GitHub source-tag URL above for source/provenance verification. Do not substitute the GitHub-generated source archive for the packaged plugin ZIP.
 
-## Testing guidance to paste into Grafana
+The [release page](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.0.1) contains publication status and verification details. Build provenance and a Grafana plugin signature are separate: the workflow attests the archive, while public signing requires Grafana to assign a signature level and a signing token to be configured. This repository currently has no signing token, so this is an unsigned review archive.
 
-Install the required `digitalrcs-intelligencegateway-datasource` companion first. The repository's Docker Compose environment mounts both plugins and provisions a credential-free deterministic AI provider, a secure data-source instance, sample CSV-backed dashboard data, and an Intelligence Gateway panel. Build the companion frontend and backend as documented, run `docker compose up`, open `http://localhost:3004`, select the provisioned dashboard, and click **Analyze**. Confirm that an assessment appears, **Clear analysis** removes it, and **Refresh assessment** produces another result. In the panel editor, verify secure model loading, Dashboard data-source reuse, the full-width 1,048,576-token control, timeout settings, and empty-data behavior. No external account or API key is needed for this review path.
+## Testing guidance
 
-## Release procedure
+Install/build the required `digitalrcs-intelligencegateway-datasource` sibling plugin, then run `docker compose up --build` from the panel repository. At `http://localhost:3004`, open **Intelligence Gateway: traffic-shift walkthrough** and inspect the synthetic DC1/DC2 rates. Select **Analyze** and verify **MOCK MODE — no AI inference performed**. This verifies connectivity and rendering only. Use [Reviewer Walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) to connect a real local or hosted model and verify that changed query data changes the assessment. The mock needs no credential; actual inference needs a configured provider.
 
-1. Merge the catalog-readiness pull request and ensure all required checks pass on `main`.
-2. Confirm the required companion data source has a published, non-draft, non-prerelease release and is submitted or accepted before the panel.
-3. Create tag `v1.0.0` on the exact reviewed commit and push the tag.
-4. Wait for `.github/workflows/release.yml` to complete successfully.
-5. Publish the GitHub draft release as a normal release, not a prerelease.
-6. Copy the generated ZIP URL and SHA1 from the release assets into the table above.
-7. Verify the ZIP is the subject of a GitHub provenance attestation before submitting it.
+Confirm model discovery, Dashboard data-source reuse, clear/refresh controls, prompt variables, and input/output limits. The catalog screenshot comes from a real LM Studio response to synthetic data; the [capture evidence](LIVE_REVIEW_EVIDENCE.md) records its configuration and limitations.
 
-## Provenance verification
-
-The Release workflow grants only the required job permissions and invokes `grafana/plugin-actions/build-plugin@build-plugin/v1.2.0` with `attestation: true`. GitHub creates the attestation for the generated release ZIP by digest.
-
-After the release is published:
+## Verify the downloaded archive
 
 ```bash
-gh release download v1.0.0 --pattern "digitalrcs-intelligencegateway-panel-1.0.0.zip*"
-sha1sum digitalrcs-intelligencegateway-panel-1.0.0.zip
-sha256sum digitalrcs-intelligencegateway-panel-1.0.0.zip
-gh attestation verify digitalrcs-intelligencegateway-panel-1.0.0.zip \
-  --repo DigitalRCS/grafana-intelligence-gateway
+gh release download v1.0.1 --repo digitalrcs/grafana-intelligence-gateway \
+  --pattern 'digitalrcs-intelligencegateway-panel-1.0.1.zip*'
+sha1sum digitalrcs-intelligencegateway-panel-1.0.1.zip
+sha256sum digitalrcs-intelligencegateway-panel-1.0.1.zip
+gh attestation verify digitalrcs-intelligencegateway-panel-1.0.1.zip \
+  --repo digitalrcs/grafana-intelligence-gateway
 ```
 
-The SHA1 must match the `.sha1` release asset. The SHA256 verified by `gh attestation verify` must match the downloaded ZIP. Record the attestation URL shown by GitHub in the submission table.
+The SHA1 must match the checksum asset; provenance must verify for this exact ZIP. The archive must contain one `digitalrcs-intelligencegateway-panel/` directory with version `1.0.1`, the updated README, screenshot, plugin logo, changelog, license, and production module. Authenticated Grafana Plugin Validator provenance checks require `GITHUB_TOKEN`; without it, provenance may be skipped.
 
-Verified release SHA256: `736e9060dbd84626c31dd2bc9db3de44f8799399fd7ff2dfab6a24bfee8c8a90`.
-
-Release workflow: `https://github.com/digitalrcs/grafana-intelligence-gateway/actions/runs/31715903368`.
-
-## Final compliance gate
-
-- Release tag resolves to the reviewed `main` commit.
-- Release workflow and all supported-version CI jobs pass.
-- Release is public, published, and not marked prerelease.
-- ZIP has exactly one top-level directory named `digitalrcs-intelligencegateway-panel`.
-- Packaged `plugin.json` reports ID `digitalrcs-intelligencegateway-panel`, version `1.0.0`, and Grafana dependency `>=11.6.0`.
-- ZIP contains `README.md`, `CHANGELOG.md`, `LICENSE`, catalog screenshots, logo, production `module.js`, and source map.
-- Grafana Plugin Validator reports no blocking errors. `unsigned-plugin` is expected for the first public review because Grafana assigns the public signature level after approval.
-- GitHub provenance verification succeeds for the exact submitted ZIP.
-- The source code field is the canonical public GitHub repository URL.
-- The secure companion data source is available to the reviewer and its credentials remain in `secureJsonData`.
-
-Do not claim Grafana certification or catalog acceptance until Grafana completes its automated and manual review.
+See [v1.0.1 release notes](RELEASE_NOTES_1.0.1.md), [certification readiness](CERTIFICATION.md), and the [historical v1.0.0 record](GRAFANA_SUBMISSION_1.0.0.md). Grafana catalog acceptance remains with Grafana's review team.

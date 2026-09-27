@@ -27,7 +27,7 @@ The required `digitalrcs-intelligencegateway-datasource` companion owns provider
 - The tagged release workflow produces a correctly rooted ZIP and a GitHub build-provenance attestation.
 - The first public-review archive is intentionally unsigned. Grafana assigns the public signature level after review.
 
-See [Grafana submission information](GRAFANA_SUBMISSION.md) and [certification readiness](CERTIFICATION.md) for the exact release evidence and review instructions.
+See [Grafana submission information](GRAFANA_SUBMISSION_1.0.0.md) and [certification readiness](CERTIFICATION.md) for the exact release evidence and review instructions.
 
 ## Release evidence
 

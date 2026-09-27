@@ -23,6 +23,7 @@ jobs:
 
       - uses: grafana/plugin-actions/build-plugin@build-plugin/v1.2.0
         with:
+          node-version: '22'
           # Repository secret created from a Grafana Cloud access policy with plugins:write scope.
           policy_token: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
           # Generate build provenance for the public release artifact.
