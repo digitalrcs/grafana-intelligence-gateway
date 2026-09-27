@@ -24,7 +24,7 @@ Official references:
 2. Restart Grafana after installation or a `plugin.json` change.
 3. Open **Connections > Data sources > Add new data source**.
 4. Select **Intelligence Gateway Secure AI**.
-5. Configure the provider URL, default model, allowed models, timeout, administrator token ceiling, and streaming policy.
+5. Configure the provider URL, default model, allowed models, timeout, and administrator token ceiling. Responses are buffered; streaming is not supported.
 6. Enter only the credential required by the provider and select **Save & test**.
 7. Edit the Intelligence Gateway panel and select the saved instance under **Secure AI data source**.
 8. Enter or securely load an administrator-allowed model, then select **Analyze**.
@@ -110,4 +110,4 @@ The effective hard cap is `min(panel Maximum output tokens, data-source maxOutpu
 
 ## Integrated Docker test
 
-The panel repository's Docker Compose environment mounts both sibling `dist` directories and provisions the secure instance plus a dashboard already configured with UID `intelligence-gateway-secure`. Build both plugins, set `OPENAI_API_KEY`, start the panel Compose project, and open <http://localhost:3004>.
+The panel repository's Docker Compose environment mounts both sibling `dist` directories and provisions the secure instance plus a dashboard already configured with UID `intelligence-gateway-secure`. Build both plugins, start the panel Compose project, and open <http://localhost:3004>. The default deterministic mock requires no credential or `OPENAI_API_KEY` and performs no AI inference. To test a real provider, follow the [Reviewer Walkthrough](Reviewer-Walkthrough); configure a server-side API key only when the selected provider requires one, such as OpenAI.
