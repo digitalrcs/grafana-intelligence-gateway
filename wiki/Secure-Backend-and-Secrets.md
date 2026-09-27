@@ -24,7 +24,7 @@ Official references:
 2. Restart Grafana after installation or a `plugin.json` change.
 3. Open **Connections > Data sources > Add new data source**.
 4. Select **Intelligence Gateway Secure AI**.
-5. Configure the provider URL, default model, allowed models, timeout, administrator token ceiling, and streaming policy.
+5. Configure the provider URL, default model, allowed models, timeout, and administrator token ceiling. Responses are buffered; streaming is not supported.
 6. Enter only the credential required by the provider and select **Save & test**.
 7. Edit the Intelligence Gateway panel and select the saved instance under **Secure AI data source**.
 8. Enter or securely load an administrator-allowed model, then select **Analyze**.
