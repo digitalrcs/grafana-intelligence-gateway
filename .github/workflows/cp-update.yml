@@ -5,16 +5,18 @@ on:
   schedule:
     - cron: '0 0 1 * *' # run once a month on the 1st day
 
-# To use this workflow please create a fine-grained personal access token for your repository with:
-# `contents: read and write`
-# `pull requests: read and write`
-# `workflows: read and write`
+# Allow GitHub Actions to create pull requests in the repository Actions settings.
+# Optional GH_PAT_TOKEN supports migrations that modify workflow files and
+# triggering CI without the approval required for pull requests from GITHUB_TOKEN.
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: grafana/plugin-actions/create-plugin-update@create-plugin-update/v2.0.2
         with:
-          # Make sure to save the token in your repository secrets as `GH_PAT_TOKEN`
-          token: ${{ secrets.GH_PAT_TOKEN }}
+          token: ${{ secrets.GH_PAT_TOKEN || github.token }}
+          node-version: '22'
