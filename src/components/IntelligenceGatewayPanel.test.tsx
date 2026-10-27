@@ -78,7 +78,7 @@ describe('IntelligenceGatewayPanel', () => {
     expect(mockedAnalyzeWithAI.mock.calls[0][0].images).toHaveLength(1);
     expect(mockedAnalyzeWithAI.mock.calls[0][0].prompt.user).toContain('Query data was intentionally omitted');
     expect(screen.queryByRole('button', { name: 'Analyze images' })).not.toBeInTheDocument();
-    expect(screen.getByText(/Assessed 1 image/)).toBeInTheDocument();
+    expect(screen.getByText(/Submitted 1 image/)).toBeInTheDocument();
   });
 
   it('clears pending image attachments with Clear analysis', () => {

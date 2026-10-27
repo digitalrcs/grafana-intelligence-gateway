@@ -3,12 +3,16 @@ services:
     extends:
       file: .config/docker-compose-base.yaml
       service: grafana
+    build:
+      dockerfile: ${GRAFANA_DOCKERFILE:-../Dockerfile.review}
     ports: !override
       - 3004:3000/tcp
     volumes:
       - grafana-storage:/var/lib/grafana
       - ${INTELLIGENCE_GATEWAY_DATASOURCE_DIST:-../digitalrcs-intelligencegateway-datasource/dist}:/var/lib/grafana/plugins/digitalrcs-intelligencegateway-datasource
     environment:
+      NODE_ENV: production
+      GF_DEFAULT_APP_MODE: ${GRAFANA_APP_MODE:-production}
       GF_LOG_FILTERS: plugin.digitalrcs-intelligencegateway-panel:debug plugin.digitalrcs-intelligencegateway-datasource:debug
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: digitalrcs-intelligencegateway-panel,digitalrcs-intelligencegateway-datasource
       GF_SECURITY_ADMIN_USER: admin

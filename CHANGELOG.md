@@ -2,6 +2,7 @@
 
 ## 1.1.0 - 2026-10-26
 
+- Clearly label the supplied mock connection before analysis, show the selected AI instance/model, and provide a separate real-provider setup checklist. Mock responses are delivery receipts, not AI assessments.
 - Keep image-capture panel titles left-aligned beside their checkboxes, with wrapping on narrow screens.
 - Read capture labels from panel headings, not the surrounding panel body, and bound generated labels to 256 UTF-8 bytes without breaking Unicode characters.
 - Add dashboard capture, selected-panel capture, and PNG/JPEG upload with removable previews and explicit image submission.

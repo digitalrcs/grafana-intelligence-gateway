@@ -32,12 +32,14 @@ The panel analyzes time-series and table query results. It can run its own Grafa
 | **Images only**     | No query results are required. Turn off **Include query data with images**, then capture panels or add files and review the previews. | **Use images**, then **Analyze images** |
 | **Data and images** | Connect the query data and leave **Include query data with images** on. Capture or add images and review the previews.                | **Use images**, then **Analyze images** |
 
-Two connections serve different purposes:
+Who provides what:
 
-| Connection                              | What it provides                               |
-| --------------------------------------- | ---------------------------------------------- |
-| **Queries → Dashboard → Source panel**  | The existing panel's query results to analyze. |
-| **AI provider → Secure AI data source** | The connection to your local or hosted model.  |
+| Connection                              | What it provides                                          |
+| --------------------------------------- | --------------------------------------------------------- |
+| **Queries → Dashboard → Source panel**  | The existing panel's query results to analyze.            |
+| **AI provider → Secure AI data source** | The connection to your local or hosted model.             |
+| **TestData DB** in the supplied demo    | Synthetic chart rows, not an AI model.                    |
+| **DEMO ONLY - Mock AI (no inference)**  | A fixed connectivity receipt, not data or image analysis. |
 
 Field names, labels, units, recent rows, and the active time range give the model context for its answer. Use Grafana transformations and the panel's row and character limits to control the input.
 
@@ -45,13 +47,21 @@ Field names, labels, units, recent rows, and the active time range give the mode
 
 Requires **Grafana 11.6 or later** and [Intelligence Gateway Secure AI data source **1.1.0 or later**](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource). Install the companion before panel 1.1.0. The optional Grafana LLM app has its own requirements; the documented app 1.2.0 integration requires Grafana 13 or later. The Current View Exporter plugin is not required.
 
-1. **Configure the AI connection.** Create a Secure AI data-source instance with your provider endpoint, credentials when required, and an allowed model. The endpoint must be reachable from the Grafana server.
+1. **Configure the AI connection.** In **Connections → Data sources → Add new data source**, create an **Intelligence Gateway Secure AI** instance with your provider endpoint, required secure credentials, and an approved model, then **Save & test**. The endpoint must be reachable from Grafana's server/container. If using the supplied demo, create a separate real-provider instance and retain the mock.
 2. **Choose the evidence.** Add a Grafana Intelligence Gateway panel. For data-only or combined analysis, select **Queries → Dashboard** and a source panel returning data for the selected time range. For images-only analysis, query results are optional.
 3. **Choose the model.** Under **AI provider**, select the Secure AI data source, then use **Load models securely** to choose an available, administrator-approved model.
 4. **Set the analysis task.** Add your question to the user message template. For data-only or combined assessment, keep `{{data}}` to include query results; for images-only, ask about the attached evidence. Use `{{skills}}` to include definitions or runbook guidance from **Skills / additional context**.
 5. **Run the assessment.** Select **Analyze** for query data. For images, open **Images**, capture or add files, inspect every preview, choose **Use images**, and select **Analyze images**. Use **Clear analysis** to clear the answer and pending images without changing the source data.
 
 The [illustrated setup guide](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Panel-Setup-and-Configuration) explains every setting. See [Connecting Data from Other Panels](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Connecting-Data-from-Other-Panels) for query sharing and transformations.
+
+## Try the supplied demo in two phases
+
+**Phase 1 — verify connectivity.** The supplied **DEMO ONLY - Mock AI (no inference)** instance returns a fixed receipt: no model runs, and no data or image analysis occurs. The synthetic TestData chart and successful receipt prove the request path, not AI quality. Check the analysis panel's **AI connection label** for the instance currently selected; the dashboard introduction describes only the supplied default.
+
+**Phase 2 — connect a real model.** Create a separate secure AI instance, configure its server-reachable endpoint, approved model, and any required secure credentials, then select **Save & test**. In the panel's **AI provider** settings, select that instance and model. **Queries → Dashboard** selects measurements, not the AI connection; it is optional for images-only analysis. Confirm the connection label has changed before analyzing.
+
+For LM Studio on the Docker Desktop host, the usual base URL is `http://host.docker.internal:1234/v1`; container `localhost` is not the host computer. Other hosts require an address reachable from Grafana and approved server/firewall settings. Plain HTTP requires an explicit trusted-lab exception; model, network, credential, payload, and timeout safeguards still apply. Follow the [real-provider quickstart](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough#phase-2-connect-a-real-provider) for exact steps, reasoning-token budgets, and timeout examples. Neither a mock receipt nor a successful model-list request verifies vision.
 
 ## Shape the analysis
 

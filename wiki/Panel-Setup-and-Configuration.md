@@ -10,6 +10,8 @@ Grafana Intelligence Gateway analyzes query data, images, or both. This guide co
 
 All three modes require **AI provider → Secure AI data source**. It connects the model. **Queries → Dashboard** is a separate setting that reuses another panel's query results; selecting the AI data source does not import measurements. Capturing a panel adds its rendered image, not its DataFrames.
 
+The supplied demo instance, **DEMO ONLY - Mock AI (no inference)**, returns a fixed receipt: no model runs and no data or image analysis occurs. Read the analysis panel's **AI connection label** to identify the currently selected instance. For genuine analysis, use **Connections → Data sources → Add new data source** to create a **separate** real-provider instance, configure and test it, then select it and its approved model under the panel's **AI provider** settings. Follow the [two-phase walkthrough](Reviewer-Walkthrough#phase-2-connect-a-real-provider); the chart's TestData/Dashboard connection is not an AI provider.
+
 ## 1. Configure the required secure data source
 
 Install `digitalrcs-intelligencegateway-datasource` **1.1.0 or later**, restart Grafana, then create an **Intelligence Gateway Secure AI** data-source instance.

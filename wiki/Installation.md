@@ -18,7 +18,7 @@ npm run build
 docker compose up --build
 ```
 
-Open `http://localhost:3004`. The development Compose configuration mounts both unsigned plugins, starts a credential-free deterministic mock provider, provisions the secure data source, and loads a dashboard that sends CSV panel data through it.
+Open `http://localhost:3004`. The development Compose configuration mounts both unsigned plugins, starts a credential-free deterministic mock provider, and provisions **DEMO ONLY - Mock AI (no inference)**. The supplied default returns a fixed receipt: no model runs and no data or image analysis occurs. The TestData chart supplies synthetic rows, not an AI model. Follow the [two-phase walkthrough](Reviewer-Walkthrough) to create a separate real-provider instance, then select that instance and model under the panel's **AI provider** settings. Read the current AI connection label after switching; the introduction describes only the supplied default.
 
 ## Built artifact
 

@@ -18,6 +18,8 @@ Version **1.1.0** requires companion **`digitalrcs-intelligencegateway-datasourc
 
 Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration), then [Image Analysis](Image-Analysis). The six provider choices are OpenAI, LM Studio, Open WebUI, the optional Grafana LLM app, custom OpenAI-compatible Chat Completions, and Copilot Studio Direct Line **preview**. Copilot is not an enterprise SSO integration; see its [authentication boundaries](Copilot-Studio-Notes).
 
+Trying the supplied demo? **DEMO ONLY - Mock AI (no inference)** returns a fixed receipt, not an assessment. Follow the [two-phase walkthrough](Reviewer-Walkthrough): first verify the mock path, then create and select a **separate real-provider instance**. Check the analysis panel's current **AI connection label**; the dashboard introduction describes only the supplied default. TestData and **Queries → Dashboard** provide evidence, not an AI model.
+
 ## Pages
 
 - [Reviewer Walkthrough](Reviewer-Walkthrough): purpose, mock versus real inference, and a worked traffic assessment

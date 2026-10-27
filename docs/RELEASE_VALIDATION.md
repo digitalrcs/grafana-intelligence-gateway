@@ -33,6 +33,8 @@ Capture uses rendered dashboard content. Lazy panel loading or scheduled dashboa
 
 ## Exact release archive gate
 
+The default Docker review image uses production application mode and a specific unsigned-plugin allow-list. It omits the scaffold's unconditional `localhost:35729/livereload.js` injection, which caused unrelated connection-refused errors in browser validation. Console checks remain strict. The images-only regression measures action-triggered queries after Grafana completes initial dashboard setup; Grafana may initialize a default data source even when no source query is configured. Its output is excluded from the images-only request.
+
 The tagged Release workflow downloads its generated ZIP and SHA1 asset, verifies their agreement, verifies GitHub provenance against the repository, release workflow and exact tag commit, then runs the full default Grafana Plugin Validator Docker image with the matching source tag. It preserves the validator image digest and results as the `release-validation` Actions artifact.
 
 Before publishing/submitting, inspect that evidence for packaging, source, security, dependency, provenance, and signature findings. An expected unsigned-review warning is not permission to overlook other failures. AI-assisted validator reviews require a separately configured provider and are not represented as performed without one.

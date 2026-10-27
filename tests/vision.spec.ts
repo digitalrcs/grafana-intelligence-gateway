@@ -158,8 +158,9 @@ test('image panel checkbox labels stay adjacent and wrap on desktop and narrow s
       expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
       expect(geometry.rowLeft).toBeGreaterThanOrEqual(0);
       expect(geometry.rowRight).toBeLessThanOrEqual(viewport.width);
-      // The long text-panel title wraps; the shorter chart title can still fit.
-      if (viewport.width === 390 && source.type === 'text') {
+      // Require wrapping only when the fixture has a long text-panel heading.
+      // Short mock-demo headings can fit; adjacency and overflow checks still apply.
+      if (viewport.width === 390 && source.type === 'text' && source.title.length > 40) {
         expect(geometry.lineCount).toBeGreaterThan(1);
       }
       starts.push(geometry.textStart);
@@ -428,7 +429,6 @@ test('images-only analysis needs no query source and sends one image only after 
   const png = await sourcePanel.screenshot({ type: 'png' });
   await page.waitForLoadState('networkidle', { timeout: 10000 });
   expect(observed.inference).toHaveLength(0);
-  const queryBaseline = observed.queryCount();
 
   const temporaryUid = `vision-only-${randomUUID().slice(0, 24)}`;
   const panelTitle = 'Images-only assessment without query data';
@@ -488,6 +488,12 @@ test('images-only analysis needs no query source and sends one image only after 
     await expect(page).toHaveTitle(/Grafana/);
     const panel = isolatedPage.getPanelByTitle(panelTitle).locator;
     await expect(panel.getByTestId('intelligence-gateway-panel')).toBeVisible();
+    // Grafana may initialize its default data source even when the saved panel
+    // has datasource:null and targets:[]. Measure image actions only after that
+    // initial load; the request payload below must still omit all query data.
+    await isolatedPage.waitForPanelsQueriesToComplete({ timeout: 30000 });
+    await page.waitForLoadState('networkidle', { timeout: 10000 });
+    const queryBaseline = observed.queryCount();
     await panel.getByRole('button', { name: 'Images', exact: true }).click();
     const dialog = page.getByTestId('image-inputs');
     await expect(dialog).toContainText('Query data will not be included in image requests.');
@@ -520,7 +526,7 @@ test('images-only analysis needs no query source and sends one image only after 
     expect(payload.prompt.user).not.toContain('"rows"');
     expect(observed.queryCount()).toBe(queryBaseline);
     await expect(panel).not.toContainText('AI analysis failed');
-    await expect(panel).toContainText('Assessed 1 image. Capture again to assess a newer view.');
+    await expect(panel).toContainText('Submitted 1 image. Capture again to assess a newer view.');
     await evidence(page, info, 'vision-images-only-receipt');
     await assertNoUnexpectedErrors(observed, info);
   } finally {

@@ -10,6 +10,8 @@ The integrated environment expects the companion [secure AI data source](https:/
 
 ## Run locally
 
+The default Compose image is `Dockerfile.review`: Grafana's official entrypoint in production application mode, with only the two review plugin IDs explicitly allowed unsigned. It does not inject the scaffold's live-reload script. This is a local review fixture, not a hardened public service; never expose anonymous administrator access. To explicitly use scaffold hot reload for local development, set `GRAFANA_DOCKERFILE=Dockerfile`, `GRAFANA_APP_MODE=development`, and `DEVELOPMENT=true`; do not use that profile for release validation or as a cache workaround.
+
 From the panel repository:
 
 ```bash
@@ -23,13 +25,13 @@ In a second terminal:
 docker compose up
 ```
 
-Open <http://localhost:3004>. Compose mounts both plugins, provisions an AI data source and sample dashboard, and starts a credential-free mock provider. The mock returns a fixed connectivity receipt; it does not analyze data. Use a configured model endpoint for actual analysis.
+Open <http://localhost:3004>. Compose mounts both plugins, provisions **DEMO ONLY - Mock AI (no inference)** and a sample dashboard, and starts a credential-free mock provider. This supplied default returns a fixed connectivity receipt: no model runs and no data or image analysis occurs. The dashboard introduction describes the supplied default; read the analysis panel's current AI connection label after changing providers. Follow the [two-phase quickstart](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough#phase-2-connect-a-real-provider) to create a separate real-provider instance. Keep the mock for automated tests.
 
 The development container enables anonymous Admin access. Do not use that configuration for a production deployment.
 
 The sample dashboard uses the synthetic [traffic-shift fixture](../testdata/reviewer-traffic.csv). Run `npm run sync:test-data` after replacing the fixture, then restart Grafana. The script embeds the CSV into Grafana TestData's **CSV Content** query and updates the dashboard time range. The original `testdata/datasource.csv` is preserved separately.
 
-For LM Studio outside the Grafana container, configure a server-reachable address such as `host.docker.internal`. Prefer HTTPS; any HTTP exception must be explicitly enabled in the companion data source and confined to a trusted environment.
+For LM Studio on the Docker Desktop host, use `http://host.docker.internal:1234/v1`; container `localhost` means the Grafana container. Another host requires an address reachable from Grafana, approved LM Studio network access, and firewall routing. Prefer HTTPS; any HTTP exception must be explicitly enabled in the companion and confined to a trusted environment. The exception does not bypass model, redirect, payload, timeout, or other network policy.
 
 ## Build and test
 

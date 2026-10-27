@@ -19,6 +19,7 @@ Version 1.1.0 adds reviewed image evidence to the Intelligence Gateway panel and
 - **Secure provider choices:** OpenAI, LM Studio, Open WebUI, custom OpenAI-compatible Chat Completions, the optional Grafana LLM app, and Copilot Studio Direct Line **preview**, configured in the companion backend.
 - **Capture robustness:** panel headings are used instead of full panel body text, generated image names are bounded safely, and selection labels stay beside their checkboxes and wrap on narrow screens.
 - **Operational guidance:** clearer distinctions among output-budget exhaustion, reasoning-only responses, timeout, image-policy rejection, and provider incompatibility, with setup examples and troubleshooting documentation.
+- **Unambiguous demo setup:** the supplied **DEMO ONLY - Mock AI (no inference)** connection is labeled as a fixed receipt, not a model. A current AI connection notice and two-phase quickstart distinguish the mock from a separately configured real provider and distinguish query evidence from the AI connection.
 
 ## Choose the workflow
 

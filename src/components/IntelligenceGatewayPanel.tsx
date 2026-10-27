@@ -7,6 +7,7 @@ import { formatTimeRange, serializeDataFrames } from '../utils/dataFrames';
 import { constructPrompt } from '../utils/prompt';
 import { IntelligenceGatewayOptions } from '../types';
 import { ImageInputs } from './ImageInputs';
+import { ConnectionNotice } from './ConnectionNotice';
 import type { VisionAttachment } from '../vision';
 
 type Props = PanelProps<IntelligenceGatewayOptions>;
@@ -153,7 +154,7 @@ const IntelligenceGatewayPanelContent = ({
         setResponse(result);
         setAssessmentContext(
           images.length > 0
-            ? `Assessed ${images.length} image${images.length === 1 ? '' : 's'}. Capture again to assess a newer view.`
+            ? `Submitted ${images.length} image${images.length === 1 ? '' : 's'}. Capture again to assess a newer view.`
             : ''
         );
         if (images.length > 0) {
@@ -248,6 +249,8 @@ const IntelligenceGatewayPanelContent = ({
             ) : null}
           </div>
         </div>
+
+        <ConnectionNotice dataSourceUid={options.secureDataSourceUid ?? ''} model={options.model} />
 
         {imageDialogOpen ? (
           <ImageInputs
