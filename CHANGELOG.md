@@ -1,6 +1,17 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-10-26
+
+- Keep image-capture panel titles left-aligned beside their checkboxes, with wrapping on narrow screens.
+- Read capture labels from panel headings, not the surrounding panel body, and bound generated labels to 256 UTF-8 bytes without breaking Unicode characters.
+- Add dashboard capture, selected-panel capture, and PNG/JPEG upload with removable previews and explicit image submission.
+- Keep images out of saved dashboards and automatic analysis; clear pending images on success, Clear analysis, or provider/model change.
+- Validate image dimensions, bytes, aggregate limits, model approval, and request size; strip hidden upload metadata by re-encoding pixels.
+- Integrate companion capabilities for LM Studio, Open WebUI, optional Grafana LLM app, and the bounded Copilot Studio Direct Line preview. Corporate SSO/delegated authentication is not implemented.
+- Document image limits, provider setup, capture caveats, enterprise authentication, and synthetic validation.
+- Restrict the build to the plugin source so archived release evidence cannot become extra bundle entries.
+- Patch the development signing dependency and host-external Moment dependency; retain the documented moderate React Router advisory assessment.
+- Require companion data source 1.1.0 or newer for image and provider-capability features. Existing data-only analysis remains available.
 
 ## 1.0.1 - 2026-09-27
 

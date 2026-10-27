@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check dependencies for high severity advisories
+        run: npm audit --audit-level=high
+
       - name: Check types
         run: npm run typecheck
       - name: Lint
@@ -148,7 +151,7 @@ jobs:
         id: resolve-versions
         uses: grafana/plugin-actions/e2e-version@e2e-version/v3.0.1
         with:
-          # Certify released Grafana versions. Nightly UI changes are tested upstream by plugin-e2e.
+          # Validate released Grafana versions; this does not imply catalog certification.
           skip-grafana-nightly-image: true
 
   playwright-tests:
@@ -175,6 +178,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: DigitalRCS/grafana-intelligence-gateway-datasource
+          # Exact 1.1.0 companion source; do not silently test against moving main.
+          ref: 627b244d6d59da98dc0e49d36f2db2e87801bfc1
           path: companion-datasource
           persist-credentials: false
 
@@ -230,7 +235,18 @@ jobs:
           docker logs digitalrcs-intelligencegateway-panel >& grafana-server.log
 
       - name: Stop grafana docker
+        if: always()
         run: docker compose down
+
+      - name: Preserve synthetic browser-test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-tests-${{ matrix.GRAFANA_IMAGE.NAME }}-${{ matrix.GRAFANA_IMAGE.VERSION }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
 
       # Uncomment this step to upload the server log to Github artifacts. Remember Github artifacts are public on the Internet if the repository is public.
       # - name: Upload server log

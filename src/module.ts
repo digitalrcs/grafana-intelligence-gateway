@@ -48,7 +48,8 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       id: 'maxTokens',
       path: 'maxTokens',
       name: 'Maximum output tokens',
-      description: 'Hard request cap for output and, on many models, hidden reasoning. Supports up to 1,048,576 tokens.',
+      description:
+        'Hard request cap for output and, on many models, hidden reasoning. Supports up to 1,048,576 tokens.',
       category: ['AI provider'],
       defaultValue: DEFAULT_OPTIONS.maxTokens,
       settings: { min: 64, max: 1048576, step: 64 },
@@ -152,9 +153,26 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       },
     })
     .addBooleanSwitch({
+      path: 'showImageControls',
+      name: 'Show image controls',
+      description:
+        'Capture dashboard panels or add PNG/JPEG images. Image sending requires administrator-enabled vision support in the secure AI data source.',
+      category: ['Image assessment'],
+      defaultValue: DEFAULT_OPTIONS.showImageControls,
+    })
+    .addBooleanSwitch({
+      path: 'includeDataWithImages',
+      name: 'Include query data with images',
+      description:
+        "Send this Intelligence panel's query results alongside images for precise values. Screenshot capture does not retrieve other panels' raw data.",
+      category: ['Image assessment'],
+      defaultValue: DEFAULT_OPTIONS.includeDataWithImages,
+    })
+    .addBooleanSwitch({
       path: 'autoAnalyze',
       name: 'Analyze automatically',
-      description: 'Runs after data or prompt changes, with a debounce to reduce duplicate requests.',
+      description:
+        'Text-only analysis after data or prompt changes. Pauses while image inputs are open or attached; images always require a manual Analyze action.',
       category: ['Behavior'],
       defaultValue: DEFAULT_OPTIONS.autoAnalyze,
     })

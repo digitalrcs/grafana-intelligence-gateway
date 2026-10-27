@@ -1,4 +1,5 @@
 import json
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
@@ -21,6 +22,13 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         model = payload.get("model", "review-model")
+        image_count = sum(
+            1
+            for message in payload.get("messages", [])
+            if isinstance(message.get("content"), list)
+            for part in message["content"]
+            if part.get("type") == "image_url"
+        )
         self.respond(
             200,
             {
@@ -36,6 +44,7 @@ class Handler(BaseHTTPRequestHandler):
                                 "**MOCK MODE — no AI inference performed.**\n\n"
                                 "The request reached the test provider through Grafana's secure data source. "
                                 "This fixed receipt does not analyze your data and will not change when the data changes.\n\n"
+                                f"Image transport receipt: {image_count} image(s) received. This is not visual analysis.\n\n"
                                 "To assess the traffic shift, follow the Reviewer Walkthrough, select a real provider "
                                 "and its loaded model, then choose Analyze again."
                             ),
@@ -58,4 +67,4 @@ class Handler(BaseHTTPRequestHandler):
         return
 
 
-ThreadingHTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
+ThreadingHTTPServer((os.environ.get("MOCK_AI_HOST", "0.0.0.0"), int(os.environ.get("MOCK_AI_PORT", "8080"))), Handler).serve_forever()

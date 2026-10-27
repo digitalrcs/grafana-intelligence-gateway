@@ -2,13 +2,13 @@
 
 ## What problem does this solve?
 
-An operator can see a change in a chart but still needs to write a handover or decide what to check next. Intelligence Gateway sends selected Grafana query results, the time range, and configurable operational context to an administrator-selected AI model and displays its assessment beside the chart.
+An operator can see a change in a chart but still needs to write a handover or decide what to check next. Intelligence Gateway sends selected Grafana query results, reviewed dashboard images, and configurable operational context to an administrator-selected AI model and displays its assessment beside the chart. This walkthrough uses panel and companion **1.1.0 or later**.
 
 Example uses include comparing traffic across sites, summarizing an incident window, and drafting a handover from supplied metrics and runbook context. The input is Grafana DataFrames, not a particular database or CSV format. CSV is only the portable fixture in this example.
 
 The **panel** assembles the bounded data and instructions and renders the response. The **data source** supplies server-side provider access, encrypted credential storage, and administrator policy. The data source does not independently collect dashboard metrics, train a model, detect incidents in the background, or prove a root cause.
 
-## Understand the two modes
+## Understand mock versus real inference
 
 | Mode          | What runs                                                             | What it demonstrates                                                                                     |
 | ------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -48,16 +48,28 @@ These are human-checkable fixture facts, not canned AI output.
 
 1. Start LM Studio's server and load a chat-capable model, or prepare another compatible provider.
 2. In Grafana, add a **separate Intelligence Gateway Secure AI** data-source instance named **Reviewer live AI**. Keep the mock instance for reproducible smoke tests.
-3. Select the provider and a base URL reachable **from Grafana's server/container**, ending in `/v1`. For LM Studio on the Docker host this can be `http://host.docker.internal:1234/v1`; for another machine use its reachable hostname. Prefer HTTPS. For a trusted HTTP-only lab endpoint, explicitly enable **Allow insecure HTTP**.
-4. Enter the exact loaded model ID as the default and allowed model. Set a conservative administrator output ceiling, for example 2,400, and timeout of 300 seconds. If authentication is required, enter it only in the data-source secure credential fields.
+3. Select the provider and its documented base URL reachable **from Grafana's server/container**. For LM Studio on the Docker host this can be `http://host.docker.internal:1234/v1`; for another machine use its reachable hostname. Other providers have different paths: see [AI Providers](Configuration-AI-Providers). Prefer HTTPS. For a trusted HTTP-only lab endpoint, explicitly enable **Allow insecure HTTP**.
+4. Enter the exact loaded model ID as the default and allowed model. Choose a bounded output ceiling appropriate for that model; a local reasoning-model test might use 8,192 tokens and a 300-second deadline. If authentication is required, enter it only in the data-source secure credential fields.
 5. Select **Save & test**. Success verifies model endpoint access, not inference quality.
 6. Duplicate the provisioned dashboard for your experiment. Edit panel 2, select **Reviewer live AI** under **Secure AI data source**, and select the real model. The mock ID `review-model` will not work with the real provider.
-7. Change the panel's response description to **Live model response to synthetic data**, retain manual analysis, and set the request cap to 1,200 (or up to the administrator ceiling if the model uses reasoning tokens). Apply the panel changes.
+7. Change the panel's response description to **Live model response to synthetic data** and retain manual analysis. Match the panel request cap to the approved test budget, for example 8,192 tokens, with a 500-token soft answer target and 300-second panel timeout. A smaller panel cap still wins over the administrator ceiling; reasoning may use that cap before visible text appears. Apply the panel changes.
 8. Select **Analyze**. A real answer should discuss DC1/DC2, numeric evidence, uncertainty, and next checks. It must not return the mock receipt.
 
 The panel already includes this task: compare the periods before and after 12:20 UTC, explain distribution and combined rate, cite evidence, state uncertainty, and suggest three verification steps in at most 200 words. The full constructed prompt can be inspected in panel configuration.
 
 Only selected query results and prompt context are sent. Model/provider choice determines where they are processed. No external AI account is required when using a local model without authentication.
+
+## Verify all three evidence modes
+
+| Mode            | Setup                                                                                                                                                                                    | What to verify                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Data only       | Leave images unattached and keep **Queries → Dashboard → Source panel** connected. Select **Analyze**.                                                                                   | The model cites supplied rows and does not claim to have received an image.                         |
+| Images only     | Use a separate test panel without query results. Turn **Include query data with images** off. Preview a chart capture or approved synthetic image, then **Use images → Analyze images**. | The model describes known visible facts without refusing solely because query rows are absent.      |
+| Data and images | Reconnect query results, leave **Include query data with images** on, and preview the chart capture before **Analyze images**.                                                           | Precise values come from supplied rows; visual observations and missing evidence are distinguished. |
+
+All three need **Secure AI data source**. Image modes also need an administrator-enabled vision policy and a genuinely vision-capable model. Capture supplies pixels, not every pictured panel's raw rows. Use **Remove** or **Remove all images** to discard staged attachments; **Clear analysis** cancels a request and clears the answer, errors, and pending images without modifying source measurements. A successful image assessment releases attachments, so capture again before another image request.
+
+The mock can verify image counts, controls, and transport but cannot assess the chart. A model-list check or a successful data-only answer does not prove vision. Record a separate approved synthetic vision test before claiming that a provider/model combination understands images. Copilot remains a Direct Line preview, not a verified enterprise SSO connection.
 
 ## Verify that the model responds to changed input
 

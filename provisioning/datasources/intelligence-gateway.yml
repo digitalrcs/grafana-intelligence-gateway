@@ -16,3 +16,7 @@ datasources:
         - review-model
       maxOutputTokens: 256000
       allowInsecureHttp: true
+      # Synthetic test provider only; real providers require an approved vision-capable model.
+      enableVision: true
+      allowedVisionModels:
+        - review-model
