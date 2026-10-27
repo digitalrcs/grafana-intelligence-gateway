@@ -21,6 +21,8 @@ Copy the **hash value** from the SHA1 asset into Grafana's SHA1 field, not the c
 
 Install both Intelligence Gateway 1.1.0 packages side by side. Follow the [panel reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) and [data-source test guide](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki/Testing-and-Review). The provisioned Docker environment uses a deterministic mock and synthetic traffic data without external credentials. Its labeled receipt verifies transport, not AI understanding.
 
+Phase 1 checks the mock connection only. Before Phase 2, use an existing approved provider or coordinate suitable limited test API access privately with DigitalRCS through the existing Grafana review conversation. [Grafana may require test API access for more complex plugins](https://grafana.com/developers/plugin-tools/publish-a-plugin/provide-test-environment). No hosted service or credentials are currently bundled or promised; any access must be arranged and confirmed separately. Never publish credentials or private endpoint details. Completing the mock check does not complete real-provider review.
+
 Verify all three input modes:
 
 1. **Data only:** configure the panel's Queries using Grafana's Dashboard data source to reuse the source chart; select **Analyze** without attaching images.

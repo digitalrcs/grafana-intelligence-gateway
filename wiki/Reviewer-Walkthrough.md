@@ -58,7 +58,9 @@ These are human-checkable fixture facts, not canned AI output.
 
 ## Phase 2: connect a real provider
 
-1. Start LM Studio's server and load a chat-capable model, or prepare another compatible provider.
+Use an existing approved provider, or coordinate suitable limited test API access privately with DigitalRCS through the existing Grafana review conversation before starting this phase. No hosted service or credentials are currently bundled or promised; any access must be arranged and confirmed separately. Never publish credentials or private endpoint details. The mock connection check alone does not complete real-provider review.
+
+1. Confirm the agreed provider is reachable and has a compatible model. For a local LM Studio test, start its server and load a chat-capable model.
 2. Open **Connections → Data sources → Add new data source**. Choose **Intelligence Gateway Secure AI** and create a **separate instance** named **Reviewer live AI**. Do not repurpose **DEMO ONLY - Mock AI (no inference)**; keep it for reproducible smoke tests.
 3. Select the provider and its documented base URL reachable **from Grafana's server/container**. For LM Studio on the Docker Desktop host, use `http://host.docker.internal:1234/v1`. Container `localhost` means the Grafana container, not the LM Studio host. On another computer, use its reachable hostname and port, enable the LM Studio server's approved network access, and allow the connection through the network/firewall. Other providers have different paths: see [AI Providers](Configuration-AI-Providers). Prefer HTTPS. A trusted HTTP-only lab requires the explicit **Allow insecure HTTP** setting; it does not bypass backend model, address, redirect, payload, or credential policy. Never disable TLS certificate validation.
 4. Enter the exact loaded model ID as the default and allowed model. Choose a bounded output ceiling appropriate for that model; a local reasoning-model test might use 8,192 tokens and a 300-second deadline. If authentication is required, enter it only in the data-source secure credential fields.
