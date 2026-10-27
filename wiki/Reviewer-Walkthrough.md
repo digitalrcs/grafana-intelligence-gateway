@@ -73,7 +73,7 @@ The plugin does not remove security restrictions for a demo. Endpoint allow-list
 
 The panel already includes this task: compare the periods before and after 12:20 UTC, explain distribution and combined rate, cite evidence, state uncertainty, and suggest three verification steps in at most 200 words. The full constructed prompt can be inspected in panel configuration.
 
-Only selected query results and prompt context are sent. Model/provider choice determines where they are processed. No external AI account is required when using a local model without authentication.
+For this data-only example, only selected query results and prompt context are sent. Image modes additionally send the images you explicitly preview and attach. Model/provider choice determines where the inputs are processed. No external AI account is required when using a local model without authentication.
 
 ## Verify all three evidence modes
 
