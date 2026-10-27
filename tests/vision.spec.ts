@@ -13,7 +13,8 @@ test.beforeEach(async ({ page, grafanaVersion, selectors }) => {
   // OFREP request can start after a 500 ms network-idle window. Wait for that
   // real request to finish before navigating, including when it already
   // completed before this hook. Do not mock flags or suppress OFREP errors.
-  if (gte(grafanaVersion, '12.1.0')) {
+  // Earlier versions expose this API but may not request it on the homepage.
+  if (gte(grafanaVersion, '13.2.0')) {
     await page.waitForFunction(
       (coreOfrepPath) =>
         performance.getEntriesByType('resource').some((entry) => {
