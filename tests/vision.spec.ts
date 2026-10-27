@@ -1,4 +1,4 @@
-import { test, expect, Dashboard } from '@grafana/plugin-e2e';
+import { test, expect, Dashboard, gte } from '@grafana/plugin-e2e';
 import type { Page, Request, TestInfo } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
@@ -8,10 +8,23 @@ import { version as companionVersion } from '../package.json';
 // Grafana/backend transport with @grafana/plugin-e2e and the synthetic mock provider.
 test.setTimeout(120000);
 test.use({ viewport: { width: 1440, height: 1000 }, screenshot: 'only-on-failure' });
-test.beforeEach(async ({ page }) => {
-  // plugin-e2e first opens the Grafana homepage. Let its initial feature-flag
-  // requests finish before navigation; interrupting them produces core OFREP
-  // initialization failures unrelated to the plugin under test.
+test.beforeEach(async ({ page, grafanaVersion, selectors }) => {
+  // plugin-e2e first opens the Grafana homepage. In Grafana 13.2 its initial
+  // OFREP request can start after a 500 ms network-idle window. Wait for that
+  // real request to finish before navigating, including when it already
+  // completed before this hook. Do not mock flags or suppress OFREP errors.
+  if (gte(grafanaVersion, '12.1.0')) {
+    await page.waitForFunction(
+      (coreOfrepPath) =>
+        performance.getEntriesByType('resource').some((entry) => {
+          const resource = entry as PerformanceResourceTiming;
+          const url = new URL(resource.name);
+          return url.origin === window.location.origin && url.pathname === coreOfrepPath && resource.responseEnd > 0;
+        }),
+      selectors.apis.OpenFeature.ofrepBulkPath(),
+      { timeout: 15000 }
+    );
+  }
   await page.waitForLoadState('networkidle', { timeout: 10000 });
 });
 

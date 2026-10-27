@@ -52,7 +52,7 @@ jobs:
           test "$EXPECTED" = "$ACTUAL"
           gh attestation verify "$ARCHIVE" --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
-            --source-ref "refs/tags/$RELEASE_TAG" --source-digest "$GITHUB_SHA" 2>&1 | tee provenance.txt
+            --source-ref "refs/tags/$RELEASE_TAG" --source-digest "$GITHUB_SHA" --format json 2>&1 | tee provenance.txt
           docker pull grafana/plugin-validator-cli
           docker image inspect grafana/plugin-validator-cli --format '{{json .RepoDigests}}' | tee validator-image.txt
           docker run --rm -e GITHUB_TOKEN -v "$PWD/$ARCHIVE:/archive.zip:ro" \
