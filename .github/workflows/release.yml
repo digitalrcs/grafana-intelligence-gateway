@@ -28,3 +28,42 @@ jobs:
           policy_token: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
           # Generate build provenance for the public release artifact.
           attestation: true
+
+      - name: Verify the exact release archive and provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          PLUGIN_ID=$(node -p "require('./src/plugin.json').id")
+          VERSION=$(node -p "require('./package.json').version")
+          test "$RELEASE_TAG" = "v$VERSION"
+          ARCHIVE="$PLUGIN_ID-$VERSION.zip"
+          mkdir -p release-validation
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$ARCHIVE*" --dir release-validation
+          cd release-validation
+          sha1sum "$ARCHIVE" | tee archive.sha1.txt
+          sha256sum "$ARCHIVE" | tee archive.sha256.txt
+          EXPECTED=$(awk '{print $1}' "$ARCHIVE.sha1")
+          ACTUAL=$(sha1sum "$ARCHIVE" | awk '{print $1}')
+          test "$EXPECTED" = "$ACTUAL"
+          gh attestation verify "$ARCHIVE" --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --source-ref "refs/tags/$RELEASE_TAG" --source-digest "$GITHUB_SHA" --format json 2>&1 | tee provenance.txt
+          docker pull grafana/plugin-validator-cli
+          docker image inspect grafana/plugin-validator-cli --format '{{json .RepoDigests}}' | tee validator-image.txt
+          docker run --rm -e GITHUB_TOKEN -v "$PWD/$ARCHIVE:/archive.zip:ro" \
+            grafana/plugin-validator-cli \
+            -sourceCodeUri "https://github.com/$GITHUB_REPOSITORY/tree/$RELEASE_TAG" \
+            /archive.zip 2>&1 | tee plugin-validator.txt
+
+      - name: Preserve release verification evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-validation
+          path: release-validation/*.txt
+          retention-days: 30

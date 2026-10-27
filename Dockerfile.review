@@ -1,0 +1,16 @@
+# Deterministic reviewer image: no development helpers or blanket unsigned mode.
+ARG grafana_version=latest
+ARG grafana_image=grafana-enterprise
+FROM grafana/${grafana_image}:${grafana_version}
+
+ARG anonymous_auth_enabled=true
+ENV GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+ENV GF_AUTH_ANONYMOUS_ENABLED=${anonymous_auth_enabled}
+ENV GF_AUTH_BASIC_ENABLED=false
+ENV GF_DEFAULT_APP_MODE=production
+# The standalone review has no Grafana Assistant service/account configured.
+# Its optional preinstalled app otherwise makes failing background requests.
+ENV GF_PLUGINS_DISABLE_PLUGINS=grafana-assistant-app
+
+# Keep Grafana's official entrypoint. Compose allows only the two local review
+# plugin IDs. Anonymous admin is a local-review convenience, never a public setup.

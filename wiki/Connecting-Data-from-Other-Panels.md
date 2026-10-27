@@ -2,6 +2,10 @@
 
 Grafana Intelligence Gateway consumes normal Grafana DataFrames. To assess another panel, use Grafana's built-in `-- Dashboard --` data source to reuse the other panel's query results on the same dashboard.
 
+This is separate from **AI provider → Secure AI data source**, which selects the model connection and is required in every mode. Panel 1.1.0 requires the companion plugin at 1.1.0 or later. The secure AI instance does not collect dashboard measurements by itself.
+
+For an **images-only** assessment, no query results or Dashboard source are required: turn **Include query data with images** off and follow [Image Analysis](Image-Analysis). For **data and images**, connect the query results here and leave that setting on. Capturing a panel adds pixels, not its DataFrames, and does not automatically import rows from every pictured panel.
+
 ## Quick setup
 
 1. Confirm the source panel has a working query and a clear title.

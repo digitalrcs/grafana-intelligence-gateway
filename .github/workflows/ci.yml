@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check dependencies for high severity advisories
+        run: npm audit --audit-level=high
+
       - name: Check types
         run: npm run typecheck
       - name: Lint
@@ -148,7 +151,7 @@ jobs:
         id: resolve-versions
         uses: grafana/plugin-actions/e2e-version@e2e-version/v3.0.1
         with:
-          # Certify released Grafana versions. Nightly UI changes are tested upstream by plugin-e2e.
+          # Validate released Grafana versions; this does not imply catalog certification.
           skip-grafana-nightly-image: true
 
   playwright-tests:
@@ -175,6 +178,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: DigitalRCS/grafana-intelligence-gateway-datasource
+          # Exact 1.1.0 companion source; do not silently test against moving main.
+          ref: b72929a22e95cb1a1f748b692bec28c80b8f06ed
           path: companion-datasource
           persist-credentials: false
 
@@ -203,7 +208,9 @@ jobs:
           npm ci --prefix companion-datasource
           npm run build --prefix companion-datasource
           cd companion-datasource
-          go run github.com/magefile/mage@v1.15.0 buildAll
+          # Browser runners need Linux amd64 only. The companion's own CI and
+          # Release workflow build and verify all six distributed platforms.
+          go run github.com/magefile/mage@v1.15.0 build:linux
 
       - name: Start Grafana
         run: |
@@ -230,7 +237,18 @@ jobs:
           docker logs digitalrcs-intelligencegateway-panel >& grafana-server.log
 
       - name: Stop grafana docker
+        if: always()
         run: docker compose down
+
+      - name: Preserve synthetic browser-test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-tests-${{ matrix.GRAFANA_IMAGE.NAME }}-${{ matrix.GRAFANA_IMAGE.VERSION }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
 
       # Uncomment this step to upload the server log to Github artifacts. Remember Github artifacts are public on the Internet if the repository is public.
       # - name: Upload server log

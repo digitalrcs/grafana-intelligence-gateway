@@ -9,7 +9,7 @@ This page tracks the repository items used for Grafana plugin catalog review. Gr
 - Declared Grafana dependency: `>=11.6.0`
 - Frontend: TypeScript, React, and Grafana public plugin APIs
 - Backend binary: none
-- Required external plugin: `digitalrcs-intelligencegateway-datasource`
+- Required external plugin: `digitalrcs-intelligencegateway-datasource`; use 1.1.0 or newer for image analysis and provider capabilities.
 - License: Apache-2.0
 
 The CI matrix builds, lints, type-checks, unit-tests, packages, validates metadata, and runs `@grafana/plugin-e2e` across supported released Grafana Enterprise versions. The repository's GitHub Actions results are the compatibility authority.
@@ -49,19 +49,19 @@ npm run e2e
 
 The release workflow is triggered by tags matching `v*`. It uses Grafana's `build-plugin` action to build, package, validate, optionally sign, and attest the release artifact.
 
-The current version 1.0.1 submission values and provenance verification commands are maintained in [`docs/GRAFANA_SUBMISSION.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/GRAFANA_SUBMISSION.md). Release notes are in [`docs/RELEASE_NOTES_1.0.1.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.0.1.md).
+The version 1.1.0 submission values and provenance verification commands are maintained in [`docs/GRAFANA_SUBMISSION.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/GRAFANA_SUBMISSION.md). Release notes are in [`docs/RELEASE_NOTES_1.1.0.md`](https://github.com/DigitalRCS/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.1.0.md). A prepared document is not evidence of publication: verify the linked release assets and validation results before submitting.
 
 Do not add public-signing settings until Grafana assigns the plugin a public signature level. When Grafana provides the access policy, save it as the repository secret `GRAFANA_ACCESS_POLICY_TOKEN`; never commit it.
 
 ## Submission values
 
-Use these values in Grafana's **Submit New Plugin** form after publishing the GitHub draft release:
+Use these values in Grafana's **Submit Update** form for an existing submission after publishing the GitHub draft release. Use **Submit New Plugin** only if no submission exists:
 
 | Form field            | Value/source                                                             |
 | --------------------- | ------------------------------------------------------------------------ |
 | OS & Architecture     | Single; this is a frontend-only plugin with no platform binaries.        |
 | URL                   | Direct URL of the packaged plugin ZIP from the GitHub release.           |
-| Source code URL       | `https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.0.1` |
+| Source code URL       | `https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.1.0` |
 | SHA1                  | SHA1 asset generated with the release, matching the submitted ZIP.       |
 | Testing guidance      | Use the text below and link this Wiki.                                   |
 | Provisioning provided | Yes; `docker compose up` loads the dashboard and TestData data source.   |
@@ -82,11 +82,19 @@ On Windows, create the ZIP with a tool that stores portable forward-slash entry 
 2. Submit and publish the required data source first; the panel declares it as an external plugin dependency.
 3. Confirm catalog screenshots and all metadata links render from the built plugin.
 4. Add `GRAFANA_ACCESS_POLICY_TOKEN` only after Grafana grants a public signature level.
-5. Create and push the semantic-version tag, for example `v1.0.1`.
+5. Create and push the semantic-version tag, for example `v1.1.0`. Never reuse a failed release tag.
 6. Wait for the release workflow and inspect the draft release assets and provenance attestation.
 7. Validate the release ZIP and its SHA1.
 8. Publish the GitHub release.
 9. Submit the ZIP URL, version-tag source URL, SHA1 value, testing guidance, and provisioning declaration through Grafana's Plugins Admin page.
+
+## Image-release checks
+
+Verify data-only analysis still uses the panel's configured query results, images-only analysis works without a source panel, and combined analysis includes only the bounded selected inputs. Capture/preview alone must not send an inference request. Check removal, Clear analysis, cancellation, desktop/narrow label layout, upload limits, and backend vision-model approval. The mock proves transport and UI behavior, not image understanding.
+
+Copilot Studio is a bounded Direct Line preview, not a claim of enterprise SSO support or Microsoft tenant certification. Test the actual published agent before production use. Treat optional Grafana LLM app compatibility separately from the minimum Grafana version.
+
+Record unresolved dependency findings, skipped checks, and the exact Grafana versions tested in the release evidence. Provenance proves build origin; it does not grant a Grafana signature or catalog approval. Publish the Wiki repository as well as the source files under `wiki/`.
 
 Official references:
 

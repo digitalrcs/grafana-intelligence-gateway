@@ -4,8 +4,8 @@
   "name": "Grafana Intelligence Gateway",
   "id": "digitalrcs-intelligencegateway-panel",
   "info": {
-    "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "panel"],
-    "description": "Analyze panel query data with local or hosted AI models and display assessments alongside your charts. Connect through the DigitalRCS secure AI data source.",
+    "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "vision", "panel"],
+    "description": "Assess panel query data, reviewed dashboard captures, or uploaded images with local or hosted AI. Connect through the required DigitalRCS secure AI data source.",
     "author": {
       "name": "DigitalRCS",
       "url": "https://www.digitalrcs.com"

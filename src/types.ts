@@ -18,6 +18,8 @@ export interface IntelligenceGatewayOptions {
   autoAnalyze: boolean;
   autoAnalyzeDelayMs: number;
   showAnalyzeButton: boolean;
+  showImageControls: boolean;
+  includeDataWithImages: boolean;
   emptyDataBehavior: 'allow' | 'warn' | 'block';
   responseTitle: string;
   responseDescription: string;
@@ -74,6 +76,8 @@ export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
   autoAnalyze: false,
   autoAnalyzeDelayMs: 1200,
   showAnalyzeButton: true,
+  showImageControls: true,
+  includeDataWithImages: true,
   emptyDataBehavior: 'warn',
   responseTitle: 'Intelligence assessment',
   responseDescription: '',

@@ -39,9 +39,20 @@ test('exposes the manual analysis behavior option', async ({ gotoPanelEditPage, 
   await expect(analyzeButton).toBeChecked();
 });
 
-test('uses the provisioned secure AI data source', async ({ gotoPanelEditPage, readProvisionedDashboard, page }) => {
+test('identifies the provisioned mock AI connection before analysis', async ({
+  gotoPanelEditPage,
+  readProvisionedDashboard,
+  readProvisionedDataSource,
+  page,
+}) => {
   const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
-  await gotoPanelEditPage({ dashboard, id: '2' });
+  const mock = await readProvisionedDataSource<{ reviewMock: boolean }>({ fileName: 'intelligence-gateway.yml' });
+  expect(mock.jsonData.reviewMock).toBe(true);
+  const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
+  const notice = panelEditPage.panel.locator.getByTestId('connection-notice');
+  await expect(notice).toBeVisible();
+  await expect(notice).toContainText('Mock connection — no AI analysis');
+  await expect(notice).toContainText(mock.name);
   await expect(page.getByText('Server-side credentials enabled')).toBeVisible();
   await expect(page.getByText(/API keys and provider policy remain on the Grafana server/)).toBeVisible();
 });
