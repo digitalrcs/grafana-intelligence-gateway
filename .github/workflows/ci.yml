@@ -179,7 +179,7 @@ jobs:
         with:
           repository: DigitalRCS/grafana-intelligence-gateway-datasource
           # Exact 1.1.0 companion source; do not silently test against moving main.
-          ref: 627b244d6d59da98dc0e49d36f2db2e87801bfc1
+          ref: a0433e3646faf226259695025cd548d1e04632de
           path: companion-datasource
           persist-credentials: false
 
