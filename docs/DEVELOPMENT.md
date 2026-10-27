@@ -12,6 +12,8 @@ The integrated environment expects the companion [secure AI data source](https:/
 
 The default Compose image is `Dockerfile.review`: Grafana's official entrypoint in production application mode, with only the two review plugin IDs explicitly allowed unsigned. It does not inject the scaffold's live-reload script. This is a local review fixture, not a hardened public service; never expose anonymous administrator access. To explicitly use scaffold hot reload for local development, set `GRAFANA_DOCKERFILE=Dockerfile`, `GRAFANA_APP_MODE=development`, and `DEVELOPMENT=true`; do not use that profile for release validation or as a cache workaround.
 
+The integrated review image disables the unrelated preinstalled `grafana-assistant-app` using Grafana's documented [disable_plugins setting](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#disable_plugins). The standalone fixture has no Assistant service/account; otherwise that app can make failing background requests. This is not `grafana-llm-app`, does not disable any Intelligence Gateway provider, and does not change an existing Grafana installation. Browser tests still fail on unexpected errors, including provider errors.
+
 From the panel repository:
 
 ```bash

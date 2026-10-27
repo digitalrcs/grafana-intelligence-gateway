@@ -37,6 +37,10 @@ The default Docker review image uses production application mode and a specific 
 
 The tagged Release workflow downloads its generated ZIP and SHA1 asset, verifies their agreement, verifies GitHub provenance against the repository, release workflow and exact tag commit, then runs the full default Grafana Plugin Validator Docker image with the matching source tag. It preserves the validator image digest and results as the `release-validation` Actions artifact.
 
+The integrated review image disables only the unrelated, unconfigured `grafana-assistant-app`. Its background service requests returned HTTP 503 in the standalone Grafana 13.2.4 fixture while Grafana's core feature-flag endpoint returned HTTP 200. This environment correction avoids hiding those errors in the test harness; it does not disable the optional `grafana-llm-app` provider or change production hosts.
+
+Browser evidence separately records Grafana's documented missing public-sharing configuration and per-user saved-query configuration probes. Only same-origin GET 404 responses on those exact routes with the expected structured absence body are classified as known diagnostics. Unexpected bodies, other routes, plugin resource failures, HTTP 503s, and uncaught page errors still fail the check; a regression test covers this boundary.
+
 Before publishing/submitting, inspect that evidence for packaging, source, security, dependency, provenance, and signature findings. An expected unsigned-review warning is not permission to overlook other failures. AI-assisted validator reviews require a separately configured provider and are not represented as performed without one.
 
 Public-signing credentials are not configured. These archives are for review with an explicit plugin allow-list until Grafana assigns the signature level and a signed build is produced. Provenance and a Grafana signature are independent.

@@ -19,10 +19,66 @@ type VisionDashboard = Dashboard & {
   panels: Array<{ type: string; title: string; options?: { secureDataSourceUid?: string } }>;
 };
 
+type MissingConfigProbe = { kind: 'public-dashboard' } | { kind: 'saved-queries'; resourceName: string };
+type CoreDiagnostic = {
+  message: string;
+  source: string;
+  response?: { method: 'GET'; status: 404; probe: MissingConfigProbe };
+};
+
+function missingConfigProbe(source: string, origin: string, method: string, status: number): MissingConfigProbe | null {
+  if (method !== 'GET' || status !== 404) {
+    return null;
+  }
+  try {
+    const url = new URL(source);
+    if (url.origin !== origin || url.search || url.hash) {
+      return null;
+    }
+    if (/^\/api\/dashboards\/uid\/[A-Za-z0-9_-]+\/public-dashboards$/.test(url.pathname)) {
+      return { kind: 'public-dashboard' };
+    }
+    const storage = decodeURIComponent(url.pathname).match(
+      /^\/apis\/userstorage\.grafana\.app\/v0alpha1\/namespaces\/default\/user-storage\/(saved-queries:[A-Za-z0-9_-]+)$/
+    );
+    return storage ? { kind: 'saved-queries', resourceName: storage[1] } : null;
+  } catch {
+    return null;
+  }
+}
+
+function isDocumentedMissingConfig(probe: MissingConfigProbe, body: unknown): boolean {
+  if (!body || typeof body !== 'object') {
+    return false;
+  }
+  const value = body as Record<string, unknown>;
+  // Grafana explicitly treats this exact absence marker as a non-error:
+  // https://github.com/grafana/grafana/blob/v12.2.10/public/app/features/dashboard/api/publicDashboardApi.ts
+  if (probe.kind === 'public-dashboard') {
+    return value.statusCode === 404 && value.messageId === 'publicdashboards.notFound';
+  }
+  // UserStorage.init treats a missing per-user configuration as an empty store:
+  // https://github.com/grafana/grafana/blob/v13.2.4/packages/grafana-runtime/src/utils/userStorage.tsx
+  const details = value.details as Record<string, unknown> | undefined;
+  return (
+    value.kind === 'Status' &&
+    value.apiVersion === 'v1' &&
+    value.status === 'Failure' &&
+    value.code === 404 &&
+    value.reason === 'NotFound' &&
+    details?.name === probe.resourceName &&
+    details?.group === 'userstorage.grafana.app' &&
+    details?.kind === 'user-storage'
+  );
+}
+
 function observe(page: Page) {
   const inference: Request[] = [];
   const errors: string[] = [];
-  const knownCoreDiagnostics: Array<{ message: string; source: string }> = [];
+  const knownCoreDiagnostics: CoreDiagnostic[] = [];
+  const optionalConfigDiagnostics: CoreDiagnostic[] = [];
+  const optionalConfigResponses = new Map<string, Array<Promise<MissingConfigProbe | null>>>();
+  const origin = new URL(page.url()).origin;
   let queries = 0;
   page.on('request', (request) => {
     const pathname = new URL(request.url()).pathname;
@@ -31,6 +87,19 @@ function observe(page: Page) {
     }
     if (request.method() === 'POST' && pathname === '/api/ds/query') {
       queries++;
+    }
+  });
+  page.on('response', (response) => {
+    const source = response.url();
+    if (response.status() === 404 && missingConfigProbe(source, origin, 'GET', 404)) {
+      const probe = missingConfigProbe(source, origin, response.request().method(), response.status());
+      const validation = probe
+        ? response
+            .json()
+            .then((body: unknown) => (isDocumentedMissingConfig(probe, body) ? probe : null))
+            .catch(() => null)
+        : Promise.resolve(null);
+      optionalConfigResponses.set(source, [...(optionalConfigResponses.get(source) ?? []), validation]);
     }
   });
   page.on('pageerror', (error) => errors.push(error.message));
@@ -59,15 +128,36 @@ function observe(page: Page) {
         ].includes(sourcePath);
       if (knownOpenFeatureDiagnostic || unpublishedCatalogDiagnostic) {
         knownCoreDiagnostics.push({ message: text, source });
+      } else if (
+        text === 'Failed to load resource: the server responded with a status of 404 (Not Found)' &&
+        missingConfigProbe(source, origin, 'GET', 404)
+      ) {
+        // Wait for the actual response body before classifying this console
+        // diagnostic. A matching path alone must never conceal a failed request.
+        optionalConfigDiagnostics.push({ message: text, source });
       } else {
         errors.push(text);
       }
     }
   });
-  return { inference, errors, knownCoreDiagnostics, queryCount: () => queries };
+  const classifyOptionalConfigDiagnostics = async () => {
+    for (const diagnostic of optionalConfigDiagnostics.splice(0)) {
+      const responses = await Promise.all(optionalConfigResponses.get(diagnostic.source) ?? []);
+      if (responses.length > 0 && responses.every((probe) => probe !== null)) {
+        knownCoreDiagnostics.push({
+          ...diagnostic,
+          response: { method: 'GET', status: 404, probe: responses[0]! },
+        });
+      } else {
+        errors.push(`${diagnostic.message} (${diagnostic.source}; missing or unexpected absence response)`);
+      }
+    }
+  };
+  return { inference, errors, knownCoreDiagnostics, queryCount: () => queries, classifyOptionalConfigDiagnostics };
 }
 
 async function assertNoUnexpectedErrors(observed: ReturnType<typeof observe>, info: TestInfo) {
+  await observed.classifyOptionalConfigDiagnostics();
   if (observed.knownCoreDiagnostics.length) {
     await info.attach('known-grafana-core-diagnostics', {
       body: JSON.stringify(observed.knownCoreDiagnostics, null, 2),
@@ -76,6 +166,49 @@ async function assertNoUnexpectedErrors(observed: ReturnType<typeof observe>, in
   }
   expect(observed.errors).toEqual([]);
 }
+
+test('optional host configuration diagnostics require an exact origin, request, path, and absence body', () => {
+  const origin = 'http://grafana.example.test';
+  const publicPath = '/api/dashboards/uid/synthetic-dashboard/public-dashboards';
+  const storagePath =
+    '/apis/userstorage.grafana.app/v0alpha1/namespaces/default/user-storage/saved-queries:synthetic-user';
+  const publicBody = { statusCode: 404, messageId: 'publicdashboards.notFound' };
+  const storageBody = {
+    kind: 'Status',
+    apiVersion: 'v1',
+    status: 'Failure',
+    code: 404,
+    reason: 'NotFound',
+    details: { name: 'saved-queries:synthetic-user', group: 'userstorage.grafana.app', kind: 'user-storage' },
+  };
+  for (const [pathname, body] of [
+    [publicPath, publicBody],
+    [storagePath, storageBody],
+  ] as const) {
+    const source = `${origin}${pathname}`;
+    const probe = missingConfigProbe(source, origin, 'GET', 404)!;
+    expect(probe).not.toBeNull();
+    expect(isDocumentedMissingConfig(probe, body)).toBe(true);
+    expect(isDocumentedMissingConfig(probe, { message: 'generic not found' })).toBe(false);
+    expect(isDocumentedMissingConfig(probe, null)).toBe(false);
+    expect(missingConfigProbe(source, origin, 'POST', 404)).toBeNull();
+    expect(missingConfigProbe(source, origin, 'GET', 503)).toBeNull();
+    expect(missingConfigProbe(source, 'https://other.example.test', 'GET', 404)).toBeNull();
+    expect(missingConfigProbe(`${source}?unexpected=true`, origin, 'GET', 404)).toBeNull();
+  }
+  const storage = missingConfigProbe(`${origin}${storagePath}`, origin, 'GET', 404)!;
+  expect(
+    isDocumentedMissingConfig(storage, { ...storageBody, details: { ...storageBody.details, name: 'other' } })
+  ).toBe(false);
+  for (const pathname of [
+    '/api/plugins/grafana-assistant-app/resources/api/v1/ofrep/v1/evaluate/flags',
+    '/api/datasources/uid/secure-ai/resources/chat/completions',
+    storagePath.replace('saved-queries:', 'other-service:'),
+    publicPath.replace('/public-dashboards', ''),
+  ]) {
+    expect(missingConfigProbe(`${origin}${pathname}`, origin, 'GET', 404)).toBeNull();
+  }
+});
 
 async function evidence(page: Page, info: TestInfo, name: string) {
   const destination = process.env.VISION_EVIDENCE_DIR
