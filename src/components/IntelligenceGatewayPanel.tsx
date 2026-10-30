@@ -8,7 +8,7 @@ import { constructPrompt } from '../utils/prompt';
 import { IntelligenceGatewayOptions } from '../types';
 import { ImageInputs } from './ImageInputs';
 import { ConnectionNotice } from './ConnectionNotice';
-import type { VisionAttachment } from '../vision';
+import { useImageSession } from '../vision/session';
 
 type Props = PanelProps<IntelligenceGatewayOptions>;
 
@@ -42,7 +42,7 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
 
 export const IntelligenceGatewayPanel = (props: Props) => (
   <IntelligenceGatewayPanelContent
-    key={`${props.id}:${props.options.secureDataSourceUid}:${props.options.model}`}
+    key={JSON.stringify([window.location.pathname, props.id, props.options.secureDataSourceUid, props.options.model])}
     {...props}
   />
 );
@@ -62,8 +62,13 @@ const IntelligenceGatewayPanelContent = ({
   const [response, setResponse] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<VisionAttachment[]>([]);
-  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const { session: imageSession, state: imageState } = useImageSession(
+    JSON.stringify([window.location.pathname, id, options.secureDataSourceUid, options.model]),
+    JSON.stringify([window.location.pathname, id])
+  );
+  const { images, open: imageDialogOpen } = imageState;
+  const setImages = imageSession.setImages;
+  const setImageDialogOpen = imageSession.setOpen;
   const [assessmentContext, setAssessmentContext] = useState('');
   const suppressAutoAnalysis = useRef(false);
   const requestSequence = useRef(0);
@@ -122,7 +127,7 @@ const IntelligenceGatewayPanelContent = ({
     setImageDialogOpen(false);
     setAssessmentContext('');
     suppressAutoAnalysis.current = true;
-  }, []);
+  }, [setImages, setImageDialogOpen]);
 
   useEffect(() => {
     suppressAutoAnalysis.current = false;
@@ -174,7 +179,7 @@ const IntelligenceGatewayPanelContent = ({
         setLoading(false);
       }
     }
-  }, [data.series.length, imageDialogOpen, images, options, prompt]);
+  }, [data.series.length, imageDialogOpen, images, options, prompt, setImages]);
 
   useEffect(() => {
     if (!options.autoAnalyze || images.length > 0 || imageDialogOpen || suppressAutoAnalysis.current) {
@@ -254,6 +259,7 @@ const IntelligenceGatewayPanelContent = ({
 
         {imageDialogOpen ? (
           <ImageInputs
+            session={imageSession}
             isOpen={imageDialogOpen}
             onClose={() => setImageDialogOpen(false)}
             images={images}

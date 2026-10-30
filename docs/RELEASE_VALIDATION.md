@@ -16,6 +16,10 @@ npm install reports no high/critical advisories (7 low, 5 moderate); the histori
 
 The tested local capture build initially used 1.1.1; after discovering that version was already published, this patch is released as 1.1.2. Final release verification must use v1.1.2 assets.
 
+## Grafana 12.2 virtualization follow-up
+
+The first PR CI run exposed a further failure on Grafana 12.2.10: scrolling unmounted the gateway panel, aborting its capture and losing the dialog. A bounded, browser-memory capture session now survives that temporary unmount. The previously failing local tall-dashboard regression passes (all eight charts, scroll restoration, and no inference). Navigation, provider/model changes, timeout, and unclaimed-result expiry are covered by lifecycle tests. Grafana 12.2.10 is now pinned in the CI matrix. Final PR CI and release verification remain separate gates.
+
 ## 1.1.1 signing-release assessment — October 30, 2026
 
 The fresh full npm audit reports **five moderate and seven low affected package entries, zero high, and zero critical**. The production-only audit reports the same **four moderate React Router package entries** described below. The additional moderate `qs` finding is in the development-only `tiny-lr` chain; the low `deepmerge` finding is in development test/type-check tooling. These development tools are not shipped as plugin runtime implementations. The October 26 totals below are historical and must not be presented as today's full-audit count.

@@ -93,4 +93,4 @@ Developed by [DigitalRCS](https://digitalrcs.com).
 
 ### Grafana 12.4 capture compatibility
 
-Panel 1.1.2 fixes tall-dashboard capture on Grafana 12.4.0. Upgrade the panel and restart Grafana; companion 1.1.0 or later remains compatible. Updating Current View Exporter alone does not update the AI panel capture code. Always review previews and any omitted-panel warnings before sending.
+Panel 1.1.2 fixes tall-dashboard capture on Grafana 12.4.0 and preserves active capture when Grafana 12.2 virtualizes the AI panel. Upgrade the panel and restart Grafana; companion 1.1.0 or later remains compatible. Updating Current View Exporter alone does not update the AI panel capture code. Always review previews and any omitted-panel warnings before sending.

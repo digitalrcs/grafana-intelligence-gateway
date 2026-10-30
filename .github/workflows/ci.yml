@@ -159,7 +159,7 @@ jobs:
         env:
           RESOLVED_MATRIX: ${{ steps.resolve-versions.outputs.matrix }}
         run: |
-          matrix=$(jq -c '. + [{"name":"grafana-enterprise","version":"12.4.0"},{"name":"grafana-enterprise","version":"13.3.0"}] | unique_by([.name, .version])' <<< "$RESOLVED_MATRIX")
+          matrix=$(jq -c '. + [{"name":"grafana-enterprise","version":"12.2.10"},{"name":"grafana-enterprise","version":"12.4.0"},{"name":"grafana-enterprise","version":"13.3.0"}] | unique_by([.name, .version])' <<< "$RESOLVED_MATRIX")
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   playwright-tests:

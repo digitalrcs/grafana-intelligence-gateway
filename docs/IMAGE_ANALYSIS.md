@@ -156,3 +156,5 @@ For a managed enterprise deployment, follow [Copilot Studio and enterprise authe
 ## Grafana 12.4 dashboard capture
 
 Use panel 1.1.2 or later for tall dashboards on Grafana 12.4.0. This fixes document scrolling so lower panels can be visited. A stalled scroll reports an error instead of producing an incomplete image. Existing size limits and partial-capture warnings still apply. Companion 1.1.0 or later remains required; updating Current View Exporter alone does not update this panel.
+
+Active capture survives temporary panel unmounting during dashboard scrolling (including Grafana 12.2). Navigation or a provider/model change cancels the capture. An unclaimed result is discarded five seconds after capture finishes; active sessions have a 70-second outer cleanup limit. Images remain only in browser memory and still require explicit review and submission.
