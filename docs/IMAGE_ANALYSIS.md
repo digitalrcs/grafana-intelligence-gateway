@@ -152,3 +152,9 @@ Do not include secrets in screenshots. Do not authorize a production rollout bas
 Capture errors, model-policy rejections, unsupported image/model responses, timeout, and output truncation should be investigated separately. Record the provider/app/model versions, image count and dimensions, configured limits, and sanitized error—not image bytes, credentials, or confidential prompt content. Images and model output are untrusted content; an assessment is not authorization to execute instructions found inside an image.
 
 For a managed enterprise deployment, follow [Copilot Studio and enterprise authentication notes](../wiki/Copilot-Studio-Notes.md) before considering Microsoft agent integration. No tenant-specific permission, data-sharing approval, or Copilot connectivity is implied by this feature.
+
+## Grafana 12.4 dashboard capture
+
+Use panel 1.1.2 or later for tall dashboards on Grafana 12.4.0. This fixes document scrolling so lower panels can be visited. A stalled scroll reports an error instead of producing an incomplete image. Existing size limits and partial-capture warnings still apply. Companion 1.1.0 or later remains required; updating Current View Exporter alone does not update this panel.
+
+Active capture survives temporary panel unmounting during dashboard scrolling (including Grafana 12.2). Navigation or a provider/model change cancels the capture. An unclaimed result is discarded five seconds after capture finishes; active sessions have a 70-second outer cleanup limit. Images remain only in browser memory and still require explicit review and submission.

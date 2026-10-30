@@ -13,6 +13,7 @@
 - [Security Considerations](Security-Considerations)
 - [Secure Backend and Secret Storage](Secure-Backend-and-Secrets)
 - [Installation](Installation)
+- [Release notes: 1.1.2](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.1.2.md)
 - [Release notes: 1.1.0](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.1.0.md)
 - [Grafana Compatibility and Certification](Grafana-Compatibility-and-Certification)
 - [Development and Contributing](Development-and-Contributing)

@@ -90,3 +90,7 @@ Assessments depend on the model, prompt, and supplied data. Review findings agai
 Developed by [DigitalRCS](https://digitalrcs.com).
 
 <a href="https://digitalrcs.com"><img src="https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/digitalrcs-logo.webp" alt="DigitalRCS — Solutions that connect. Inside and out." width="240" /></a>
+
+### Grafana 12.4 capture compatibility
+
+Panel 1.1.2 fixes tall-dashboard capture on Grafana 12.4.0 and preserves active capture when Grafana 12.2 virtualizes the AI panel. Upgrade the panel and restart Grafana; companion 1.1.0 or later remains compatible. Updating Current View Exporter alone does not update the AI panel capture code. Always review previews and any omitted-panel warnings before sending.

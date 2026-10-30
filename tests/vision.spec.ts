@@ -2,6 +2,7 @@ import { test, expect, Dashboard, gte } from '@grafana/plugin-e2e';
 import type { Page, Request, TestInfo } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
+import { writeFile } from 'node:fs/promises';
 
 // Browser plugin not available in the validation environment. Exercise the real
 // Grafana/backend transport with @grafana/plugin-e2e and the synthetic mock provider.
@@ -741,4 +742,104 @@ test('secure data source exposes provider-specific credentials and vision policy
   // Do not save these exploratory form changes or invoke any non-mock provider.
   expect(observed.inference).toHaveLength(0);
   await assertNoUnexpectedErrors(observed, info);
+});
+
+test('tall dashboard capture visits every chart and restores scroll without sending images', async ({
+  page,
+  gotoDashboardPage,
+  readProvisionedDashboard,
+}, info) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const observed = observe(page);
+  await page.route('**/resources/chat/completions', (route) => route.abort());
+  const dashboard = await readProvisionedDashboard({ fileName: 'vision-tall.json' });
+  const dashboardPage = await gotoDashboardPage({ uid: dashboard.uid });
+  await expect(page).toHaveURL(new RegExp(`/d/${dashboard.uid}`));
+  await expect(page).toHaveTitle(/Grafana/);
+  const controls = dashboardPage.getPanelByTitle('Capture controls').locator;
+  await controls.getByRole('button', { name: 'Images', exact: true }).click();
+  const dialog = page.getByTestId('image-inputs');
+  await expect(dialog.getByRole('button', { name: 'Capture dashboard', exact: true })).toBeEnabled();
+  // Exercise restoration from a nonzero position without preloading the lower charts.
+  const initial = await page.evaluate(() => {
+    const panel = document.querySelector('[data-viz-panel-id], [data-viz-panel-key]')!;
+    let ancestor = panel.parentElement;
+    while (ancestor && ancestor !== document.body) {
+      if (
+        ['auto', 'scroll'].includes(getComputedStyle(ancestor).overflowY) &&
+        ancestor.scrollHeight > ancestor.clientHeight
+      ) {
+        ancestor.scrollTop = 100;
+        return ancestor.scrollTop;
+      }
+      ancestor = ancestor.parentElement;
+    }
+    document.scrollingElement!.scrollTop = 100;
+    return document.scrollingElement!.scrollTop;
+  });
+  expect(initial).toBeGreaterThan(0);
+  await dialog.getByRole('button', { name: 'Capture dashboard', exact: true }).click();
+  const preview = dialog.getByTestId('image-preview').getByRole('img');
+  await expect(preview).toBeVisible({ timeout: 70000 });
+  await expect(dialog).not.toContainText('was omitted');
+  await expect(dialog).not.toContainText('partial dashboard');
+  const result = await preview.evaluate(async (element) => {
+    const image = element as HTMLImageElement;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d')!;
+    context.drawImage(image, 0, 0);
+    const pixels = Array.from({ length: 8 }, (_, index) => {
+      const width = Math.floor(canvas.width / 2),
+        height = Math.floor(canvas.height / 4);
+      const { data } = context.getImageData(
+        (index % 2) * width,
+        Math.floor(index / 2) * height + 45,
+        width,
+        height - 90
+      );
+      let green = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 1] > 70 && data[i + 1] > data[i] * 1.2 && data[i + 1] > data[i + 2] * 1.1) {
+          green++;
+        }
+      }
+      return green;
+    });
+    return { pixels, height: canvas.height };
+  });
+  expect(result.height).toBeGreaterThan(1000);
+  for (const [index, pixels] of result.pixels.entries()) {
+    expect(pixels, `Chart ${index + 1} must contain rendered data`).toBeGreaterThan(100);
+  }
+  const restored = await page.evaluate(() => {
+    const panel = document.querySelector('[data-viz-panel-id], [data-viz-panel-key]')!;
+    const positions = [document.scrollingElement!.scrollTop];
+    for (let ancestor = panel.parentElement; ancestor; ancestor = ancestor.parentElement) {
+      positions.push(ancestor.scrollTop);
+    }
+    return positions;
+  });
+  expect(restored).toContain(initial);
+  expect(observed.inference).toEqual([]);
+  await assertNoUnexpectedErrors(observed, info);
+  if (process.env.VISION_EVIDENCE_DIR) {
+    const dataUrl = (await preview.getAttribute('src'))!;
+    await writeFile(
+      path.join(process.env.VISION_EVIDENCE_DIR, 'captured-dashboard.png'),
+      Buffer.from(dataUrl.split(',')[1], 'base64')
+    );
+  }
+  await preview.scrollIntoViewIfNeeded();
+  await info.attach('tall-dashboard-preview', {
+    body: await page.screenshot({
+      path: process.env.VISION_EVIDENCE_DIR
+        ? path.join(process.env.VISION_EVIDENCE_DIR, 'tall-dashboard-preview.png')
+        : undefined,
+    }),
+    contentType: 'image/png',
+  });
 });

@@ -1,6 +1,6 @@
 # Panel Setup and Configuration
 
-Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers panel **1.1.0**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
+Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers panel **1.1.2**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
 
 | Mode            | Query setup                                                            | Image setup and action                                                                                       |
 | --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -164,3 +164,7 @@ For images-only verification, disconnect query results, turn **Include query dat
 See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels) for transformations and multi-frame behavior.
 
 For persistent stale code, see [the development cache guide](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/DEVELOPMENT.md#rebuilt-code-still-looks-unchanged). Do not clear all browser credentials or enable server development mode just to bypass cache.
+
+## Grafana 12.4 dashboard capture
+
+Use panel 1.1.2 or later for tall dashboards on Grafana 12.4.0. This fixes document scrolling so lower panels can be visited. A stalled scroll reports an error instead of producing an incomplete image. Existing size limits and partial-capture warnings still apply. Companion 1.1.0 or later remains required; updating Current View Exporter alone does not update this panel.

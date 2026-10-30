@@ -60,8 +60,19 @@ export function findDashboardScroller(root: ParentNode = document): HTMLElement 
   let ancestor = panels[0].parentElement;
   while (ancestor) {
     const candidate = ancestor;
+    const doc = candidate.ownerDocument;
+    // Grafana 12.4 propagates body overflow to the viewport. In standards
+    // mode that body can look scrollable while only scrollingElement moves.
+    const viewportBody =
+      candidate === doc.body &&
+      doc.scrollingElement !== candidate &&
+      window.getComputedStyle(doc.documentElement).overflowY === 'visible';
     const overflow = window.getComputedStyle(candidate).overflowY;
-    if (panels.every((panel) => candidate.contains(panel)) && (overflow === 'auto' || overflow === 'scroll')) {
+    if (
+      !viewportBody &&
+      panels.every((panel) => candidate.contains(panel)) &&
+      (overflow === 'auto' || overflow === 'scroll')
+    ) {
       if (candidate.scrollHeight > candidate.clientHeight) {
         return candidate;
       }

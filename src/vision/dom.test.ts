@@ -110,6 +110,31 @@ describe('vision panel discovery', () => {
     expect(panelPosition(panel, scroller)).toEqual({ x: 0, y: 550, width: 800, height: 300 });
   });
 
+  test('uses the document root when body overflow is propagated to the Grafana 12.4 viewport', () => {
+    addPanel(document.body, 'panel-1');
+    const original = Object.getOwnPropertyDescriptor(document, 'scrollingElement');
+    Object.defineProperty(document, 'scrollingElement', { configurable: true, value: document.documentElement });
+    jest.spyOn(window, 'getComputedStyle').mockImplementation(
+      (element) =>
+        ({
+          overflowY: element === document.body ? 'auto' : 'visible',
+        }) as CSSStyleDeclaration
+    );
+    const height = jest.spyOn(document.body, 'scrollHeight', 'get').mockReturnValue(3000);
+    const client = jest.spyOn(document.body, 'clientHeight', 'get').mockReturnValue(800);
+    try {
+      expect(findDashboardScroller()).toBe(document.documentElement);
+    } finally {
+      height.mockRestore();
+      client.mockRestore();
+      if (original) {
+        Object.defineProperty(document, 'scrollingElement', original);
+      } else {
+        Reflect.deleteProperty(document, 'scrollingElement');
+      }
+    }
+  });
+
   test('refuses to capture a currently loading, removed, or newly excluded panel', () => {
     const element = addPanel(document.body, 'panel-1');
     const descriptor = discoverCapturePanels()[0];

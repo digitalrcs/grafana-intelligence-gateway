@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { analyzeWithAI, fetchVisionCapabilities, type VisionCapabilities } from '../utils/aiClient';
 import {
@@ -6,11 +6,15 @@ import {
   captureSelectedPanels,
   discoverCapturePanels,
   importImageFiles,
-  validateAttachments,
   type VisionAttachment,
   type VisionCaptureResult,
 } from '../vision';
 import { ImageInputs } from './ImageInputs';
+import { useImageSession } from '../vision/session';
+import { validateVisionAttachments as validateAttachments } from '../vision/limits';
+import { locationService } from '@grafana/runtime';
+
+jest.mock('../vision/limits', () => ({ validateVisionAttachments: jest.fn() }));
 
 jest.mock('../utils/aiClient', () => ({
   fetchVisionCapabilities: jest.fn(),
@@ -21,7 +25,6 @@ jest.mock('../vision', () => ({
   captureSelectedPanels: jest.fn(),
   discoverCapturePanels: jest.fn(),
   importImageFiles: jest.fn(),
-  validateAttachments: jest.fn(),
   VISION_LIMITS: { maxImages: 8 },
 }));
 
@@ -56,19 +59,38 @@ const capabilities = (enabled = true, models = ['vision-model']): VisionCapabili
   },
 });
 
+const noChange = () => undefined;
+const noImages: VisionAttachment[] = [];
 function Harness({
-  initialImages = [],
-  onChange = () => undefined,
-  onClose = () => undefined,
+  initialImages = noImages,
+  onChange = noChange,
+  onClose = noChange,
 }: {
   initialImages?: VisionAttachment[];
   onChange?: (images: VisionAttachment[]) => void;
   onClose?: () => void;
 }) {
-  const [images, setImages] = useState(initialImages);
-  const [isOpen, setOpen] = useState(true);
+  const {
+    session,
+    state: { images, open: isOpen },
+  } = useImageSession('test-images', 'test-images');
+  useEffect(() => {
+    if (!session.state.open) {
+      session.update({ images: initialImages, open: true });
+    }
+    let previous = session.state.images;
+    return session.subscribe(() => {
+      if (session.state.images !== previous) {
+        previous = session.state.images;
+        onChange(previous);
+      }
+    });
+  }, [session, initialImages, onChange]);
+  const setImages = session.setImages;
+  const setOpen = session.setOpen;
   return (
     <ImageInputs
+      session={session}
       isOpen={isOpen}
       onClose={() => {
         setOpen(false);
@@ -77,7 +99,6 @@ function Harness({
       images={images}
       onImagesChange={(next) => {
         setImages(next);
-        onChange(next);
       }}
       dataSourceUid="secure-ai"
       model="vision-model"
@@ -221,7 +242,7 @@ describe('ImageInputs explicit preview workflow', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  test('unmounting aborts capture and prevents a late result from restoring sensitive image state', async () => {
+  test('navigation aborts detached capture and prevents a late result from restoring sensitive image state', async () => {
     let finish: (result: VisionCaptureResult) => void = () => undefined;
     let signal: AbortSignal | undefined;
     jest.mocked(captureDashboard).mockImplementation((activeSignal) => {
@@ -235,6 +256,8 @@ describe('ImageInputs explicit preview workflow', () => {
     fireEvent.click(await captureButton());
     await waitFor(() => expect(captureDashboard).toHaveBeenCalledTimes(1));
     view.unmount();
+    expect(signal?.aborted).toBe(false);
+    act(() => locationService.push('/another-dashboard'));
     expect(signal?.aborted).toBe(true);
     await act(async () => finish({ attachments: [image('Late private image')], warnings: [] }));
     expect(onChange).not.toHaveBeenCalled();

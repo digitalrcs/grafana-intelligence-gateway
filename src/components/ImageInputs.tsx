@@ -7,12 +7,13 @@ import {
   captureSelectedPanels,
   discoverCapturePanels,
   importImageFiles,
-  validateAttachments,
   VisionAttachment,
   VISION_LIMITS,
 } from '../vision';
+import { ImageSession } from '../vision/session';
 
 interface Props {
+  session: ImageSession;
   isOpen: boolean;
   onClose: () => void;
   images: VisionAttachment[];
@@ -60,8 +61,9 @@ const stylesFor = (theme: ReturnType<typeof useTheme2>) => ({
   progress: css({ display: 'flex', flexWrap: 'wrap', gap: theme.spacing(1), alignItems: 'center' }),
 });
 
-/** Attachments exist only in React state. This component never sends an inference request. */
+/** Attachments exist only in browser memory. This component never sends an inference request. */
 export function ImageInputs({
+  session,
   isOpen,
   onClose,
   images,
@@ -76,16 +78,8 @@ export function ImageInputs({
   const [capabilities, setCapabilities] = useState<VisionCapabilities>();
   const [checking, setChecking] = useState(true);
   const [capabilityError, setCapabilityError] = useState('');
-  const [error, setError] = useState('');
-  const [warnings, setWarnings] = useState<string[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState('');
-  const controller = useRef<AbortController>();
+  const { error, warnings, busy, progress } = session.state;
   const fileInput = useRef<HTMLInputElement>(null);
-  const currentImages = useRef(images);
-  useEffect(() => {
-    currentImages.current = images;
-  }, [images]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -115,49 +109,10 @@ export function ImageInputs({
       active = false;
       window.clearTimeout(capabilityTimeout);
       capabilityController.abort();
-      controller.current?.abort();
     };
   }, [isOpen, dataSourceUid, model]);
 
-  useEffect(() => () => controller.current?.abort(), []);
-
   const visionReady = capabilities?.vision.enabled && capabilities.vision.models.includes(model.trim());
-  const run = async (
-    operation: (signal: AbortSignal) => Promise<{ attachments: VisionAttachment[]; warnings: string[] }>
-  ) => {
-    controller.current?.abort();
-    const active = new AbortController();
-    controller.current = active;
-    setBusy(true);
-    setError('');
-    setWarnings([]);
-    setProgress('Preparing image inputs…');
-    try {
-      // Remove the dialog and backdrop before reading dashboard pixels.
-      await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-      if (active.signal.aborted) {
-        return;
-      }
-      const result = await operation(active.signal);
-      if (active.signal.aborted) {
-        return;
-      }
-      const next = [...currentImages.current, ...result.attachments];
-      validateAttachments(next);
-      onImagesChange(next);
-      setWarnings(result.warnings);
-    } catch (reason) {
-      if (!active.signal.aborted) {
-        setError(reason instanceof Error ? reason.message : 'Could not prepare image inputs.');
-      }
-    } finally {
-      if (controller.current === active) {
-        setBusy(false);
-        setProgress('');
-        controller.current = undefined;
-      }
-    }
-  };
 
   return (
     <>
@@ -165,7 +120,7 @@ export function ImageInputs({
         <div className={styles.progress} role="status">
           <Spinner />
           {progress}
-          <Button size="sm" variant="secondary" onClick={() => controller.current?.abort()}>
+          <Button size="sm" variant="secondary" onClick={session.cancel}>
             Cancel capture
           </Button>
         </div>
@@ -208,17 +163,15 @@ export function ImageInputs({
             still occur.
           </p>
           <div className={styles.actions}>
-            <Button
-              variant="secondary"
-              disabled={!visionReady}
-              onClick={() => void run((signal) => captureDashboard(signal, setProgress))}
-            >
+            <Button variant="secondary" disabled={!visionReady} onClick={() => void session.run(captureDashboard)}>
               Capture dashboard
             </Button>
             <Button
               variant="secondary"
               disabled={!visionReady || selectedIds.length === 0}
-              onClick={() => void run((signal) => captureSelectedPanels(selectedIds, signal, setProgress))}
+              onClick={() =>
+                void session.run((signal, onProgress) => captureSelectedPanels(selectedIds, signal, onProgress))
+              }
             >
               Capture selected panels
             </Button>
@@ -236,7 +189,10 @@ export function ImageInputs({
                 const files = Array.from(event.currentTarget.files ?? []);
                 event.currentTarget.value = '';
                 if (files.length > 0) {
-                  void run(async (signal) => ({ attachments: await importImageFiles(files, signal), warnings: [] }));
+                  void session.run(async (signal) => ({
+                    attachments: await importImageFiles(files, signal),
+                    warnings: [],
+                  }));
                 }
               }}
             />
@@ -310,7 +266,7 @@ export function ImageInputs({
                 variant="secondary"
                 onClick={() => {
                   onImagesChange([]);
-                  setWarnings([]);
+                  session.update({ warnings: [] });
                 }}
               >
                 Remove all images

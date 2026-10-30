@@ -166,6 +166,18 @@ describe('bounded vision capture lifecycle', () => {
     expect(() => compositionGeometry([panel])).toThrow('selected panels');
   });
 
+  test('rejects a stalled dashboard scroller instead of returning an incomplete image', async () => {
+    const viewport = dashboard();
+    Object.defineProperty(viewport, 'scrollTop', { get: () => 300, set: () => undefined });
+    const operation = captureDashboard(new AbortController().signal);
+    const assertion = expect(operation).rejects.toThrow('scrolling stopped before reaching the bottom');
+    await jest.advanceTimersByTimeAsync(5000);
+    await assertion;
+    expect(encodeCanvas).not.toHaveBeenCalled();
+    expect(viewport.scrollTop).toBe(300);
+    expect(viewport.scrollLeft).toBe(20);
+  });
+
   test('walks virtualized rows without skipping intermediate panels and composes one image', async () => {
     const viewport = dashboard();
     let top = 300;
