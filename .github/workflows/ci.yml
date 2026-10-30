@@ -59,7 +59,7 @@ jobs:
 
       - name: Setup Go environment
         if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
 
@@ -195,7 +195,7 @@ jobs:
           cache: 'npm'
 
       - name: Setup Go environment
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: companion-datasource/go.mod
           cache-dependency-path: companion-datasource/go.sum
