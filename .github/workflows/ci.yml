@@ -149,7 +149,7 @@ jobs:
 
       - name: Resolve Grafana E2E versions
         id: resolve-versions
-        uses: grafana/plugin-actions/e2e-version@e2e-version/v3.0.1
+        uses: grafana/plugin-actions/e2e-version@e2e-version/v3.0.2
         with:
           # Validate released Grafana versions; this does not imply catalog certification.
           skip-grafana-nightly-image: true
