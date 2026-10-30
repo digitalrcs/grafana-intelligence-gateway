@@ -10,10 +10,10 @@ Repository evidence:
 - `provisioning/`: sample dashboard and TestData data source for reviewers.
 - `testdata/mock-provider/`: deterministic credential-free AI provider used by Docker and E2E review.
 - `.github/workflows/ci.yml`: build, validation, and multi-version E2E testing.
-- `.github/workflows/release.yml`: tagged release packaging, optional public signing, and provenance attestation.
+- `.github/workflows/release.yml`: tagged release packaging, required signing credential and manifest checks, and provenance attestation.
 - `README.md`, `CHANGELOG.md`, `LICENSE`, `SECURITY.md`: required user and legal documentation.
 
-External steps remain: the companion data source must be accepted/published first, Grafana must assign the appropriate public signature level, the repository secret `GRAFANA_ACCESS_POLICY_TOKEN` must then be configured, and a tagged panel release must be submitted through Grafana's Plugins Admin page. Grafana approval is always a manual decision and cannot be guaranteed by repository checks.
+Grafana's review response permits signing both plugins. Configure the repository secret `GRAFANA_ACCESS_POLICY_TOKEN`, verify both signed release archives, and update the existing submissions through Grafana's Plugins Admin page, coordinating the companion data source before the dependent panel. The actual manifests establish the signature levels; signing and repository checks do not themselves establish catalog publication or certification.
 
 For the release-specific URLs, checksums, provenance verification commands, and text to paste into the Grafana submission form, see [GRAFANA_SUBMISSION.md](GRAFANA_SUBMISSION.md). Do not submit a branch build or GitHub source-code archive; submit the ZIP produced by the tagged Release workflow.
 

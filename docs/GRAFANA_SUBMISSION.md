@@ -1,6 +1,6 @@
-# Grafana submission update — 1.1.0
+# Grafana submission reference — reviewed 1.1.0 baseline
 
-Use **Submit Update** on the existing plugin submission. Submit the secure data source first, then the panel; they are separate packages. The fields below target the 1.1.0 release. Confirm publication and the exact archive verification before entering them in Grafana. Preparing these fields does not update the portal or grant approval.
+Use **Submit Update** on the existing plugin submission. Submit the secure data source first, then the panel; they are separate packages. The historical fields below target the unsigned 1.1.0 release, not the 1.1.1 public-signing release. For 1.1.1, use its exact published archive, source tag, and newly verified checksum; do not reuse the 1.1.0 values. Preparing these fields does not update the portal or grant approval.
 
 | Field                 | Value                                                                                                                                   |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -48,6 +48,6 @@ The Release workflow verifies the downloaded artifact, source-tag provenance, ch
 
 The ZIP must contain one `digitalrcs-intelligencegateway-panel/` root, version 1.1.0, production module, catalog README, changelog, license, and all referenced image assets. Install the secure companion 1.1.0 or newer for image features.
 
-These repositories currently have no public-signing token: the release is intended as an **unsigned review archive**. Build provenance is not a Grafana signature. Public installation without an unsigned allow-list requires Grafana's signature assignment and a properly signed build. Do not represent this as certified or catalog-approved.
+The 1.1.0 release was an **unsigned review archive**. The 1.1.1 release workflow requires the signing credential and a signed manifest in the downloaded archive; inspect its manifest and validation results before claiming a signature level. Build provenance is not a Grafana signature, and signing does not by itself establish catalog publication or certification.
 
 See [release notes](RELEASE_NOTES_1.1.0.md), [release validation](RELEASE_VALIDATION.md), and the [GitHub release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.1.0). Portal submission remains a separate administrator action.

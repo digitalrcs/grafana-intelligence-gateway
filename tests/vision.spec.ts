@@ -2,27 +2,28 @@ import { test, expect, Dashboard, gte } from '@grafana/plugin-e2e';
 import type { Page, Request, TestInfo } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
-import { version as companionVersion } from '../package.json';
 
 // Browser plugin not available in the validation environment. Exercise the real
 // Grafana/backend transport with @grafana/plugin-e2e and the synthetic mock provider.
 test.setTimeout(120000);
 test.use({ viewport: { width: 1440, height: 1000 }, screenshot: 'only-on-failure' });
 test.beforeEach(async ({ page, grafanaVersion, selectors }) => {
-  // plugin-e2e first opens the Grafana homepage. In Grafana 13.2 its initial
-  // OFREP request can start after a 500 ms network-idle window. Wait for that
+  // plugin-e2e first opens the Grafana homepage. In Grafana 13.1+ its initial
+  // OFREP request can race navigation after a 500 ms network-idle window. Wait for that
   // real request to finish before navigating, including when it already
   // completed before this hook. Do not mock flags or suppress OFREP errors.
   // Earlier versions expose this API but may not request it on the homepage.
-  if (gte(grafanaVersion, '13.2.0')) {
+  if (gte(grafanaVersion, '13.1.0')) {
     await page.waitForFunction(
-      (coreOfrepPath) =>
+      (coreOfrepPaths) =>
         performance.getEntriesByType('resource').some((entry) => {
           const resource = entry as PerformanceResourceTiming;
           const url = new URL(resource.name);
-          return url.origin === window.location.origin && url.pathname === coreOfrepPath && resource.responseEnd > 0;
+          return (
+            url.origin === window.location.origin && coreOfrepPaths.includes(url.pathname) && resource.responseEnd > 0
+          );
         }),
-      selectors.apis.OpenFeature.ofrepBulkPath(),
+      [selectors.apis.OpenFeature.ofrepBulkPath(), selectors.apis.OpenFeature.ofrepBulkPathWithoutNamespace()],
       { timeout: 15000 }
     );
   }
@@ -86,7 +87,23 @@ function isDocumentedMissingConfig(probe: MissingConfigProbe, body: unknown): bo
   );
 }
 
-function observe(page: Page) {
+function isCompanionCatalogLookup(source: string, origin: string, companionVersion?: string): boolean {
+  try {
+    const url = new URL(source);
+    const pluginPath = '/api/gnet/plugins/digitalrcs-intelligencegateway-datasource';
+    return (
+      url.origin === origin &&
+      !url.search &&
+      !url.hash &&
+      (url.pathname === pluginPath ||
+        (companionVersion !== undefined && url.pathname === `${pluginPath}/versions/${companionVersion}`))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function observe(page: Page, companionVersion?: string) {
   const inference: Request[] = [];
   const errors: string[] = [];
   const knownCoreDiagnostics: CoreDiagnostic[] = [];
@@ -121,7 +138,6 @@ function observe(page: Page) {
     if (message.type() === 'error') {
       const text = message.text();
       const source = message.location().url;
-      const sourcePath = source ? new URL(source).pathname : '';
       // Reproduced on the bare Grafana 13.1.1 homepage with no plugin panels,
       // using plugin-e2e 3.11.0. Preserve this core diagnostic in test evidence;
       // do not suppress other console errors or any uncaught page errors.
@@ -131,15 +147,12 @@ function observe(page: Page) {
         ) &&
         /\/public\/build\/[^/]+\.js$/.test(source) &&
         text.includes('/public/build/3776-react19.87b76a9e19a4ca3ddbd2.js:86:20409');
-      // A local unsigned development plugin is not yet in the public catalog.
-      // Verified both exact metadata requests return404 in the settings page;
-      // the installed plugin/configuration loads successfully from local assets.
+      // An installed companion version can be absent from the public catalog.
+      // Match only this host and the actual installed companion metadata, not
+      // this panel's independently versioned package or arbitrary version URLs.
       const unpublishedCatalogDiagnostic =
         text === 'Failed to load resource: the server responded with a status of 404 (Not Found)' &&
-        [
-          '/api/gnet/plugins/digitalrcs-intelligencegateway-datasource',
-          `/api/gnet/plugins/digitalrcs-intelligencegateway-datasource/versions/${companionVersion}`,
-        ].includes(sourcePath);
+        isCompanionCatalogLookup(source, origin, companionVersion);
       if (knownOpenFeatureDiagnostic || unpublishedCatalogDiagnostic) {
         knownCoreDiagnostics.push({ message: text, source });
       } else if (
@@ -183,6 +196,15 @@ async function assertNoUnexpectedErrors(observed: ReturnType<typeof observe>, in
 
 test('optional host configuration diagnostics require an exact origin, request, path, and absence body', () => {
   const origin = 'http://grafana.example.test';
+  const companionCatalog = `${origin}/api/gnet/plugins/digitalrcs-intelligencegateway-datasource`;
+  expect(isCompanionCatalogLookup(companionCatalog, origin, '1.1.0')).toBe(true);
+  expect(isCompanionCatalogLookup(`${companionCatalog}/versions/1.1.0`, origin, '1.1.0')).toBe(true);
+  expect(isCompanionCatalogLookup(`${companionCatalog}/versions/1.1.1`, origin, '1.1.0')).toBe(false);
+  expect(isCompanionCatalogLookup(`${companionCatalog}/versions/1.1.0`, origin)).toBe(false);
+  expect(isCompanionCatalogLookup(companionCatalog, 'https://other.example.test', '1.1.0')).toBe(false);
+  expect(isCompanionCatalogLookup(`${companionCatalog}?unexpected=true`, origin, '1.1.0')).toBe(false);
+  expect(isCompanionCatalogLookup(`${companionCatalog}#unexpected`, origin, '1.1.0')).toBe(false);
+  expect(isCompanionCatalogLookup(`${companionCatalog}/resources/health`, origin, '1.1.0')).toBe(false);
   const publicPath = '/api/dashboards/uid/synthetic-dashboard/public-dashboards';
   const storagePath =
     '/apis/userstorage.grafana.app/v0alpha1/namespaces/default/user-storage/saved-queries:synthetic-user';
@@ -687,10 +709,16 @@ test('images-only analysis needs no query source and sends one image only after 
 
 test('secure data source exposes provider-specific credentials and vision policy', async ({
   page,
+  request,
   gotoDataSourceConfigPage,
   readProvisionedDataSource,
 }, info) => {
-  const observed = observe(page);
+  const settingsResponse = await request.get('/api/plugins/digitalrcs-intelligencegateway-datasource/settings');
+  expect(settingsResponse.ok()).toBe(true);
+  const companionSettings = await settingsResponse.json();
+  expect(companionSettings.id).toBe('digitalrcs-intelligencegateway-datasource');
+  expect(companionSettings.info.version).toMatch(/^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$/);
+  const observed = observe(page, companionSettings.info.version);
   const dataSource = await readProvisionedDataSource({ fileName: 'intelligence-gateway.yml' });
   await gotoDataSourceConfigPage(dataSource.uid);
   await expect(page.getByRole('switch', { name: 'Enable image analysis', exact: true })).toBeChecked();
