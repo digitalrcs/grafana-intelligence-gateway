@@ -1,6 +1,20 @@
-# 1.1.0 release validation
+# 1.1.2 release validation
 
 This record separates local preflight, GitHub CI, the exact released archive, and Grafana's own approval. The [submission handoff](GRAFANA_SUBMISSION.md) contains the version-matched fields. No catalog approval or public signature is implied.
+
+## Capture patch preflight — October 30, 2026
+
+Panel 1.1.1 fixes the Grafana 12.4 viewport-body scroller and rejects stalled traversal. Companion 1.1.0 remains compatible. The shared LM Studio demo has been restarted with panel 1.1.1 and its provider health check passes.
+
+Local checks: 86 unit tests, TypeScript, lint (existing deprecation warnings only), production webpack build, and local ZIP archive/metadata/schema validation pass. The local archive is unsigned preflight output, not a published release; no immutable tag, public download, provenance, signing, or catalog update is claimed here.
+
+Final Chromium image-suite results: **10 passed on Grafana 12.4.0** and **10 passed on Grafana 13.3.0**, using plugin-e2e 3.15.4. This includes authentication, the diagnostic-boundary regression, capture/preview, upload/remove, explicit send, images-only analysis, provider settings, and desktop/narrow label layout. No unexpected console or page errors remained. The temporary regression stack was stopped after validation.
+
+The tall-dashboard browser test inspects trace pixels in all eight chart cells, verifies nonzero scroll restoration and no inference during preview. Grafana 12.4.0 and 13.3.0 are pinned in CI in addition to resolved versions. Browser tests use Chromium and synthetic TestData; the mock transport is not evidence of real image understanding. Test tooling is updated to plugin-e2e 3.15.4, including the Grafana 13.3 non-namespaced feature-flag route.
+
+npm install reports no high/critical advisories (7 low, 5 moderate); the historical dependency assessment below remains separate from this capture fix.
+
+The tested local capture build initially used 1.1.1; after discovering that version was already published, this patch is released as 1.1.2. Final release verification must use v1.1.2 assets.
 
 ## 1.1.1 signing-release assessment — October 30, 2026
 

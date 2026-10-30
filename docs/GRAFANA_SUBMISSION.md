@@ -1,16 +1,16 @@
-# Grafana submission reference — reviewed 1.1.0 baseline
+# Grafana submission update — 1.1.2
 
-Use **Submit Update** on the existing plugin submission. Submit the secure data source first, then the panel; they are separate packages. The historical fields below target the unsigned 1.1.0 release, not the 1.1.1 public-signing release. For 1.1.1, use its exact published archive, source tag, and newly verified checksum; do not reuse the 1.1.0 values. Preparing these fields does not update the portal or grant approval.
+Use **Submit Update** on the existing plugin submission. This is a panel-only patch; companion data source 1.1.0 or later is still required and does not need a new release. The fields below target the 1.1.2 release. Confirm publication and the exact archive verification before entering them in Grafana. Preparing these fields does not update the portal or grant approval.
 
 | Field                 | Value                                                                                                                                   |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | Plugin ID             | `digitalrcs-intelligencegateway-panel`                                                                                                  |
-| Version               | `1.1.0`                                                                                                                                 |
+| Version               | `1.1.2`                                                                                                                                 |
 | Type                  | Panel                                                                                                                                   |
 | OS & Architecture     | Single (frontend-only archive)                                                                                                          |
-| ZIP URL               | https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.1.0/digitalrcs-intelligencegateway-panel-1.1.0.zip      |
-| Source URL            | https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.1.0                                                                  |
-| SHA1 asset            | https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.1.0/digitalrcs-intelligencegateway-panel-1.1.0.zip.sha1 |
+| ZIP URL               | https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.1.2/digitalrcs-intelligencegateway-panel-1.1.2.zip      |
+| Source URL            | https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.1.2                                                                  |
+| SHA1 asset            | https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.1.2/digitalrcs-intelligencegateway-panel-1.1.2.zip.sha1 |
 | Provisioning provided | Yes                                                                                                                                     |
 | Minimum Grafana       | 11.6.0; optional Grafana LLM app requires Grafana 13+                                                                                   |
 | License               | Apache-2.0                                                                                                                              |
@@ -19,7 +19,7 @@ Copy the **hash value** from the SHA1 asset into Grafana's SHA1 field, not the c
 
 ## Testing guidance
 
-Install both Intelligence Gateway 1.1.0 packages side by side. Follow the [panel reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) and [data-source test guide](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki/Testing-and-Review). The provisioned Docker environment uses a deterministic mock and synthetic traffic data without external credentials. Its labeled receipt verifies transport, not AI understanding.
+Install panel 1.1.2 beside companion data source 1.1.0 or later. Follow the [panel reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) and [data-source test guide](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki/Testing-and-Review). The provisioned Docker environment uses a deterministic mock and synthetic traffic data without external credentials. Its labeled receipt verifies transport, not AI understanding.
 
 Phase 1 checks the mock connection only. Before Phase 2, use an existing approved provider or coordinate suitable limited test API access privately with DigitalRCS through the existing Grafana review conversation. [Grafana may require test API access for more complex plugins](https://grafana.com/developers/plugin-tools/publish-a-plugin/provide-test-environment). No hosted service or credentials are currently bundled or promised; any access must be arranged and confirmed separately. Never publish credentials or private endpoint details. Completing the mock check does not complete real-provider review.
 
@@ -34,20 +34,20 @@ Confirm previews do not send inference requests, the Intelligence panels are exc
 ## Verify the exact release
 
 ```bash
-gh release download v1.1.0 --repo digitalrcs/grafana-intelligence-gateway \
-  --pattern 'digitalrcs-intelligencegateway-panel-1.1.0.zip*'
-sha1sum digitalrcs-intelligencegateway-panel-1.1.0.zip
-sha256sum digitalrcs-intelligencegateway-panel-1.1.0.zip
-gh attestation verify digitalrcs-intelligencegateway-panel-1.1.0.zip \
+gh release download v1.1.2 --repo digitalrcs/grafana-intelligence-gateway \
+  --pattern 'digitalrcs-intelligencegateway-panel-1.1.2.zip*'
+sha1sum digitalrcs-intelligencegateway-panel-1.1.2.zip
+sha256sum digitalrcs-intelligencegateway-panel-1.1.2.zip
+gh attestation verify digitalrcs-intelligencegateway-panel-1.1.2.zip \
   --repo digitalrcs/grafana-intelligence-gateway \
   --signer-workflow digitalrcs/grafana-intelligence-gateway/.github/workflows/release.yml \
-  --source-ref refs/tags/v1.1.0
+  --source-ref refs/tags/v1.1.2
 ```
 
 The Release workflow verifies the downloaded artifact, source-tag provenance, checksum, and full Grafana Plugin Validator output. Its evidence artifact records results and the validator image digest. Check those results rather than assuming the workflow configuration proves success.
 
-The ZIP must contain one `digitalrcs-intelligencegateway-panel/` root, version 1.1.0, production module, catalog README, changelog, license, and all referenced image assets. Install the secure companion 1.1.0 or newer for image features.
+The ZIP must contain one `digitalrcs-intelligencegateway-panel/` root, version 1.1.2, production module, catalog README, changelog, license, and all referenced image assets. Install the secure companion 1.1.0 or newer for image features.
 
-The 1.1.0 release was an **unsigned review archive**. The 1.1.1 release workflow requires the signing credential and a signed manifest in the downloaded archive; inspect its manifest and validation results before claiming a signature level. Build provenance is not a Grafana signature, and signing does not by itself establish catalog publication or certification.
+The release workflow requires the signing credential and a signed manifest in the exact downloaded archive. Verify the manifest, signature level, checksums, provenance, and validator results before submission. Signing does not by itself establish catalog publication or certification.
 
-See [release notes](RELEASE_NOTES_1.1.0.md), [release validation](RELEASE_VALIDATION.md), and the [GitHub release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.1.0). Portal submission remains a separate administrator action.
+See [release notes](RELEASE_NOTES_1.1.2.md), [release validation](RELEASE_VALIDATION.md), and the [GitHub release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.1.2). Portal submission remains a separate administrator action.

@@ -91,3 +91,9 @@ The [reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-ga
 - `wiki/`: source for the published GitHub Wiki.
 
 See [Contributing](../CONTRIBUTING.md) and [Security](../SECURITY.md).
+
+## Tall-dashboard capture regression
+
+The tall-dashboard test in `tests/vision.spec.ts` uses the separate `vision-tall.json` dashboard with eight synthetic charts. It checks every chart cell for rendered green trace pixels, nonzero scroll restoration, gateway exclusion, and no inference request during preview. CI always includes Grafana 12.4.0 and 13.3.0 alongside dynamically resolved versions.
+
+Run with `GRAFANA_VERSION=12.4.0 ANONYMOUS_AUTH_ENABLED=false docker compose up -d --build`, then `npm run e2e -- tests/vision.spec.ts --grep "tall dashboard"`. Use fresh disposable storage when changing Grafana versions; do not downgrade a saved database.

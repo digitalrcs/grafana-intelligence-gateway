@@ -301,6 +301,12 @@ async function runCapture(
       }
       scrolled = true;
       setScroll(scroller, nextTop, originalLeft);
+      await pause(signal);
+      if (scroller.scrollTop <= currentTop + 1) {
+        throw new Error(
+          'Dashboard scrolling stopped before reaching the bottom. No image was captured. Try selected panels.'
+        );
+      }
     }
     throwIfAborted(signal);
     if (selected) {

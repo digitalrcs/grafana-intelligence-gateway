@@ -12,3 +12,5 @@ This adaptation adds exclusion of Intelligence Gateway panels, bounded in-memory
 Grafana's alpha screenshot service is feature detected using the installed official `@grafana/runtime` `PanelScreenshotService` interface. Its documented requirement is a visible, materialized panel. Legacy DOM selectors are isolated in `dom.ts`.
 
 The fallback rasterizer bundles `html-to-image` 1.11.13 under its MIT license. The production archive includes its complete copyright and license notice at `licenses/html-to-image-LICENSE.txt`, copied from the locked dependency during the build.
+
+The Grafana 12.4 viewport-body correction follows exporter revision `4ff906d62379c57aedf145d1e7ea295068135903` (1.2.5). The panel retains its own bounded traversal and adds explicit stalled-scroll detection.

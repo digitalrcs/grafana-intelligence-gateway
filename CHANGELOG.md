@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.2 - 2026-10-30
+
+- Fix dashboard capture on Grafana 12.4.0 when body overflow belongs to the document viewport.
+- Stop with an explicit error if scrolling stalls before the dashboard bottom, instead of composing an incomplete image.
+- Add tall-dashboard browser regression coverage and pin Grafana 12.4.0 and 13.3.0 in CI alongside resolved versions.
+- Companion data source requirement remains 1.1.0 or later.
+
 ## 1.1.1 - 2026-10-30
 
 - Prepare the public-signing release after Grafana's review; plugin functionality and runtime dependencies are unchanged from 1.1.0.

@@ -50,3 +50,7 @@ An output-budget failure, a timeout, and an unsupported image/model response are
 If controls still look unchanged after an upgrade, restart Grafana and fully reload the browser page. Dashboard **Refresh** refreshes queries, not the plugin runtime. See [development cache guidance](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/DEVELOPMENT.md#rebuilt-code-still-looks-unchanged) before clearing browser data.
 
 See the [complete image-analysis guide](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/IMAGE_ANALYSIS.md) for exact endpoint examples, service-account permissions, limits, and validation boundaries.
+
+## Grafana 12.4 capture fix
+
+Use panel 1.1.2 or later for tall-dashboard capture on Grafana 12.4.0. Companion 1.1.0 or later remains compatible. Stalled scrolling now reports an error; review any partial-capture warnings caused by image limits. Updating the separate exporter does not update this capture implementation.
