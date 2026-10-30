@@ -21,6 +21,17 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Require the public-signing credential
+        env:
+          GRAFANA_ACCESS_POLICY_TOKEN: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$GRAFANA_ACCESS_POLICY_TOKEN" ]; then
+            echo "::error::Configure the GRAFANA_ACCESS_POLICY_TOKEN repository secret before releasing. Unsigned releases are no longer permitted."
+            exit 1
+          fi
+
       - uses: grafana/plugin-actions/build-plugin@build-plugin/v1.2.0
         with:
           node-version: '22'
@@ -50,6 +61,11 @@ jobs:
           EXPECTED=$(awk '{print $1}' "$ARCHIVE.sha1")
           ACTUAL=$(sha1sum "$ARCHIVE" | awk '{print $1}')
           test "$EXPECTED" = "$ACTUAL"
+          unzip -p "$ARCHIVE" "$PLUGIN_ID/MANIFEST.txt" > MANIFEST.txt
+          test -s MANIFEST.txt
+          grep -q '^-----BEGIN PGP SIGNED MESSAGE-----$' MANIFEST.txt
+          grep -q '^-----BEGIN PGP SIGNATURE-----$' MANIFEST.txt
+          printf 'Signed manifest is present in the exact archive: %s/MANIFEST.txt\n' "$PLUGIN_ID" | tee signature-presence.txt
           gh attestation verify "$ARCHIVE" --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
             --source-ref "refs/tags/$RELEASE_TAG" --source-digest "$GITHUB_SHA" --format json 2>&1 | tee provenance.txt

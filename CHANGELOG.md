@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1 - 2026-10-30
+
+- Prepare the public-signing release after Grafana's review; plugin functionality and dependencies are unchanged from 1.1.0.
+- Require a configured Grafana signing token before the release build and a signed manifest in the exact downloadable archive before release verification can succeed.
+- Preserve archive checksum, build-provenance, and full plugin-validator verification. The generated manifest and validation results establish the actual signature status; this changelog does not claim catalog publication or certification.
+
 ## 1.1.0 - 2026-10-26
 
 - Clearly label the supplied mock connection before analysis, show the selected AI instance/model, and provide a separate real-provider setup checklist. Mock responses are delivery receipts, not AI assessments.
