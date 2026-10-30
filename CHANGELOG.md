@@ -2,7 +2,8 @@
 
 ## 1.1.1 - 2026-10-30
 
-- Prepare the public-signing release after Grafana's review; plugin functionality and dependencies are unchanged from 1.1.0.
+- Prepare the public-signing release after Grafana's review; plugin functionality and runtime dependencies are unchanged from 1.1.0.
+- Update the development-only Grafana E2E helper and test synchronization for current Grafana versions; classify companion catalog diagnostics using the installed companion version rather than the panel version.
 - Require a configured Grafana signing token before the release build and a signed manifest in the exact downloadable archive before release verification can succeed.
 - Preserve archive checksum, build-provenance, and full plugin-validator verification. The generated manifest and validation results establish the actual signature status; this changelog does not claim catalog publication or certification.
 
