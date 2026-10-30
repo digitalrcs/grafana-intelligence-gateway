@@ -19,13 +19,14 @@ test('loads the provisioned DC1 and DC2 CSV data', async ({ gotoDashboardPage, r
 });
 
 test('renders the intelligence gateway when data is supplied', async ({
-  panelEditPage,
-  readProvisionedDataSource,
+  gotoPanelEditPage,
+  readProvisionedDashboard,
   page,
 }) => {
-  const ds = await readProvisionedDataSource({ fileName: 'datasources.yml' });
-  await panelEditPage.datasource.set(ds.name);
-  await panelEditPage.setVisualization('Grafana Intelligence Gateway');
+  // Exercise the provisioned gateway and its real query data without coupling
+  // this plugin assertion to Grafana's version-dependent visualization picker.
+  const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
+  const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
   await expect(page.getByTestId('intelligence-gateway-panel')).toBeVisible();
   await expect(panelEditPage.panel.locator).toContainText('Select Analyze');
 });
