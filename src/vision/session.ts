@@ -42,7 +42,12 @@ export class ImageSession {
     this.listeners.forEach((listener) => listener());
   };
   setImages = (images: VisionAttachment[]) => this.update({ images });
-  setOpen = (open: boolean) => this.update({ open });
+  setOpen = (open: boolean) => {
+    if (!open) {
+      this.cancel();
+    }
+    this.update({ open });
+  };
   cancel = () => this.controller?.abort();
 
   mount = () => {

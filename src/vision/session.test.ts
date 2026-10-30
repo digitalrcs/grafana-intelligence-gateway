@@ -8,7 +8,8 @@ const captured: VisionCaptureResult = {
     {
       id: '1',
       name: 'Chart',
-      dataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6DkUAAAAASUVORK5CYII=',
+      dataUrl:
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6DkUAAAAASUVORK5CYII=',
       mimeType: 'image/png',
       width: 1,
       height: 1,
@@ -88,6 +89,22 @@ describe('capture handoff across Grafana virtualization', () => {
     expect(restored.result.current.session).not.toBe(session);
     expect(restored.result.current.state.open).toBe(false);
     restored.unmount();
+  });
+
+  test('clearing the panel cancels capture and cannot restore a late image', async () => {
+    const { hook, session, signal, finish, pending } = await start();
+    act(() => {
+      session.setImages([]);
+      session.setOpen(false);
+    });
+    expect(signal.aborted).toBe(true);
+    await act(async () => {
+      finish(captured);
+      await pending;
+    });
+    expect(hook.result.current.state.images).toEqual([]);
+    expect(hook.result.current.state.open).toBe(false);
+    hook.unmount();
   });
 
   test.each(['navigation', 'configuration', 'timeout'])('invalidates a detached capture on %s', async (reason) => {

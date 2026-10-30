@@ -18,7 +18,7 @@ The tested local capture build initially used 1.1.1; after discovering that vers
 
 ## Grafana 12.2 virtualization follow-up
 
-The first PR CI run exposed a further failure on Grafana 12.2.10: scrolling unmounted the gateway panel, aborting its capture and losing the dialog. A bounded, browser-memory capture session now survives that temporary unmount. The previously failing local tall-dashboard regression passes (all eight charts, scroll restoration, and no inference). Navigation, provider/model changes, timeout, and unclaimed-result expiry are covered by lifecycle tests. Grafana 12.2.10 is now pinned in the CI matrix. Final PR CI and release verification remain separate gates.
+The first PR CI run exposed a further failure on Grafana 12.2.10: scrolling unmounted the gateway panel, aborting its capture and losing the dialog. A bounded, browser-memory capture session now survives that temporary unmount. All 10 local image-workflow browser tests pass on Grafana 12.2.10, including the previously failing tall-dashboard regression (all eight charts, scroll restoration, and no inference). Navigation, provider/model changes, timeout, and unclaimed-result expiry are covered by lifecycle tests. Grafana 12.2.10 is now pinned in the CI matrix. Final PR CI and release verification remain separate gates.
 
 ## 1.1.1 signing-release assessment — October 30, 2026
 
