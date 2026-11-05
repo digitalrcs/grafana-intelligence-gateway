@@ -29,3 +29,5 @@ Install the companion first (use security-fixed 1.1.2 or later). Start the isola
 - [Packaging](https://grafana.com/developers/plugin-tools/publish-a-plugin/package-a-plugin)
 
 Initial review may accept unsigned artifacts; public signing requires Grafana's signature grant. This existing project's release workflow intentionally requires signing. The installed sign-plugin 3.x is distinct from current 4.x, which requires Node 24.15 or later; do not upgrade it without updating the toolchain and validating the migration.
+
+Local candidate validation on 2026-11-05 completed against immutable source c436fec: the official validator reported only the expected unsigned warning after the React scanner cache was warmed. This does not replace validation of the final signed release.

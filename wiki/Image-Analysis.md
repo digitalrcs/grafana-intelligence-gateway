@@ -9,3 +9,5 @@ Up to 8 images, 4 MiB each and 12 MiB total are accepted subject to pixel and ba
 For images only, turn off Include query data with images. For combined analysis, select Queries â†’ Dashboard â†’ Source panel to reuse a panel's results, and leave Include query data with images on. The plugin does not re-fetch source data to prepare uploaded images.
 
 This edition has no dashboard capture, panel discovery or selected-panel capture. Upload a locally saved screenshot if visual context is needed. Other file formats are not supported.
+
+![Public candidate PNG/JPEG preview with synthetic charts](images/public-upload-preview.png)

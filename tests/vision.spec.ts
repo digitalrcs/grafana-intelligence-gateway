@@ -262,7 +262,7 @@ async function evidence(page: Page, info: TestInfo, name: string) {
   const destination = process.env.VISION_EVIDENCE_DIR
     ? path.join(process.env.VISION_EVIDENCE_DIR, `${name}.png`)
     : info.outputPath(`${name}.png`);
-  await page.screenshot({ path: destination, fullPage: false });
+  await page.screenshot({ path: destination, fullPage: false, animations: 'disabled' });
 }
 
 test('multiple PNG and JPEG uploads preview, remove, and remain out of saved dashboard data', async ({

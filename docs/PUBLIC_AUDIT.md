@@ -37,8 +37,15 @@ The initial run had 8 passes and 3 failures caused by optional Grafana page-hist
 
 ## Release blockers
 
-Do not submit yet. Establish the supported-version matrix and real-provider evidence; resolve/document dependency advisories; complete React compatibility and full exact-source validator checks; confirm Grafana organization-admin access, plugin ownership and applicable Community/Commercial signature authorization; build and verify an immutable signed archive and public-download hashes/provenance. A GitHub signing-secret name exists, but its value, validity and account grant were not inspected.
+Do not submit yet. Establish the supported-version matrix and real-provider evidence; resolve/document dependency advisories; repeat full validator checks on the final signed release artifact; confirm Grafana organization-admin access, plugin ownership and applicable Community/Commercial signature authorization; build and verify an immutable signed archive and public-download hashes/provenance. A GitHub signing-secret name exists, but its value, validity and account grant were not inspected.
 
 Follow [the current submission handoff](GRAFANA_SUBMISSION.md). No release tag, public release, signing request or Grafana submission was performed by this audit. Historical approval statements are not carried forward as proof of this candidate's approval.
 
 Final browser result: 11/11 passed on Grafana 13.3.0 after the diagnostic fix. Final TypeScript and lint checks passed (11 existing lint warnings). Other Grafana versions and a real vision provider were not exercised in this audit.
+
+
+Final validator follow-up: after caching its pinned react-detect package, the full official validator completed against source commit c436feca5049ee6ec79bdca051a6c2b7d2788130 and the exact candidate ZIP (SHA256 62d92e58a4399fb3392a6b6eb69bad26ce4620d9b4e1034c45d0e304ca2e3968). Exit 0; the only remaining warning was the missing signature. React compatibility completed successfully. The initial timeout is resolved, not waived. Later documentation/screenshot-evidence edits do not change the candidate bundle; a release still requires fresh final-source/archive verification.
+
+Cloud checks on c436fec: build/lint/unit, Grafana API compatibility, bundle comparison and version resolution passed. Six-version browser CI (11.6.16, 12.0.10, 12.2.10, 12.4.14, 13.1.9, 13.3.0) was running at this checkpoint. Final publication scan covered 66 source commits and 20 Wiki commits with zero findings.
+
+Screenshot evidence now disables transition animations so the modal is captured fully visible; the upload-preview regression and authentication were rerun successfully (2/2). Public synthetic screenshot added to the image guide. No product behavior changed in this follow-up.
