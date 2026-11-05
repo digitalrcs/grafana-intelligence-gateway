@@ -23,7 +23,7 @@ jobs:
       has-e2e: ${{ steps.check-for-e2e.outputs.has-e2e }}
       has-backend: ${{ steps.check-for-backend.outputs.has-backend }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Setup Node.js environment
@@ -137,7 +137,7 @@ jobs:
       matrix: ${{ steps.regression-versions.outputs.matrix }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -166,7 +166,7 @@ jobs:
     name: e2e test ${{ matrix.GRAFANA_IMAGE.name }}@${{ matrix.GRAFANA_IMAGE.VERSION }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -177,7 +177,7 @@ jobs:
           name: ${{ needs.build.outputs.plugin-id }}-${{ needs.build.outputs.plugin-version }}
 
       - name: Checkout secure companion data source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: DigitalRCS/grafana-intelligence-gateway-datasource
           # Exact security-fixed 1.1.2 companion source; do not silently test against moving main.
