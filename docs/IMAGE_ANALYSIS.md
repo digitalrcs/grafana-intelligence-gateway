@@ -51,4 +51,4 @@ If controls still look unchanged after an upgrade, restart Grafana and fully rel
 
 See [public-edition validation](../VALIDATION.md) for completed and pending checks.
 
-![Public candidate PNG/JPEG preview with synthetic charts](images/public-upload-preview.png)
+![PNG/JPEG preview with a real LM Studio connection and synthetic evidence](images/public-upload-preview.png)

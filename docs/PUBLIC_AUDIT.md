@@ -1,3 +1,5 @@
+> Historical candidate audit. See [current release verification](GRAFANA_SUBMISSION.md) for completed gates and published 1.2.1 artifact values.
+
 # Public edition audit — 2026-11-05
 
 ## Repository and edition boundary

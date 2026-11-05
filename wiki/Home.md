@@ -40,3 +40,5 @@ Connect your own local/hosted backend or Copilot Studio agent. Follow [Panel set
 - [Secure Backend and Secret Storage](Secure-Backend-and-Secrets)
 - [Grafana Compatibility and Certification](Grafana-Compatibility-and-Certification)
 - [Roadmap](Roadmap)
+
+[Download public 1.2.1](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.2.1) · [Verified release and catalog status](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Grafana-Compatibility-and-Certification)

@@ -1,35 +1,30 @@
-> Public 1.2.1 documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+# Public 1.2.1 release verification and catalog handoff
 
-# Public 1.2.1 readiness and submission handoff
+Published on GitHub on 2026-11-05. The exact archive passed strict Plugin Validator checks, has a verified Community signature for DigitalRCS, matching manifest file hashes, and verified GitHub build provenance. No Grafana catalog update was submitted in this task; catalog approval is separate.
 
-Status: candidate, not released or submitted. Do not enter historical 1.1.2 archive values for this candidate.
+## Exact release values
 
-The public project is https://github.com/digitalrcs/grafana-intelligence-gateway; the shared companion is https://github.com/digitalrcs/grafana-intelligence-gateway-datasource. Retain plugin ID `digitalrcs-intelligencegateway-panel` for dashboard compatibility. A separate workspace/repository does not create a new catalog identity. Confirm the existing listing with the organization administrator; normally this is Submit Update. A genuinely new plugin identity requires a deliberate migration and Grafana agreement, not just a repository rename.
+- [GitHub release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.2.1)
+- [Signed ZIP](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.2.1/digitalrcs-intelligencegateway-panel-1.2.1.zip)
+- [Immutable source tag](https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.2.1)
+- Source commit: `bb43800e6717b749e668a121dfe0b87bd9383b0f`
+- SHA1: `8b85b838fd04f14513d588ee474f7411b5e931c6`
+- SHA256: `a7e52fe6e9eeb6fae41eb29893dc9b0773ed010d186e05637dd2dd7fdb78134f`
+- Plugin ID: `digitalrcs-intelligencegateway-panel` (unchanged).
+- Grafana: 11.6 or later. Companion: 1.1.0 or later; use security-fixed 1.1.2 or newer.
 
-## Required gates
+## Validation
 
-1. Review the public source, history, documentation and image assets for secrets and private-only additions. Historical public capture code remains public history; removing it from the current tree does not retract old releases.
-2. Pass clean dependency installation, edition guard, typecheck, lint, unit tests, production build and dependency audit. Run the upload/data browser suite across supported Grafana versions with the pinned secure companion. Browser contract tests establish UI behavior only; separately validate a real approved vision provider with synthetic evidence.
-3. Confirm public signing authorization and organization ownership. Public Community/Commercial classification is Grafana's decision; free source alone does not establish Community eligibility. Organization-admin access is required for submission. Do not expose signing credentials to pull-request builds.
-4. Prepare an immutable source tag and a ZIP rooted at the plugin ID. Verify license, catalog README, metadata, screenshots, module and signature as applicable. Run the full official plugin validator against that exact ZIP and source revision; resolve warnings or document reviewer disposition.
-5. Verify exact public-download SHA1/SHA256, manifest signature and GitHub provenance. Record artifact URL, immutable source URL, literal 40-character SHA1, test guidance and all validation evidence below.
-6. Only after these gates and necessary account approvals, use the appropriate portal submission action. This document authorizes no automatic portal submission.
+All 84 unit tests, clean dependency install, high-severity dependency audit, typecheck, lint, build and latest Grafana API compatibility checks passed. [Candidate CI](https://github.com/digitalrcs/grafana-intelligence-gateway/actions/runs/42093619410) passed browser checks on Grafana 11.6.16, 12.0.10, 12.2.10, 12.4.0, 12.4.14, 13.1.9 and 13.3.0. Browser contracts use isolated test responses; cloud CI skips the optional live-backend test.
 
-## Candidate submission values
+Separate real LM Studio checks completed query assessment, frozen-evidence follow-up and images-only browser assessment using synthetic evidence. Both image labels, values and their difference were correct. No live Copilot tenant validation or general model-quality guarantee is claimed.
 
-Version: 1.2.0. ZIP URL, immutable source URL and SHA1: **not established**. Do not substitute a source ZIP, a checksum-file URL or historical values. Signing, provenance, catalog approval and certification are distinct states.
+[Release verification](https://github.com/digitalrcs/grafana-intelligence-gateway/actions/runs/42094539807) checked the exact downloaded ZIP with the full official Plugin Validator in strict mode and verified provenance against the tag, source commit and release workflow. Local verification checked archive root, ID/version, SHA1, signed manifest and every file hash. Public source and wiki history scans found no secrets.
 
-## Reviewer scenario
+The immutable 1.2.0 tag and draft archive are retained for traceability. Its validator reported direct window.location access; 1.2.1 resolves that warning using Grafana locationService. Use 1.2.1 for installation.
 
-Install the companion first (use security-fixed 1.1.2 or later), then configure your real backend and model/agent alias. Verify data, images, baseline comparison, follow-ups, exports and cancellation with approved evidence. See [Panel setup](Panel-Setup-and-Configuration).
+## Installation and catalog update
 
-## Official requirements checked 2026-11-05
+Install the companion first, replace the panel directory, restart Grafana and fully reload the browser. Install only one panel edition per Grafana instance. Existing settings remain supported; public dashboard/selected-panel capture is removed. Select a real backend/model or Copilot Studio Direct Line agent before analysis.
 
-- [Publishing and review](https://grafana.com/developers/plugin-tools/publish-a-plugin/publish-a-plugin)
-- [Signing](https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin)
-- [Plugin policy and signature classifications](https://grafana.com/legal/plugins/)
-- [Packaging](https://grafana.com/developers/plugin-tools/publish-a-plugin/package-a-plugin)
-
-Initial review may accept unsigned artifacts; public signing requires Grafana's signature grant. This existing project's release workflow intentionally requires signing. The installed sign-plugin 3.x is distinct from current 4.x, which requires Node 24.15 or later; do not upgrade it without updating the toolchain and validating the migration.
-
-Local candidate validation on 2026-11-05 completed against immutable source c436fec: the official validator reported only the expected unsigned warning after the React scanner cache was warmed. This does not replace validation of the final signed release.
+For the existing Grafana listing, use **Submit Update** with the ZIP URL, immutable source-tag URL and SHA1 above. Use the actual ZIP URL, not the checksum file or GitHub source archive. Signing and GitHub publication are not catalog submission or approval.

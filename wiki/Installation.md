@@ -33,3 +33,5 @@ When upgrading from 1.0.1, retain the secure AI instance and existing data-only 
 Private instances can be signed with `npm run sign -- --rootUrls https://grafana.example.com/`. Catalog releases must meet Grafana's publishing and signature criteria.
 
 If an old UI remains after a verified installation, use a full-page reload or a fresh private session to compare. Dashboard Refresh reloads data, not plugin code. For same-version local builds, follow [cache guidance](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/DEVELOPMENT.md#rebuilt-code-still-looks-unchanged); do not clear unrelated browser credentials or weaken server settings.
+
+[Download public 1.2.1](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.2.1) · [Verified release and catalog status](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Grafana-Compatibility-and-Certification)

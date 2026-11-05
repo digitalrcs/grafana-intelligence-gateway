@@ -50,3 +50,5 @@ Assessments and conversations are temporary panel state, not saved with the dash
 - [Source and Apache 2.0 license](https://github.com/digitalrcs/grafana-intelligence-gateway)
 
 Developed by [DigitalRCS](https://digitalrcs.com).
+
+[Download public 1.2.1](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.2.1) · [Verified release and catalog status](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Grafana-Compatibility-and-Certification)
