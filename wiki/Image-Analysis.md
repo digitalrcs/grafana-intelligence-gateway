@@ -1,8 +1,8 @@
-> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.1 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Image Analysis
 
-Use uploaded PNG/JPEG images as evidence for an Intelligence Gateway assessment. Public panel **1.2.0** requires secure companion **1.1.0 or later**; install the companion first and restart Grafana. Version 1.0.1 does not include image support. The Current View Exporter plugin does not need to be installed.
+Use uploaded PNG/JPEG images as evidence for an Intelligence Gateway assessment. Public panel **1.2.1** requires secure companion **1.1.0 or later**; install the companion first and restart Grafana. Version 1.0.1 does not include image support. The Current View Exporter plugin does not need to be installed.
 
 ## Choose the evidence
 

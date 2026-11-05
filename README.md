@@ -4,7 +4,7 @@ Analyze Grafana query results and uploaded images with your AI backend or Copilo
 
 Connect **OpenAI**, **LM Studio**, **Open WebUI**, the optional **Grafana LLM app**, a **custom OpenAI-compatible endpoint**, or **Copilot Studio Direct Line (preview)** through the required **Intelligence Gateway Secure AI** data source. Provider credentials stay on the Grafana server. You choose the backend and approved model or agent; no AI connection or model is selected for you.
 
-Public edition **1.2.0**. Requires **Grafana 11.6+** and companion **1.1.0+**; use security-fixed companion **1.1.2+**. The optional Grafana LLM app has separate version requirements. Copilot Direct Line is an implemented preview integration, not corporate SSO or delegated Entra authentication.
+Public edition **1.2.1**. Requires **Grafana 11.6+** and companion **1.1.0+**; use security-fixed companion **1.1.2+**. The optional Grafana LLM app has separate version requirements. Copilot Direct Line is an implemented preview integration, not corporate SSO or delegated Entra authentication.
 
 ## Connect and analyze
 

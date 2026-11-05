@@ -1,4 +1,4 @@
-# Public edition 1.2.0
+# Public edition 1.2.1
 
 The public edition supports query-data analysis and explicitly submitted PNG/JPEG uploads. It removes dashboard DOM capture, panel discovery and html-to-image. This is source separation, not a hidden setting.
 

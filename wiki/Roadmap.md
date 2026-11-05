@@ -1,4 +1,4 @@
-> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.1 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Roadmap
 
@@ -17,4 +17,4 @@
 - Cited findings linked to timestamps/series.
 - Saved assessments, comparison over time, quotas, and audit controls.
 
-These are future directions, not commitments or capabilities of public 1.2.0. New provider or identity paths require security review and real-environment validation.
+These are future directions, not commitments or capabilities of public 1.2.1. New provider or identity paths require security review and real-environment validation.

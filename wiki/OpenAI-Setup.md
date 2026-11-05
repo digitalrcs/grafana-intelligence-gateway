@@ -1,4 +1,4 @@
-> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.1 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # OpenAI Setup
 

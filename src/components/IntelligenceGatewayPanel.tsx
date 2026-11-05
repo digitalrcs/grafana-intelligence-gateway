@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { css, cx } from '@emotion/css';
-import { PanelProps, renderMarkdown } from '@grafana/data';
+import { PanelProps, renderMarkdown, locationUtil } from '@grafana/data';
+import { locationService } from '@grafana/runtime';
 import { Alert, Button, Field, Icon, LoadingPlaceholder, Select, Stack, useStyles2, useTheme2 } from '@grafana/ui';
 import { analyzeWithAI } from '../utils/aiClient';
 import { formatTimeRange } from '../utils/dataFrames';
@@ -45,7 +46,12 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
 
 export const IntelligenceGatewayPanel = (props: Props) => (
   <IntelligenceGatewayPanelContent
-    key={JSON.stringify([window.location.pathname, props.id, props.options.secureDataSourceUid, props.options.model])}
+    key={JSON.stringify([
+      locationService.getLocation().pathname,
+      props.id,
+      props.options.secureDataSourceUid,
+      props.options.model,
+    ])}
     {...props}
     options={{ ...DEFAULT_OPTIONS, ...props.options }}
   />
@@ -72,8 +78,8 @@ const IntelligenceGatewayPanelContent = ({
   const [snapshotKey, setSnapshotKey] = useState('');
   const conversationActive = useRef(false);
   const { session: imageSession, state: imageState } = useImageSession(
-    JSON.stringify([window.location.pathname, id, options.secureDataSourceUid, options.model]),
-    JSON.stringify([window.location.pathname, id])
+    JSON.stringify([locationService.getLocation().pathname, id, options.secureDataSourceUid, options.model]),
+    JSON.stringify([locationService.getLocation().pathname, id])
   );
   const { images, open: imageDialogOpen } = imageState;
   const setImages = imageSession.setImages;
@@ -198,7 +204,7 @@ const IntelligenceGatewayPanelContent = ({
     const queryIncluded =
       (images.length === 0 || options.includeDataWithImages !== false) &&
       /{{\s*data\s*}}/.test(options.userPromptTemplate + options.systemPrompt);
-    const dashboardUrl = new URL(window.location.href);
+    const dashboardUrl = new URL(locationUtil.assureBaseUrl(locationService.getLocation().pathname), document.baseURI);
     dashboardUrl.search = '';
     dashboardUrl.hash = '';
     dashboardUrl.searchParams.set('from', String(timeRange.from.valueOf()));

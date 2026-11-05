@@ -1,6 +1,6 @@
-> Public 1.2.0 documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.1 documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
 
-# Public 1.2.0 readiness and submission handoff
+# Public 1.2.1 readiness and submission handoff
 
 Status: candidate, not released or submitted. Do not enter historical 1.1.2 archive values for this candidate.
 
