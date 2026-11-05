@@ -1,6 +1,6 @@
 # Panel setup and analysis workflow
 
-Public 1.2.0 requires Grafana 11.6 or later and the Intelligence Gateway Secure AI companion 1.1.0 or later; use security-fixed companion 1.1.2 or later. The optional Grafana LLM app has separate requirements.
+Public 1.2.1 requires Grafana 11.6 or later and the Intelligence Gateway Secure AI companion 1.1.0 or later; use security-fixed companion 1.1.2 or later. The optional Grafana LLM app has separate requirements.
 
 ## Quick start
 

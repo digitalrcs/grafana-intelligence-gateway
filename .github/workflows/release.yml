@@ -75,7 +75,7 @@ jobs:
           docker pull grafana/plugin-validator-cli
           docker image inspect grafana/plugin-validator-cli --format '{{json .RepoDigests}}' | tee validator-image.txt
           docker run --rm -e GITHUB_TOKEN -v "$PWD/$ARCHIVE:/archive.zip:ro" \
-            grafana/plugin-validator-cli \
+            grafana/plugin-validator-cli -strict \
             -sourceCodeUri "https://github.com/$GITHUB_REPOSITORY/tree/$RELEASE_TAG" \
             /archive.zip 2>&1 | tee plugin-validator.txt
 

@@ -1,10 +1,10 @@
-> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.1 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Grafana Intelligence Gateway
 
 Grafana Intelligence Gateway is DigitalRCS's AI assessment panel for Grafana. It turns selected query results or uploaded PNG/JPEG images into an assessment from an administrator-approved local or hosted model, rendered as theme-aware Markdown.
 
-Public version **1.2.0** requires companion **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. The companion stores credentials in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side. The panel has no credential or direct provider-URL fields.
+Public version **1.2.1** requires companion **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. The companion stores credentials in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side. The panel has no credential or direct provider-URL fields.
 
 ![Grafana Intelligence Gateway assessment](images/panel-assessment.png)
 
@@ -26,7 +26,7 @@ Connect your own local/hosted backend or Copilot Studio agent. Follow [Panel set
 
 - [Reviewer Walkthrough](Reviewer-Walkthrough): real backend setup and capability verification
 - [Installation](Installation)
-- [Public 1.2.0 changes](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.2.0.md)
+- [Public 1.2.1 changes](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.2.0.md)
 - [Panel Setup and Configuration](Panel-Setup-and-Configuration)
 - [AI Provider Configuration](Configuration-AI-Providers)
 - [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels)

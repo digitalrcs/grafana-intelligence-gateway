@@ -1,6 +1,6 @@
 {
   "name": "digitalrcs-intelligencegateway-panel",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "scripts": {
     "build": "node scripts/check-edition.mjs && webpack -c ./webpack.config.ts --env production --no-cache",
     "dev": "webpack -w -c ./webpack.config.ts --env development",
