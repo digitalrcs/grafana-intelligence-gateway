@@ -1,4 +1,4 @@
-[Public edition 1.2.0 candidate and boundaries](Public-Edition)
+- [Public Edition](Public-Edition)
 
 # Grafana Intelligence Gateway
 
@@ -15,7 +15,8 @@
 - [Security Considerations](Security-Considerations)
 - [Secure Backend and Secret Storage](Secure-Backend-and-Secrets)
 - [Installation](Installation)
-- [Release notes: 1.1.2](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.1.2.md)
+- [Public 1.2.0 changes](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.2.0.md)
+- [Historical release notes: 1.1.2](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.1.2.md)
 - [Release notes: 1.1.0](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.1.0.md)
 - [Grafana Compatibility and Certification](Grafana-Compatibility-and-Certification)
 - [Development and Contributing](Development-and-Contributing)

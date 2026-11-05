@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # LM Studio Setup
 
@@ -25,7 +25,7 @@ Load a model that actually supports vision. In the companion, turn on **Enable i
 Choose the evidence in the panel:
 
 - **Data only:** connect **Queries → Dashboard → Source panel**, leave images unattached, and select **Analyze**.
-- **Images only:** no query results required; turn **Include query data with images** off, preview uploads, then select **Use images → Analyze images**.
+- **Images only:** no query results required; turn **Include query data with images** off, preview uploaded PNG/JPEG images, then select **Use images → Analyze images**.
 - **Data and images:** connect query results, leave **Include query data with images** on, preview the images, and explicitly select **Analyze images**.
 
 Use a synthetic image with known visual facts to verify the response. A model-list request, successful text completion, or mock receipt is not a vision test. See [Image Analysis](Image-Analysis) and [LM Studio's OpenAI-compatible API documentation](https://lmstudio.ai/docs/developer/openai-compat).

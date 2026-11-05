@@ -7,14 +7,14 @@ The Docker environment provisions:
 - A dashboard whose Intelligence Gateway panel reads the CSV source through Grafana's Dashboard data source and sends
   the constructed prompt through the secure AI data source.
 
-Before starting Grafana, build both sibling plugins:
+Before starting Grafana, build both sibling plugins. If the companion is elsewhere, set `INTELLIGENCE_GATEWAY_DATASOURCE_DIST` to its absolute `dist` path before starting Compose:
 
 ```powershell
 cd ../digitalrcs-intelligencegateway-datasource
 npm run build
 go run github.com/magefile/mage@v1.17.2 -v build:linux
 
-cd ../grafana-intelligence-gateway
+cd ../digitalrcs-intelligencegateway-panel
 npm run build
 docker compose up --build
 ```

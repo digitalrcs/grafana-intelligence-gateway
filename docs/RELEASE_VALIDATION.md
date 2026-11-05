@@ -1,3 +1,5 @@
+> Historical evidence for earlier releases; not validation of public 1.2.0. See [current validation](../VALIDATION.md).
+
 # 1.1.2 release validation
 
 This record separates local preflight, GitHub CI, the exact released archive, and Grafana's own approval. The [submission handoff](GRAFANA_SUBMISSION.md) contains the version-matched fields. No catalog approval or public signature is implied.

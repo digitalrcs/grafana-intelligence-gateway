@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Development and Contributing
 
@@ -14,7 +14,7 @@ npm run e2e
 
 Do not edit `.config/`. Keep runtime components small, secure data-source transport in `aiClient.ts`, provider-specific protocols in the companion backend, prompt construction pure, and DataFrame serialization deterministic and bounded. Add unit tests with each utility change and provisioned E2E coverage for panel behavior.
 
-Panel 1.1.0 requires companion 1.1.0 or later. Use the deterministic mock environment for the full E2E suite, not a dashboard configured to call a real model. Cover data-only, images-only without query data, combined requests, preview without inference, explicit submission, cancellation, clear, absence of capture controls, and narrow-screen controls. Real vision validation is a separate approved test with synthetic images and known visual facts.
+Public panel 1.2.0 requires companion 1.1.0 or later. Use the deterministic mock environment for the full E2E suite, not a dashboard configured to call a real model. Cover data-only, images-only without query data, combined requests, preview without inference, explicit submission, cancellation, clear, upload limits, and narrow-screen controls. Real vision validation is a separate approved test with synthetic images and known visual facts.
 
 The root README introduces the repository; `src/README.md` is packaged for the Grafana catalog. Keep the descriptions consistent and include documentation changes in a newly versioned archive. Preserve published artifacts and tags. A new version plus a Grafana restart and full-page reload avoids reusing the old plugin module URL; dashboard Refresh is not a code reload.
 

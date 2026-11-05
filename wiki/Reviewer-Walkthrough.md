@@ -1,10 +1,10 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Reviewer Walkthrough: explain a traffic shift
 
 ## What problem does this solve?
 
-An operator can see a change in a chart but still needs to write a handover or decide what to check next. Intelligence Gateway sends selected Grafana query results, reviewed dashboard images, and configurable operational context to an administrator-selected AI model and displays its assessment beside the chart. This walkthrough uses panel and companion **1.1.0 or later**.
+An operator can see a change in a chart but still needs to write a handover or decide what to check next. Intelligence Gateway sends selected Grafana query results, reviewed dashboard images, and configurable operational context to an administrator-selected AI model and displays its assessment beside the chart. This walkthrough covers public panel **1.2.0 (unreleased)** with companion **1.1.0 or later**; use security-fixed companion **1.1.2 or later**.
 
 Example uses include comparing traffic across sites, summarizing an incident window, and drafting a handover from supplied metrics and runbook context. The input is Grafana DataFrames, not a particular database or CSV format. CSV is only the portable fixture in this example.
 
@@ -33,7 +33,7 @@ The secure companion plugin is not a bundled model. Installing it, selecting a C
 
 ## Phase 1: verify the mock connection
 
-Build both sibling plugins using the commands in [Local provisioning](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/provisioning/README.md), then start the panel repository's Docker Compose stack. Open <http://localhost:3004> and choose **Intelligence Gateway: traffic-shift walkthrough** under Dashboards.
+Build both sibling plugins using the commands in [Local provisioning](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/provisioning/README.md), then start the panel repository's Docker Compose stack. Open <http://localhost:3005> and choose **Intelligence Gateway: traffic-shift walkthrough** under Dashboards.
 
 1. Read **Mock demo: no AI analysis**. This describes the supplied default.
 2. Inspect **Synthetic traffic: requests/minute by data center**.
@@ -79,13 +79,13 @@ For this data-only example, only selected query results and prompt context are s
 
 ## Verify all three evidence modes
 
-| Mode            | Setup                                                                                                                                                                                    | What to verify                                                                                      |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Data only       | Leave images unattached and keep **Queries → Dashboard → Source panel** connected. Select **Analyze**.                                                                                   | The model cites supplied rows and does not claim to have received an image.                         |
-| Images only     | Use a separate test panel without query results. Turn **Include query data with images** off. Preview a approved synthetic PNG/JPEG image, then **Use images → Analyze images**. | The model describes known visible facts without refusing solely because query rows are absent.      |
-| Data and images | Reconnect query results, leave **Include query data with images** on, and preview the uploaded image before **Analyze images**.                                                           | Precise values come from supplied rows; visual observations and missing evidence are distinguished. |
+| Mode            | Setup                                                                                                                                                                                  | What to verify                                                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Data only       | Leave images unattached and keep **Queries → Dashboard → Source panel** connected. Select **Analyze**.                                                                                 | The model cites supplied rows and does not claim to have received an image.                         |
+| Images only     | Use a separate test panel without query results. Turn **Include query data with images** off. Preview a PNG/JPEG of an approved synthetic chart, then **Use images → Analyze images**. | The model describes known visible facts without refusing solely because query rows are absent.      |
+| Data and images | Reconnect query results, leave **Include query data with images** on, and upload and preview a synthetic chart image before **Analyze images**.                                        | Precise values come from supplied rows; visual observations and missing evidence are distinguished. |
 
-All three need **Secure AI data source**. Image modes also need an administrator-enabled vision policy and a genuinely vision-capable model. An uploaded screenshot supplies pixels, not every pictured panel's raw rows. Use **Remove** or **Remove all images** to discard staged attachments; **Clear analysis** cancels a request and clears the answer, errors, and pending images without modifying source measurements. A successful image assessment releases attachments, so upload a fresh image before another image request.
+All three need **Secure AI data source**. Image modes also need an administrator-enabled vision policy and a genuinely vision-capable model. Uploads supply pixels, not the pictured panels' raw rows. Use **Remove** or **Remove all images** to discard staged attachments; **Clear analysis** cancels a request and clears the answer, errors, and pending images without modifying source measurements. A successful image assessment releases attachments, so upload again before another image request.
 
 The mock can verify image counts, controls, and transport but cannot assess the chart. A model-list check or a successful data-only answer does not prove vision. Record a separate approved synthetic vision test before claiming that a provider/model combination understands images. Copilot remains a Direct Line preview, not a verified enterprise SSO connection.
 
@@ -97,7 +97,7 @@ The mock will still return the same receipt. A real model can also make arithmet
 
 ## Captured example
 
-A genuine live-provider capture and its model/settings provenance are documented in [Live Review Evidence](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/LIVE_REVIEW_EVIDENCE.md). Screenshots of mock mode are labeled as mock; no canned answer is presented as live inference.
+A historical live-provider screenshot and its model/settings provenance are documented in [Live Review Evidence](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/LIVE_REVIEW_EVIDENCE.md). Screenshots of mock mode are labeled as mock; no canned answer is presented as live inference.
 
 The maintainer's LM Studio example uses an explicit HTTP override on a trusted network, a loaded model allow-list, a 300-second deadline, and an 8,192-token administrator/panel ceiling. An initial 2,400-token request was truncated because the model consumed reasoning tokens; the larger ceiling allowed complete answers. Use limits appropriate to your own model and budget. The evidence page includes the reusable hostname placeholder and exact captured settings.
 

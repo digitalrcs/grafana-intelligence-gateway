@@ -6,7 +6,7 @@ This guide covers the development environment and release workflow. For product 
 
 Use Node.js 22 and the npm version declared in `package.json`, Docker, and Docker Compose. The scaffold CLI supports Linux/macOS; use WSL for scaffolding on Windows.
 
-The integrated environment expects the companion [secure AI data source](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource) in the sibling `../digitalrcs-intelligencegateway-datasource` directory. Panel 1.1.0 requires companion 1.1.0 or later. Build its frontend and Linux backend first, following that repository's instructions. Grafana 11.6 or later is required; the optional Grafana LLM app can impose a higher minimum (app 1.2.0 requires Grafana 13).
+The integrated environment expects the companion [secure AI data source](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource) in the sibling `../digitalrcs-intelligencegateway-datasource` directory. Public panel 1.2.0 requires companion 1.1.0 or later. Build its frontend and Linux backend first, following that repository's instructions. Grafana 11.6 or later is required; the optional Grafana LLM app can impose a higher minimum (app 1.2.0 requires Grafana 13).
 
 ## Run locally
 
@@ -17,7 +17,7 @@ The integrated review image disables the unrelated preinstalled `grafana-assista
 From the panel repository:
 
 ```bash
-npm ci
+npm install
 npm run dev
 ```
 
@@ -26,6 +26,8 @@ In a second terminal:
 ```bash
 docker compose up
 ```
+
+If the companion is not a sibling checkout, set `INTELLIGENCE_GATEWAY_DATASOURCE_DIST` to its absolute `dist` path before starting Compose. The public Compose project is isolated from other editions.
 
 Open <http://localhost:3005>. Compose mounts both plugins, provisions **DEMO ONLY - Mock AI (no inference)** and a sample dashboard, and starts a credential-free mock provider. This supplied default returns a fixed connectivity receipt: no model runs and no data or image analysis occurs. The dashboard introduction describes the supplied default; read the analysis panel's current AI connection label after changing providers. Follow the [two-phase quickstart](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough#phase-2-connect-a-real-provider) to create a separate real-provider instance. Keep the mock for automated tests.
 
@@ -63,9 +65,15 @@ In Grafana 13.1.1, the [plugin loader](https://github.com/grafana/grafana/blob/v
 
 ## Signing and releases
 
-CI builds, tests, packages, and validates metadata. Pull-request CI does not receive a signing token. Signing is confined to the tagged release workflow. The tagged release workflow uses `grafana/plugin-actions/build-plugin` and generates GitHub build-provenance attestation.
+CI builds, tests, packages, and validates metadata. Signing runs when `GRAFANA_ACCESS_POLICY_TOKEN` is configured. The tagged release workflow uses `grafana/plugin-actions/build-plugin` and generates GitHub build-provenance attestation.
 
-For public signing, first confirm the Grafana organization owns this plugin ID and has the appropriate public signature grant. Store a plugins:write access-policy token only in the release secret. Private root-URL signing belongs to the independent private project and must not be used for this public candidate.
+For private signing:
+
+```bash
+export GRAFANA_ACCESS_POLICY_TOKEN="..."
+npm run build
+npm run sign -- --rootUrls https://grafana.example.com/
+```
 
 For catalog publication, see [Compatibility and Certification](CERTIFICATION.md) and the existing [submission handoff](GRAFANA_SUBMISSION.md). Keep source tags and release artifacts immutable. A catalog README change must be included in a newly packaged submission; changing GitHub's README alone does not update the catalog.
 

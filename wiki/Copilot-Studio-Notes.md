@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Copilot Studio and Enterprise Authentication
 

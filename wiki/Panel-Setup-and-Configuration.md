@@ -1,8 +1,8 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Panel Setup and Configuration
 
-Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers panel **1.2.0 candidate**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
+Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers public panel **1.2.0**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
 
 | Mode            | Query setup                                                            | Image setup and action                                                                                       |
 | --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -10,7 +10,7 @@ Grafana Intelligence Gateway analyzes query data, images, or both. This guide co
 | Images only     | No query results or Dashboard source required.                         | Turn **Include query data with images** off; preview images, select **Use images**, then **Analyze images**. |
 | Data and images | Connect the query results needed for precise values.                   | Leave **Include query data with images** on; preview images, select **Use images**, then **Analyze images**. |
 
-All three modes require **AI provider → Secure AI data source**. It connects the model. **Queries → Dashboard** is a separate setting that reuses another panel's query results; selecting the AI data source does not import measurements. Capturing a panel adds its rendered image, not its DataFrames.
+All three modes require **AI provider → Secure AI data source**. It connects the model. **Queries → Dashboard** is a separate setting that reuses another panel's query results; selecting the AI data source does not import measurements. Uploaded images do not supply query DataFrames.
 
 The supplied demo instance, **DEMO ONLY - Mock AI (no inference)**, returns a fixed receipt: no model runs and no data or image analysis occurs. Read the analysis panel's **AI connection label** to identify the currently selected instance. For genuine analysis, use **Connections → Data sources → Add new data source** to create a **separate** real-provider instance, configure and test it, then select it and its approved model under the panel's **AI provider** settings. Follow the [two-phase walkthrough](Reviewer-Walkthrough#phase-2-connect-a-real-provider); the chart's TestData/Dashboard connection is not an AI provider.
 
@@ -114,13 +114,13 @@ Image controls are included in 1.1.0 and require companion 1.1.0 or later. They 
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | **Show image controls**            | Shows the runtime **Images** button. Any pending images remain reviewable even if this setting is turned off. | On                            |
 | **Include query data with images** | Sends this panel's bounded query rows alongside the images. Turn off for an image-only assessment.            | On                            |
-| **Images**                         | Opens upload and removable previews. It does not send an assessment.                                | Runtime button                |
+| **Images**                         | Opens PNG/JPEG upload and removable previews. It does not send an assessment.                                 | Runtime button                |
 | **Use images**                     | Closes the preview and keeps the images staged in memory.                                                     | No network submission         |
 | **Remove / Remove all images**     | Discards one or all staged attachments.                                                                       | No network submission         |
 | **Analyze images**                 | Sends the staged images and prompt through the selected secure companion.                                     | Explicit action only          |
 | **Clear analysis**                 | Cancels a request and removes the answer, errors, and pending images.                                         | Source measurements unchanged |
 
-The administrator must enable image analysis and approve the selected vision model in the data source. Automatic analysis is paused while images are staged or the dialog is open. Successful image assessments release the attachments; upload a fresh image for a newer view. See [Image Analysis](Image-Analysis) for all upload limits and privacy considerations.
+The administrator must enable image analysis and approve the selected vision model in the data source. Automatic analysis is paused while images are staged or the dialog is open. Successful image assessments release the attachments; upload again for a newer view. See [Image Analysis](Image-Analysis) for all upload limits and privacy considerations.
 
 ## 8. Configure the display
 

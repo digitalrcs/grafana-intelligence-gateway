@@ -1,33 +1,21 @@
-# Public 1.2.0 readiness and submission handoff
+# Public 1.2.0 submission preparation
 
-Status: candidate, not released or submitted. Do not enter historical 1.1.2 archive values for this candidate.
+Public 1.2.0 is an unreleased source candidate. Uploading source and the wiki to GitHub does not sign a plugin, publish a release archive, or submit a Grafana catalog update.
 
-The public project is https://github.com/digitalrcs/grafana-intelligence-gateway; the shared companion is https://github.com/digitalrcs/grafana-intelligence-gateway-datasource. Retain plugin ID `digitalrcs-intelligencegateway-panel` for dashboard compatibility. A separate workspace/repository does not create a new catalog identity. Confirm the existing listing with the organization administrator; normally this is Submit Update. A genuinely new plugin identity requires a deliberate migration and Grafana agreement, not just a repository rename.
+- Plugin ID: `digitalrcs-intelligencegateway-panel` (unchanged).
+- Type: frontend-only panel; minimum Grafana: 11.6.0.
+- Required companion: `digitalrcs-intelligencegateway-datasource` 1.1.0 or later; use security-fixed 1.1.2 or later.
+- Public scope: query-data analysis and explicitly submitted PNG/JPEG uploads. No dashboard or selected-panel capture.
 
-## Required gates
+## Remaining release steps
 
-1. Review the public source, history, documentation and image assets for secrets and private-only additions. Historical public capture code remains public history; removing it from the current tree does not retract old releases.
-2. Pass clean dependency installation, edition guard, typecheck, lint, unit tests, production build and dependency audit. Run the upload/data browser suite across supported Grafana versions with the pinned secure companion. Mock receipts establish transport only; separately validate a real approved vision provider with synthetic evidence.
-3. Confirm public signing authorization and organization ownership. Public Community/Commercial classification is Grafana's decision; free source alone does not establish Community eligibility. Organization-admin access is required for submission. Do not expose signing credentials to pull-request builds.
-4. Prepare an immutable source tag and a ZIP rooted at the plugin ID. Verify license, catalog README, metadata, screenshots, module and signature as applicable. Run the full official plugin validator against that exact ZIP and source revision; resolve warnings or document reviewer disposition.
-5. Verify exact public-download SHA1/SHA256, manifest signature and GitHub provenance. Record artifact URL, immutable source URL, literal 40-character SHA1, test guidance and all validation evidence below.
-6. Only after these gates and necessary account approvals, use the appropriate portal submission action. This document authorizes no automatic portal submission.
+1. Confirm organization-admin access, plugin ownership, and applicable public signature authorization. Pass the public-edition guard, typecheck, lint, unit tests, production build, and supported-version browser matrix on the exact release commit. See [validation](../VALIDATION.md).
+2. Verify data-only, images-only, and combined analysis, preview without inference, absent capture controls, removal/clear, and vision policy. Use the deterministic mock for transport and an approved real vision provider with synthetic evidence for understanding.
+3. Create an immutable version tag only after release checks pass. Build and sign through the release workflow.
+4. Inspect the exact downloaded ZIP: plugin root, version, manifest/signature, SHA1, build provenance, and full Plugin Validator results.
+5. Record the actual published ZIP URL, immutable source-tag URL, and 40-character SHA1 value here. Those values are pending; do not reuse 1.1.2 values for 1.2.0.
+6. Use **Submit Update** for the existing Grafana listing. Portal submission and catalog approval are separate actions.
 
-## Candidate submission values
+Follow the [reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough). The mock returns a fixed receipt, not AI inference. No hosted credentials are bundled. Restart Grafana after installation and reload the browser.
 
-Version: 1.2.0. ZIP URL, immutable source URL and SHA1: **not established**. Do not substitute a source ZIP, a checksum-file URL or historical values. Signing, provenance, catalog approval and certification are distinct states.
-
-## Reviewer scenario
-
-Install the companion first (use security-fixed 1.1.2 or later). Start the isolated loopback-only port-3005 fixture with synthetic TestData and the labeled deterministic mock. Connect Queries → Dashboard → Source panel for existing results. Choose the secure AI instance separately. Verify Analyze for data, PNG/JPEG preview without inference, explicit Analyze images, images-only with query inclusion disabled, combined mode, removal, clear/cancellation, model-policy rejection and absence of dashboard/selected-panel capture controls. Do not run the full mock-oriented suite against a real provider.
-
-## Official requirements checked 2026-11-05
-
-- [Publishing and review](https://grafana.com/developers/plugin-tools/publish-a-plugin/publish-a-plugin)
-- [Signing](https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin)
-- [Plugin policy and signature classifications](https://grafana.com/legal/plugins/)
-- [Packaging](https://grafana.com/developers/plugin-tools/publish-a-plugin/package-a-plugin)
-
-Initial review may accept unsigned artifacts; public signing requires Grafana's signature grant. This existing project's release workflow intentionally requires signing. The installed sign-plugin 3.x is distinct from current 4.x, which requires Node 24.15 or later; do not upgrade it without updating the toolchain and validating the migration.
-
-Local candidate validation on 2026-11-05 completed against immutable source c436fec: the official validator reported only the expected unsigned warning after the React scanner cache was warmed. This does not replace validation of the final signed release.
+See [public changes](RELEASE_NOTES_1.2.0.md) and the [historical 1.1.2 handoff](GRAFANA_SUBMISSION_1.1.2.md).

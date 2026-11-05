@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Secure Backend and Secret Storage
 
@@ -135,4 +135,4 @@ The shortest panel, backend, reverse-proxy, and provider timeout can terminate a
 
 ## Integrated Docker test
 
-The panel repository's Docker Compose environment mounts both sibling `dist` directories and provisions the secure instance plus a dashboard already configured with UID `intelligence-gateway-secure`. Build both plugins, start the panel Compose project, and open <http://localhost:3004>. The default deterministic mock requires no credential or `OPENAI_API_KEY` and performs no AI inference. To test a real provider, follow the [Reviewer Walkthrough](Reviewer-Walkthrough); configure a server-side API key only when the selected provider requires one, such as OpenAI.
+The panel repository's Docker Compose environment mounts both sibling `dist` directories and provisions the secure instance plus a dashboard already configured with UID `intelligence-gateway-secure`. Build both plugins, start the panel Compose project, and open <http://localhost:3005>. The default deterministic mock requires no credential or `OPENAI_API_KEY` and performs no AI inference. To test a real provider, follow the [Reviewer Walkthrough](Reviewer-Walkthrough); configure a server-side API key only when the selected provider requires one, such as OpenAI.

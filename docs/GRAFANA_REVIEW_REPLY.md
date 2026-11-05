@@ -1,3 +1,5 @@
+> Historical evidence for earlier releases; not validation of public 1.2.0. See [current validation](../VALIDATION.md).
+
 # Draft reply to Grafana review
 
 Review and send this message manually. It has not been sent on your behalf.

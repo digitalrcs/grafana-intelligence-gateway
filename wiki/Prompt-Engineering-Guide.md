@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Prompt Engineering Guide
 
@@ -22,7 +22,7 @@ Use the constructed-prompt preview before enabling automatic analysis.
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Data only       | `Assess {{panelTitle}} during {{timeRange}} using {{data}}. Cite timestamps and values; separate observations from hypotheses.`          | Only the bounded query context is sent; no screenshots are implied.                                                            |
 | Images only     | `Assess the attached images. Summarize visible trends, identify unreadable labels, and suggest three checks. Do not claim a root cause.` | Turn **Include query data with images** off. No query data is required; estimates read from pixels are not exact measurements. |
-| Data and images | `Compare the attached charts with {{data}} for {{timeRange}}. Cite query values when available and identify any visual/data mismatch.`   | An uploaded screenshot does not fetch every pictured panel's DataFrames. Identify which rows were actually supplied.                          |
+| Data and images | `Compare the attached charts with {{data}} for {{timeRange}}. Cite query values when available and identify any visual/data mismatch.`   | Uploading an image does not fetch the pictured panels' DataFrames. Identify which rows were actually supplied.                 |
 
 The panel adds image-specific guidance to assess attached evidence even when there are no query rows. Avoid contradictory instructions such as “refuse unless rows exist” when intentionally requesting images-only assessment.
 

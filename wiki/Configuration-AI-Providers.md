@@ -1,8 +1,8 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Configuration: Secure AI Provider
 
-Panel 1.1.0 requires a configured **Intelligence Gateway Secure AI** data-source instance from companion plugin **1.1.0 or later**. Provider URLs and credentials are configured in that data source, not in the panel. The panel stores the instance UID and non-secret analysis settings.
+Public panel 1.2.0 requires a configured **Intelligence Gateway Secure AI** data-source instance from companion plugin **1.1.0 or later**. Provider URLs and credentials are configured in that data source, not in the panel. The panel stores the instance UID and non-secret analysis settings.
 
 **Secure AI data source** selects the model connection. **Queries → Dashboard** separately selects another panel's measurements. Both are used for data-only or combined assessment; an images-only assessment still needs the secure AI instance but does not need query results.
 

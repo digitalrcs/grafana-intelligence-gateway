@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # OpenAI Setup
 
@@ -8,7 +8,7 @@ The panel sends the prompt and generation choices through Grafana's backend reso
 
 The adapter uses buffered Chat Completions with `max_tokens` and, when configured, `temperature`. Select a model that accepts those parameters. Newer reasoning models may require other parameter names or reject temperature; Responses-only models are not supported. Discovery does not guarantee compatibility. See [OpenAI's Chat Completions reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create).
 
-For images, select a compatible vision model, enable image analysis in the companion, and approve it in both model allow-lists. Review every upload before **Analyze images**. Images-only use needs no query results; combined use separately connects **Queries → Dashboard** and enables **Include query data with images**. See [Image Analysis](Image-Analysis).
+For images, select a compatible vision model, enable image analysis in the companion, and approve it in both model allow-lists. Review every uploaded image before **Analyze images**. Images-only use needs no query results; combined use separately connects **Queries → Dashboard** and enables **Include query data with images**. See [Image Analysis](Image-Analysis).
 
 Reasoning can consume generated tokens before a visible answer. The hard cap is not an exact visible-answer length; the soft answer target is only a prompt instruction. Provider defaults do not bypass the administrator ceiling. Keep model, context, rate, and organization cost limits in force. See [OpenAI's token-counting guide](https://developers.openai.com/api/docs/guides/token-counting).
 

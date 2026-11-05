@@ -1,12 +1,12 @@
 # Grafana Intelligence Gateway
 
-Bring AI analysis to your Grafana data and uploaded images.
+Bring AI analysis to your Grafana query data and uploaded images.
 
 Grafana Intelligence Gateway by **DigitalRCS** connects your dashboard to local AI or hosted frontier models through the required **Intelligence Gateway Secure AI** data source. Ask questions about query results or uploaded images and display the model's assessment alongside your charts, without copying evidence into a separate chat application.
 
 Choose **OpenAI**, **LM Studio**, **Open WebUI**, the optional **Grafana LLM app**, a **custom OpenAI-compatible Chat Completions endpoint**, or **Copilot Studio Direct Line (preview)** in the companion data source. Model and image capabilities depend on the configured provider.
 
-Public edition **1.2.0** supports PNG/JPEG uploads and query-data analysis. Dashboard and selected-panel capture are removed from this public candidate. Historical public versions retain their previously published functionality. Images require an administrator-approved vision model, a preview, and an explicit **Analyze images** action. Copilot's Direct Line adapter is a preview, not corporate SSO or delegated Entra integration. See the [image workflow](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Image-Analysis) and [Copilot setup and authentication](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Copilot-Studio-Notes).
+Public edition **1.2.0 (unreleased)** supports PNG/JPEG uploads and query-data analysis. Dashboard and selected-panel capture are not included in this public edition. Images require an administrator-approved vision model, a preview, and an explicit **Analyze images** action. Copilot's Direct Line adapter is a preview, not corporate SSO or delegated Entra integration. See the [image workflow](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Image-Analysis) and [Copilot setup and authentication](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Copilot-Studio-Notes).
 
 ![A Grafana chart showing traffic shifting between two data centers, with a local LM Studio model's assessment below it](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/src/img/panel-analysis.png)
 
@@ -26,11 +26,11 @@ For example: “Compare DC1 and DC2 over this time range. Describe the traffic s
 
 The panel analyzes time-series and table query results. It can run its own Grafana queries or reuse another panel's results through Grafana's built-in **Dashboard** data source. Images are optional. Uploads add visual evidence; the Dashboard data source shares existing query results without duplicating the source query.
 
-| Assessment          | Setup                                                                                                                                 | Action                                  |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| **Data only**       | Connect queries or select a Dashboard source panel. Leave images unattached.                                                          | **Analyze**                             |
+| Assessment          | Setup                                                                                                                        | Action                                  |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| **Data only**       | Connect queries or select a Dashboard source panel. Leave images unattached.                                                 | **Analyze**                             |
 | **Images only**     | No query results are required. Turn off **Include query data with images**, then add PNG/JPEG files and review the previews. | **Use images**, then **Analyze images** |
-| **Data and images** | Connect the query data and leave **Include query data with images** on. Upload images and review the previews.                | **Use images**, then **Analyze images** |
+| **Data and images** | Connect the query data and leave **Include query data with images** on. Upload images and review the previews.               | **Use images**, then **Analyze images** |
 
 Who provides what:
 
@@ -45,7 +45,7 @@ Field names, labels, units, recent rows, and the active time range give the mode
 
 ## Get started
 
-Requires **Grafana 11.6 or later** and [Intelligence Gateway Secure AI data source **1.1.0 or later**](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource). Install the companion before the panel; use the security-fixed companion 1.1.2 or later. The optional Grafana LLM app has its own requirements; the documented app 1.2.0 integration requires Grafana 13 or later. The Current View Exporter plugin is not required.
+Requires **Grafana 11.6 or later** and [Intelligence Gateway Secure AI data source **1.1.0 or later**](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource). Install the companion before the panel; use security-fixed companion **1.1.2 or later**. The optional Grafana LLM app has its own requirements; the documented app 1.2.0 integration requires Grafana 13 or later. The Current View Exporter plugin is not required.
 
 1. **Configure the AI connection.** In **Connections → Data sources → Add new data source**, create an **Intelligence Gateway Secure AI** instance with your provider endpoint, required secure credentials, and an approved model, then **Save & test**. The endpoint must be reachable from Grafana's server/container. If using the supplied demo, create a separate real-provider instance and retain the mock.
 2. **Choose the evidence.** Add a Grafana Intelligence Gateway panel. For data-only or combined analysis, select **Queries → Dashboard** and a source panel returning data for the selected time range. For images-only analysis, query results are optional.

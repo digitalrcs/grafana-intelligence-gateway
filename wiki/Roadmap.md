@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Roadmap
 
@@ -13,8 +13,8 @@
 
 - Richer secure streaming with explicit response lifecycle handling.
 - Enterprise Copilot Studio delegated identity, approved token lifecycle, and tenant-verified completion contracts. The 1.1.0 Direct Line preview does not implement SSO.
-- Raw query-data aggregation from multiple panels through supported Grafana APIs. The public candidate does not capture panels or retrieve arbitrary panels' raw DataFrames.
+- Raw query-data aggregation from multiple panels through supported Grafana APIs. The public edition supports PNG/JPEG uploads; it does not capture panels or retrieve their raw DataFrames from images.
 - Cited findings linked to timestamps/series.
 - Saved assessments, comparison over time, quotas, and audit controls.
 
-These are future directions, not commitments or capabilities of 1.1.0. New provider or identity paths require security review and real-environment validation.
+These are future directions, not commitments or capabilities of public 1.2.0. New provider or identity paths require security review and real-environment validation.
