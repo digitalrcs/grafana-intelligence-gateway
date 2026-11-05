@@ -1,6 +1,13 @@
 import { dateTime, FieldType, toDataFrame } from '@grafana/data';
 import { DEFAULT_OPTIONS } from '../types';
-import { AssessmentSnapshot, buildEvidence, followUpPrompt, incidentBrief, summarize } from './evidence';
+import {
+  AssessmentSnapshot,
+  buildEvidence,
+  fingerprintFrames,
+  followUpPrompt,
+  incidentBrief,
+  summarize,
+} from './evidence';
 
 const range = { from: dateTime(0), to: dateTime(3600000), raw: { from: 'now-1h', to: 'now' } };
 const frame = (refId: string, values: unknown[], unit = 'ms') =>
@@ -13,6 +20,30 @@ const frame = (refId: string, values: unknown[], unit = 'ms') =>
   });
 
 describe('bounded query evidence', () => {
+  it('separates adjacent numeric values in freshness fingerprints', () => {
+    expect(fingerprintFrames([frame('A', [1, 23])], 'range')).not.toBe(
+      fingerprintFrames([frame('A', [12, 3])], 'range')
+    );
+    expect(fingerprintFrames([frame('A', [1, 23])], 'range')).toBe(fingerprintFrames([frame('A', [1, 23])], 'range'));
+  });
+  it.each([[], [5], [null, NaN, Infinity], [5, null, 8], [5, NaN, 8], [-1, 5], [5, -1], [5, -1, 8]])(
+    'does not report zero counter increase without a valid adjacent pair: %j',
+    (...values) => {
+      expect(summarize(values, 'counter')).toMatchObject({ observedIncrease: null, resets: null, adjacentPairs: 0 });
+    }
+  );
+  it('distinguishes observed zero counter increase from insufficient samples', () => {
+    expect(summarize([5, 5], 'counter')).toMatchObject({ observedIncrease: 0, resets: 0, adjacentPairs: 1 });
+    const evidence = buildEvidence([frame('A', [5, 8])], range, {
+      ...DEFAULT_OPTIONS,
+      metricKind: 'counter',
+      maxRows: 1,
+    });
+    expect(JSON.parse(evidence.text).frames[0].statistics[0]).toMatchObject({
+      observedIncrease: null,
+      adjacentPairs: 0,
+    });
+  });
   it('keeps valid JSON, a strict character limit and accurate included counts', () => {
     const evidence = buildEvidence(
       [

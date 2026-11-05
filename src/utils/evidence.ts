@@ -15,7 +15,8 @@ export interface NumericSummary {
   last: number | null;
   change: number | null;
   observedIncrease?: number | null;
-  resets?: number;
+  resets?: number | null;
+  adjacentPairs?: number;
 }
 interface EvidenceFrame {
   name: string;
@@ -61,7 +62,8 @@ export function summarize(
     last: number | null = null;
   let previous: number | null = null,
     observedIncrease = 0,
-    resets = 0;
+    resets = 0,
+    adjacentPairs = 0;
   for (const value of values) {
     if (!finite(value)) {
       previous = null;
@@ -75,6 +77,7 @@ export function summarize(
       first = value;
     }
     if (previous !== null && value >= 0 && previous >= 0) {
+      adjacentPairs++;
       if (value < previous) {
         resets++;
         observedIncrease += value;
@@ -94,7 +97,13 @@ export function summarize(
     first,
     last,
     change: kind === 'counter' || first === null || last === null ? null : bounded(last - first),
-    ...(kind === 'counter' ? { observedIncrease: bounded(observedIncrease), resets } : {}),
+    ...(kind === 'counter'
+      ? {
+          observedIncrease: adjacentPairs ? bounded(observedIncrease) : null,
+          resets: adjacentPairs ? resets : null,
+          adjacentPairs,
+        }
+      : {}),
   };
 }
 
@@ -102,16 +111,21 @@ export function summarize(
 export function fingerprintFrames(frames: DataFrame[], range: string): string {
   let hash = 2166136261;
   const add = (value: unknown) => {
-    const text = JSON.stringify(value) ?? 'undefined';
+    const serialized = JSON.stringify(value) ?? 'undefined';
+    // Length-prefix each token: [1, 23] and [12, 3] must not hash the same input stream.
+    const text = `${serialized.length}:${serialized}`;
     for (let i = 0; i < text.length; i++) {
       hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
     }
   };
   add(range);
+  add(frames.length);
   for (const frame of frames) {
     add([frame.name, frame.refId, frame.length]);
+    add(frame.fields.length);
     for (const field of frame.fields) {
       add([field.name, field.type, field.labels, field.config.unit, field.config.description]);
+      add(field.values.length);
       for (const value of field.values) {
         add(value);
       }
@@ -217,7 +231,7 @@ export function buildEvidence(frames: DataFrame[], range: TimeRange, options: In
     });
   };
   const note =
-    'Statistics cover only included rows, not the full query window. Missing counts are explicit null/non-finite values, not inferred absent timestamps. Unknown metrics are raw values; counter increases cover adjacent nonnegative samples only, assume resets to zero, and are not rates. Baseline queries must supply the intended historical window; shifted timestamps may represent display time. Comparisons match unique field names, labels and units and require gauge semantics.';
+    'Statistics cover only included rows, not the full query window. Missing counts are explicit null/non-finite values, not inferred absent timestamps. Unknown metrics are raw values; counter increases cover adjacent nonnegative samples only, assume resets to zero, and are not rates. Counter increase and resets are null when no valid adjacent pair exists; adjacentPairs reports coverage. Baseline queries must supply the intended historical window; shifted timestamps may represent display time. Comparisons match unique field names, labels and units and require gauge semantics.';
   const totalRows = selected.reduce((sum, frame) => sum + frame.length, 0);
   let text = '';
   // Drop whole oldest rows and recompute, preserving valid JSON and truthful statistics.

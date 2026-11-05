@@ -1,12 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { getDataSourceSrv } from '@grafana/runtime';
+import { locationUtil } from '@grafana/data';
 import { ConnectionNotice } from './ConnectionNotice';
-jest.mock('@grafana/runtime', () => ({ getDataSourceSrv: jest.fn(), config: { appSubUrl: '/grafana' } }));
+jest.mock('@grafana/runtime', () => ({ getDataSourceSrv: jest.fn() }));
 const getInstanceSettings = jest.fn();
 const initializeDataSource = jest.fn();
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(locationUtil, 'assureBaseUrl').mockImplementation((url) => '/grafana' + url);
   jest.mocked(getDataSourceSrv).mockReturnValue({ getInstanceSettings, get: initializeDataSource } as never);
   getInstanceSettings.mockReturnValue({
     uid: 'local-ai',

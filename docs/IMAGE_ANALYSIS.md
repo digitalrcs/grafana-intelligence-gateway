@@ -39,7 +39,7 @@ Use **Queries → Dashboard → Source panel** to share an existing panel's quer
 - Copilot Studio has a **Direct Line preview adapter** with server-side `secureJsonData.directLineSecret`, isolated conversations, bounded reply polling, and multipart image uploads. It is not corporate SSO, delegated Entra authentication, or app-only Direct-to-Engine access. See [Copilot Studio Notes](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Copilot-Studio-Notes) for completion-contract and tenant prerequisites. Never disable agent authentication to make it work; contract tests are not live tenant validation.
 - Limits: 8 images; 4 MiB decoded file size per image; 12 MiB combined; 4,096 pixels per side; 16 million pixels per image and 32 million combined; 18 MiB image-request JSON with non-image content still limited to 1 MiB. PNG/JPEG only. Providers can impose lower limits.
 - Uploads are rasterized to remove embedded metadata such as EXIF/GPS; JPEGs may be re-encoded. Sensitive content visible in the pixels is not automatically redacted.
-- Use synthetic or approved non-sensitive images. Dashboard viewing rights do not automatically permit sending screenshots to an 1. Connect AI. Provider retention policies apply after submission.
+- Use synthetic or approved non-sensitive images. Dashboard viewing rights do not automatically permit sending screenshots to an AI provider. Provider retention policies apply after submission.
 
 ## Output budgets and errors
 

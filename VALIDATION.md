@@ -2,6 +2,13 @@
 
 See [the current audit](docs/PUBLIC_AUDIT.md) for verified results, limitations and remaining gates. Version 1.2.0 remains an unreleased candidate.
 
+## Release reliability follow-up — 2026-11-05
+
+- Fixed an ambiguous fingerprint stream: each serialized value is length-prefixed and frame/field/value counts preserve structural boundaries. This remains a non-cryptographic change detector.
+- Counters now report null increase and reset counts without a valid adjacent nonnegative sample pair, and expose `adjacentPairs` coverage. Tests cover empty, singleton, missing/non-finite, negative and truncated samples, and distinguish observed zero increase.
+- Replaced direct configuration access in the connection link with Grafana's base-URL helper to preserve subpath handling without the latest-runtime configuration type incompatibility.
+- Separately exercised real image inference through the secure companion and the existing LM Studio model using a generated synthetic PNG. The model correctly returned ALPHA 80, BETA 40 and ALPHA as larger. The temporary source was removed. This is a narrow live image check, not a general vision-quality guarantee or Copilot tenant test.
+
 ## Real-backend setup cleanup — 2026-11-05
 
 - Removed the bundled mock server, Docker service, default AI data source, demo dashboard content and mock-specific UI. Normal provisioning now opens an unconfigured panel; analysis requires a selected AI connection and model or Copilot agent alias. Existing provider integrations and assessment capabilities remain available.

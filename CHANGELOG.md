@@ -2,6 +2,8 @@
 
 ## 1.2.0 - 2026-11-05
 
+- Separate freshness fingerprint values and structural boundaries; report unknown counter increase/reset counts when no valid adjacent sample pair exists, with explicit pair coverage.
+
 - Remove the bundled demonstration AI service and preset connection; require users to configure their real backend/model or Copilot Studio agent. Simplify connection status and collapse evidence, sharing and follow-up controls without removing capabilities.
 
 - Add evidence snapshots, included/omitted row counts and stale-assessment warnings.
