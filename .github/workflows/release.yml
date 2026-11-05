@@ -21,6 +21,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify public edition boundary before release
+        run: node scripts/check-edition.mjs
+
       - name: Require the public-signing credential
         env:
           GRAFANA_ACCESS_POLICY_TOKEN: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}

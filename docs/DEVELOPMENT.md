@@ -17,7 +17,7 @@ The integrated review image disables the unrelated preinstalled `grafana-assista
 From the panel repository:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -27,7 +27,7 @@ In a second terminal:
 docker compose up
 ```
 
-Open <http://localhost:3004>. Compose mounts both plugins, provisions **DEMO ONLY - Mock AI (no inference)** and a sample dashboard, and starts a credential-free mock provider. This supplied default returns a fixed connectivity receipt: no model runs and no data or image analysis occurs. The dashboard introduction describes the supplied default; read the analysis panel's current AI connection label after changing providers. Follow the [two-phase quickstart](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough#phase-2-connect-a-real-provider) to create a separate real-provider instance. Keep the mock for automated tests.
+Open <http://localhost:3005>. Compose mounts both plugins, provisions **DEMO ONLY - Mock AI (no inference)** and a sample dashboard, and starts a credential-free mock provider. This supplied default returns a fixed connectivity receipt: no model runs and no data or image analysis occurs. The dashboard introduction describes the supplied default; read the analysis panel's current AI connection label after changing providers. Follow the [two-phase quickstart](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough#phase-2-connect-a-real-provider) to create a separate real-provider instance. Keep the mock for automated tests.
 
 The development container enables anonymous Admin access. Do not use that configuration for a production deployment.
 
@@ -47,7 +47,7 @@ npm run e2e
 
 E2E tests require the provisioned Grafana and mock provider to be running. Use the multi-version GitHub Actions matrix for compatibility checks.
 
-Image tests require version-compatible builds of both repositories (1.1.0 or later). The provisioned `review-model` is explicitly vision-enabled only for the deterministic mock; its image-count receipt proves transport, not visual understanding. Tests cover preview without inference, selected/dashboard capture, upload, explicit submission, exclusion of Intelligence Gateway panels, cancellation, clear, and checkbox-label alignment at desktop and narrow sizes. Validate data-only, images-only with no query results, and combined requests separately. Follow [Image Analysis](IMAGE_ANALYSIS.md) for limits and provider setup.
+Image tests require version-compatible builds of both repositories (1.1.0 or later). The provisioned `review-model` is explicitly vision-enabled only for the deterministic mock; its image-count receipt proves transport, not visual understanding. Tests cover preview without inference, upload, explicit submission, absence of capture controls, cancellation, and clear. Validate data-only, images-only with no query results, and combined requests separately. Follow [Image Analysis](IMAGE_ANALYSIS.md) for limits and provider setup.
 
 Use the compatible companion revision selected by the CI/release workflow. Do not pair panel 1.1.0 with the pre-image 1.0.1 backend or skip tests to make an incompatible pair appear supported. Run the multi-version matrix against the release pair before claiming supported-version compatibility. Never point the full E2E suite at an instance configured to call a real provider; use the dedicated mock environment. Preview-only regression checks can be selected separately and must block inference requests.
 
@@ -63,15 +63,9 @@ In Grafana 13.1.1, the [plugin loader](https://github.com/grafana/grafana/blob/v
 
 ## Signing and releases
 
-CI builds, tests, packages, and validates metadata. Signing runs when `GRAFANA_ACCESS_POLICY_TOKEN` is configured. The tagged release workflow uses `grafana/plugin-actions/build-plugin` and generates GitHub build-provenance attestation.
+CI builds, tests, packages, and validates metadata. Pull-request CI does not receive a signing token. Signing is confined to the tagged release workflow. The tagged release workflow uses `grafana/plugin-actions/build-plugin` and generates GitHub build-provenance attestation.
 
-For private signing:
-
-```bash
-export GRAFANA_ACCESS_POLICY_TOKEN="..."
-npm run build
-npm run sign -- --rootUrls https://grafana.example.com/
-```
+For public signing, first confirm the Grafana organization owns this plugin ID and has the appropriate public signature grant. Store a plugins:write access-policy token only in the release secret. Private root-URL signing belongs to the independent private project and must not be used for this public candidate.
 
 For catalog publication, see [Compatibility and Certification](CERTIFICATION.md) and the existing [submission handoff](GRAFANA_SUBMISSION.md). Keep source tags and release artifacts immutable. A catalog README change must be included in a newly packaged submission; changing GitHub's README alone does not update the catalog.
 
@@ -80,8 +74,8 @@ The [reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-ga
 ## Source map
 
 - `src/components/IntelligenceGatewayPanel.tsx`: analysis lifecycle and runtime controls.
-- `src/components/ImageInputs.tsx`: in-memory image preview and capture controls; no inference transport.
-- `src/vision/`: bounded capture/import utilities, isolated Grafana DOM adapter, and exporter provenance.
+- `src/components/ImageInputs.tsx`: in-memory upload and image preview controls; no inference transport.
+- `src/vision/`: bounded image import utilities and attachment lifecycle.
 - `src/utils/aiClient.ts`: secure data-source transport and response/error handling.
 - `src/utils/dataFrames.ts`: bounded serialization of panel query data.
 - `src/utils/prompt.ts`: prompt-template construction.
@@ -91,9 +85,3 @@ The [reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-ga
 - `wiki/`: source for the published GitHub Wiki.
 
 See [Contributing](../CONTRIBUTING.md) and [Security](../SECURITY.md).
-
-## Tall-dashboard capture regression
-
-The tall-dashboard test in `tests/vision.spec.ts` uses the separate `vision-tall.json` dashboard with eight synthetic charts. It checks every chart cell for rendered green trace pixels, nonzero scroll restoration, gateway exclusion, and no inference request during preview. CI always includes Grafana 12.4.0 and 13.3.0 alongside dynamically resolved versions.
-
-Run with `GRAFANA_VERSION=12.4.0 ANONYMOUS_AUTH_ENABLED=false docker compose up -d --build`, then `npm run e2e -- tests/vision.spec.ts --grep "tall dashboard"`. Use fresh disposable storage when changing Grafana versions; do not downgrade a saved database.

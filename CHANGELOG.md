@@ -1,3 +1,7 @@
+# Public edition split (unreleased)
+
+Remove cross-panel DOM discovery and dashboard/selected-panel capture. Keep PNG/JPEG uploads, explicit image analysis and Dashboard data-source result sharing.
+
 # Changelog
 
 ## 1.1.2 - 2026-10-30

@@ -10,16 +10,16 @@ The Docker environment provisions:
 Before starting Grafana, build both sibling plugins:
 
 ```powershell
-cd C:\Data\GrafanaAIPlugin\digitalrcs-intelligencegateway-datasource
+cd ../digitalrcs-intelligencegateway-datasource
 npm run build
 go run github.com/magefile/mage@v1.17.2 -v build:linux
 
-cd C:\Data\GrafanaAIPlugin\digitalrcs-intelligencegateway-panel
+cd ../grafana-intelligence-gateway
 npm run build
 docker compose up --build
 ```
 
-Open <http://localhost:3004> and choose **Intelligence Gateway: traffic-shift walkthrough**. Compose starts a deterministic mock provider: model discovery, health checks, and the request/response path work without an external account or credential, but **no AI inference or data analysis occurs**. The response explicitly says **MOCK MODE**.
+Open <http://localhost:3005> and choose **Intelligence Gateway: traffic-shift walkthrough**. Compose starts a deterministic mock provider: model discovery, health checks, and the request/response path work without an external account or credential, but **no AI inference or data analysis occurs**. The response explicitly says **MOCK MODE**.
 
 The introduction **Mock demo: no AI analysis** describes this supplied default. Read the analysis panel's current **AI connection label** after changing settings; a static introduction is not the active provider status. The mock's non-secret `jsonData.reviewMock: true` marks its demo purpose, not an authentication or policy bypass.
 

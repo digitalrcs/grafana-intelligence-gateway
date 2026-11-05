@@ -1,6 +1,8 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
 # Panel Setup and Configuration
 
-Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers panel **1.1.2**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
+Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers panel **1.2.0 candidate**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
 
 | Mode            | Query setup                                                            | Image setup and action                                                                                       |
 | --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -63,7 +65,7 @@ Output-limit errors and timeouts are different. The shortest applicable panel, b
 
 ![Secure data source, model, and generation controls](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/configuration-model-generation.png)
 
-After analysis, the generated assessment appears with **Clear analysis** and **Refresh assessment**. **Clear analysis** cancels an active request and removes the answer, errors, and pending images without modifying the dashboard query or source data. A successful image assessment releases its attachments; capture or attach again before requesting another image assessment. Refreshing without new attachments is a data-only request.
+After analysis, the generated assessment appears with **Clear analysis** and **Refresh assessment**. **Clear analysis** cancels an active request and removes the answer, errors, and pending images without modifying the dashboard query or source data. A successful image assessment releases its attachments; attach again before requesting another image assessment. Refreshing without new attachments is a data-only request.
 
 ![Completed secure-backend analysis and runtime controls](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/production-secure-analysis.png)
 
@@ -112,13 +114,13 @@ Image controls are included in 1.1.0 and require companion 1.1.0 or later. They 
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | **Show image controls**            | Shows the runtime **Images** button. Any pending images remain reviewable even if this setting is turned off. | On                            |
 | **Include query data with images** | Sends this panel's bounded query rows alongside the images. Turn off for an image-only assessment.            | On                            |
-| **Images**                         | Opens capture, upload, and removable previews. It does not send an assessment.                                | Runtime button                |
+| **Images**                         | Opens upload and removable previews. It does not send an assessment.                                | Runtime button                |
 | **Use images**                     | Closes the preview and keeps the images staged in memory.                                                     | No network submission         |
 | **Remove / Remove all images**     | Discards one or all staged attachments.                                                                       | No network submission         |
 | **Analyze images**                 | Sends the staged images and prompt through the selected secure companion.                                     | Explicit action only          |
 | **Clear analysis**                 | Cancels a request and removes the answer, errors, and pending images.                                         | Source measurements unchanged |
 
-The administrator must enable image analysis and approve the selected vision model in the data source. Automatic analysis is paused while images are staged or the dialog is open. Successful image assessments release the attachments; capture again for a newer view. See [Image Analysis](Image-Analysis) for all capture limits and privacy considerations.
+The administrator must enable image analysis and approve the selected vision model in the data source. Automatic analysis is paused while images are staged or the dialog is open. Successful image assessments release the attachments; upload a fresh image for a newer view. See [Image Analysis](Image-Analysis) for all upload limits and privacy considerations.
 
 ## 8. Configure the display
 
@@ -164,7 +166,3 @@ For images-only verification, disconnect query results, turn **Include query dat
 See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels) for transformations and multi-frame behavior.
 
 For persistent stale code, see [the development cache guide](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/DEVELOPMENT.md#rebuilt-code-still-looks-unchanged). Do not clear all browser credentials or enable server development mode just to bypass cache.
-
-## Grafana 12.4 dashboard capture
-
-Use panel 1.1.2 or later for tall dashboards on Grafana 12.4.0. This fixes document scrolling so lower panels can be visited. A stalled scroll reports an error instead of producing an incomplete image. Existing size limits and partial-capture warnings still apply. Companion 1.1.0 or later remains required; updating Current View Exporter alone does not update this panel.

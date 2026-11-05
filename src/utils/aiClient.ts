@@ -78,7 +78,7 @@ const friendlyError = (error: unknown): Error => {
   }
   if (status === 413) {
     return new Error(
-      'The image request is too large. Remove images, capture fewer panels, or reduce image dimensions.'
+      'The image request is too large. Remove images or reduce image dimensions.'
     );
   }
   if (status && status >= 500) {

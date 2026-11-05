@@ -1,12 +1,12 @@
 # Grafana Intelligence Gateway
 
-Bring AI analysis to your Grafana data and dashboard images.
+Bring AI analysis to your Grafana data and uploaded images.
 
-Grafana Intelligence Gateway by **DigitalRCS** connects your dashboard to local AI or hosted frontier models through the required **Intelligence Gateway Secure AI** data source. Ask questions about query results, dashboard captures, or uploaded images and display the model's assessment alongside your charts, without copying evidence into a separate chat application.
+Grafana Intelligence Gateway by **DigitalRCS** connects your dashboard to local AI or hosted frontier models through the required **Intelligence Gateway Secure AI** data source. Ask questions about query results or uploaded images and display the model's assessment alongside your charts, without copying evidence into a separate chat application.
 
 Choose **OpenAI**, **LM Studio**, **Open WebUI**, the optional **Grafana LLM app**, a **custom OpenAI-compatible Chat Completions endpoint**, or **Copilot Studio Direct Line (preview)** in the companion data source. Model and image capabilities depend on the configured provider.
 
-Version **1.1.0** adds whole-dashboard capture, selected-panel capture, and multiple PNG/JPEG uploads. Images require an administrator-approved vision model, a preview, and an explicit **Analyze images** action. Copilot's Direct Line adapter is a preview, not corporate SSO or delegated Entra integration. See the [image workflow](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Image-Analysis) and [Copilot setup and authentication](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Copilot-Studio-Notes).
+Public edition **1.2.0** supports PNG/JPEG uploads and query-data analysis. Dashboard and selected-panel capture are removed from this public candidate. Historical public versions retain their previously published functionality. Images require an administrator-approved vision model, a preview, and an explicit **Analyze images** action. Copilot's Direct Line adapter is a preview, not corporate SSO or delegated Entra integration. See the [image workflow](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Image-Analysis) and [Copilot setup and authentication](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Copilot-Studio-Notes).
 
 ![A Grafana chart showing traffic shifting between two data centers, with a local LM Studio model's assessment below it](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/src/img/panel-analysis.png)
 
@@ -24,13 +24,13 @@ For example: “Compare DC1 and DC2 over this time range. Describe the traffic s
 
 ## Use the data from an existing panel
 
-The panel analyzes time-series and table query results. It can run its own Grafana queries or reuse another panel's results through Grafana's built-in **Dashboard** data source. Images are optional: capturing a chart adds its rendered appearance, not its underlying query results.
+The panel analyzes time-series and table query results. It can run its own Grafana queries or reuse another panel's results through Grafana's built-in **Dashboard** data source. Images are optional. Uploads add visual evidence; the Dashboard data source shares existing query results without duplicating the source query.
 
 | Assessment          | Setup                                                                                                                                 | Action                                  |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
 | **Data only**       | Connect queries or select a Dashboard source panel. Leave images unattached.                                                          | **Analyze**                             |
-| **Images only**     | No query results are required. Turn off **Include query data with images**, then capture panels or add files and review the previews. | **Use images**, then **Analyze images** |
-| **Data and images** | Connect the query data and leave **Include query data with images** on. Capture or add images and review the previews.                | **Use images**, then **Analyze images** |
+| **Images only**     | No query results are required. Turn off **Include query data with images**, then add PNG/JPEG files and review the previews. | **Use images**, then **Analyze images** |
+| **Data and images** | Connect the query data and leave **Include query data with images** on. Upload images and review the previews.                | **Use images**, then **Analyze images** |
 
 Who provides what:
 
@@ -45,13 +45,13 @@ Field names, labels, units, recent rows, and the active time range give the mode
 
 ## Get started
 
-Requires **Grafana 11.6 or later** and [Intelligence Gateway Secure AI data source **1.1.0 or later**](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource). Install the companion before panel 1.1.0. The optional Grafana LLM app has its own requirements; the documented app 1.2.0 integration requires Grafana 13 or later. The Current View Exporter plugin is not required.
+Requires **Grafana 11.6 or later** and [Intelligence Gateway Secure AI data source **1.1.0 or later**](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource). Install the companion before the panel; use the security-fixed companion 1.1.2 or later. The optional Grafana LLM app has its own requirements; the documented app 1.2.0 integration requires Grafana 13 or later. The Current View Exporter plugin is not required.
 
 1. **Configure the AI connection.** In **Connections → Data sources → Add new data source**, create an **Intelligence Gateway Secure AI** instance with your provider endpoint, required secure credentials, and an approved model, then **Save & test**. The endpoint must be reachable from Grafana's server/container. If using the supplied demo, create a separate real-provider instance and retain the mock.
 2. **Choose the evidence.** Add a Grafana Intelligence Gateway panel. For data-only or combined analysis, select **Queries → Dashboard** and a source panel returning data for the selected time range. For images-only analysis, query results are optional.
 3. **Choose the model.** Under **AI provider**, select the Secure AI data source, then use **Load models securely** to choose an available, administrator-approved model.
 4. **Set the analysis task.** Add your question to the user message template. For data-only or combined assessment, keep `{{data}}` to include query results; for images-only, ask about the attached evidence. Use `{{skills}}` to include definitions or runbook guidance from **Skills / additional context**.
-5. **Run the assessment.** Select **Analyze** for query data. For images, open **Images**, capture or add files, inspect every preview, choose **Use images**, and select **Analyze images**. Use **Clear analysis** to clear the answer and pending images without changing the source data.
+5. **Run the assessment.** Select **Analyze** for query data. For images, open **Images**, add PNG/JPEG files, inspect every preview, choose **Use images**, and select **Analyze images**. Use **Clear analysis** to clear the answer and pending images without changing the source data.
 
 The [illustrated setup guide](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Panel-Setup-and-Configuration) explains every setting. See [Connecting Data from Other Panels](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Connecting-Data-from-Other-Panels) for query sharing and transformations.
 
@@ -69,7 +69,7 @@ Customize system instructions, the user message template, and reusable context. 
 
 Run data analysis manually or enable automatic analysis when data and prompts change. Images are never submitted automatically. Adjust input size, output-token limits, response timeout, and the requested answer length. A reasoning model may spend its output budget before producing a visible answer; increase both the panel cap and administrator ceiling where appropriate, rather than only the requested answer length. Administrator and provider limits still apply, including when the panel uses the provider/model default output limit.
 
-Responses appear as formatted Markdown. **Refresh assessment** reruns the current assessment; after a successful image assessment, capture or attach images again to include them in a new request. **Clear analysis** removes the response and pending images and cancels an active request. The image preview also supports removing individual images or all staged images.
+Responses appear as formatted Markdown. **Refresh assessment** reruns the current assessment; after a successful image assessment, attach images again to include them in a new request. **Clear analysis** removes the response and pending images and cancels an active request. The image preview also supports removing individual images or all staged images.
 
 ## Choose where your data is processed
 
@@ -91,7 +91,3 @@ Assessments depend on the model, prompt, and supplied data. Review findings agai
 Developed by [DigitalRCS](https://digitalrcs.com).
 
 <a href="https://digitalrcs.com"><img src="https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/digitalrcs-logo.webp" alt="DigitalRCS — Solutions that connect. Inside and out." width="240" /></a>
-
-### Grafana 12.4 capture compatibility
-
-Panel 1.1.2 fixes tall-dashboard capture on Grafana 12.4.0 and preserves active capture when Grafana 12.2 virtualizes the AI panel. Upgrade the panel and restart Grafana; companion 1.1.0 or later remains compatible. Updating Current View Exporter alone does not update the AI panel capture code. Always review previews and any omitted-panel warnings before sending.

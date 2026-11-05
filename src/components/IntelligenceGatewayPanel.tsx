@@ -159,7 +159,7 @@ const IntelligenceGatewayPanelContent = ({
         setResponse(result);
         setAssessmentContext(
           images.length > 0
-            ? `Submitted ${images.length} image${images.length === 1 ? '' : 's'}. Capture again to assess a newer view.`
+            ? `Submitted ${images.length} image${images.length === 1 ? '' : 's'}. Attach images again for a new assessment.`
             : ''
         );
         if (images.length > 0) {
