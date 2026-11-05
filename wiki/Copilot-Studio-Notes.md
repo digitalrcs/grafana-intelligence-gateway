@@ -1,10 +1,10 @@
-> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Copilot Studio and Enterprise Authentication
 
 ## Current status
 
-Version **1.1.0** includes a **Copilot Studio Direct Line preview adapter** in the required secure companion data source. Use panel and companion **1.1.0 or later** together. It supports a narrowly defined, authenticated channel protocol with mock/contract tests. It has not been validated against an enterprise tenant, certified by Microsoft, or approved for corporate data. Version 1.0.1 predates this feature.
+Version **1.1.0** includes a **Copilot Studio Direct Line preview adapter** in the required secure companion data source. Use panel and companion **1.1.0 or later** together. It supports a narrowly defined, authenticated channel protocol with contract tests. It has not been validated against an enterprise tenant, certified by Microsoft, or approved for corporate data. Version 1.0.1 predates this feature.
 
 **Corporate SSO, delegated Entra sign-in, on-behalf-of token exchange, and app-only Direct-to-Engine access are not implemented.** The adapter never reuses a browser login or disables an agent's authentication. An OAuth/sign-in challenge stops the assessment with an explicit unsupported-authentication error. A channel secret is not an end-user identity.
 
@@ -30,9 +30,9 @@ Each assessment uses a cryptographically random channel user ID and a fresh conv
 
 Replies must come from an actor with `role: bot`, belong to this conversation, and match the submitted activity's `replyToId`. Duplicate activity IDs are ignored and polling preserves Microsoft watermarks. Text is collected until a correlated message supplies `inputHint: acceptingInput` or `expectingInput`, or the agent sends a correlated `endOfConversation`. The first progress message is not treated as completion. Responses are bounded in size and activity count.
 
-Direct Line has no universal final-response marker. This preview deliberately requires the readiness contract above instead of guessing completion from a quiet period. If a published agent does not emit it, the assessment reports an incomplete-turn timeout; it does not return partial progress as a successful answer. Agents that request more information can return that request as text, but the panel is a one-shot assessment interface, not an interactive conversation client. See [Microsoft's correlation and completion discussion](https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/conversational-agents-performance-testing-direct-line).
+Direct Line has no universal final-response marker. This preview deliberately requires the readiness contract above instead of guessing completion from a quiet period. If a published agent does not emit it, the assessment reports an incomplete-turn timeout; it does not return partial progress as a successful answer. The panel supports textual follow-ups with frozen evidence and bounded history. Each follow-up starts a fresh backend conversation; it does not resume the agent's native conversation or handle interactive sign-in. See [Microsoft's correlation and completion discussion](https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/conversational-agents-performance-testing-direct-line).
 
-The adapter distinguishes channel credential denial, interactive sign-in requirements, rate limiting, rejected upload size, invalid/oversized responses, cancellation, incomplete-turn timeout, and empty/non-text output. Provider error bodies, tokens, and confidential prompt contents are not echoed in error messages. Token expiry can also cause an authentication failure or shorten the assessment deadline. Mock tests verify these boundaries; they cannot prove a tenant allows the channel or that the published agent reads images correctly.
+The adapter distinguishes channel credential denial, interactive sign-in requirements, rate limiting, rejected upload size, invalid/oversized responses, cancellation, incomplete-turn timeout, and empty/non-text output. Provider error bodies, tokens, and confidential prompt contents are not echoed in error messages. Token expiry can also cause an authentication failure or shorten the assessment deadline. Contract tests verify these boundaries; they cannot prove a tenant allows the channel or that the published agent reads images correctly.
 
 ## SSO login is not an integration credential
 

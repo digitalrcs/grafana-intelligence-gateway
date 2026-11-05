@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+> Public 1.2.0 documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
 
 # Public 1.2.0 readiness and submission handoff
 
@@ -9,7 +9,7 @@ The public project is https://github.com/digitalrcs/grafana-intelligence-gateway
 ## Required gates
 
 1. Review the public source, history, documentation and image assets for secrets and private-only additions. Historical public capture code remains public history; removing it from the current tree does not retract old releases.
-2. Pass clean dependency installation, edition guard, typecheck, lint, unit tests, production build and dependency audit. Run the upload/data browser suite across supported Grafana versions with the pinned secure companion. Mock receipts establish transport only; separately validate a real approved vision provider with synthetic evidence.
+2. Pass clean dependency installation, edition guard, typecheck, lint, unit tests, production build and dependency audit. Run the upload/data browser suite across supported Grafana versions with the pinned secure companion. Browser contract tests establish UI behavior only; separately validate a real approved vision provider with synthetic evidence.
 3. Confirm public signing authorization and organization ownership. Public Community/Commercial classification is Grafana's decision; free source alone does not establish Community eligibility. Organization-admin access is required for submission. Do not expose signing credentials to pull-request builds.
 4. Prepare an immutable source tag and a ZIP rooted at the plugin ID. Verify license, catalog README, metadata, screenshots, module and signature as applicable. Run the full official plugin validator against that exact ZIP and source revision; resolve warnings or document reviewer disposition.
 5. Verify exact public-download SHA1/SHA256, manifest signature and GitHub provenance. Record artifact URL, immutable source URL, literal 40-character SHA1, test guidance and all validation evidence below.
@@ -21,7 +21,7 @@ Version: 1.2.0. ZIP URL, immutable source URL and SHA1: **not established**. Do 
 
 ## Reviewer scenario
 
-Install the companion first (use security-fixed 1.1.2 or later). Start the isolated loopback-only port-3005 fixture with synthetic TestData and the labeled deterministic mock. Connect Queries → Dashboard → Source panel for existing results. Choose the secure AI instance separately. Verify Analyze for data, PNG/JPEG preview without inference, explicit Analyze images, images-only with query inclusion disabled, combined mode, removal, clear/cancellation, model-policy rejection and absence of dashboard/selected-panel capture controls. Do not run the full mock-oriented suite against a real provider.
+Install the companion first (use security-fixed 1.1.2 or later), then configure your real backend and model/agent alias. Verify data, images, baseline comparison, follow-ups, exports and cancellation with approved evidence. See [Panel setup](Panel-Setup-and-Configuration).
 
 ## Official requirements checked 2026-11-05
 

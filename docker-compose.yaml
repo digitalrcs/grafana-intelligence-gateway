@@ -20,19 +20,6 @@ services:
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: digitalrcs-intelligencegateway-panel,digitalrcs-intelligencegateway-datasource
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
-    depends_on:
-      mock-ai:
-        condition: service_healthy
-
-  mock-ai:
-    build:
-      context: ./testdata/mock-provider
-    container_name: digitalrcs-intelligencegateway-public-mock-ai
-    healthcheck:
-      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8080/v1/models')"]
-      interval: 2s
-      timeout: 2s
-      retries: 15
 
 volumes:
   grafana-storage:

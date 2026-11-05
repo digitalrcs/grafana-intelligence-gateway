@@ -1,6 +1,10 @@
-# Intelligence Gateway public 1.2.0 — unreleased
+# Intelligence Gateway public 1.2.0
 
 This public edition retains query-data analysis, provider/model selection, prompts, skills, limits, and PNG/JPEG uploads with preview, removal, and explicit **Analyze images** submission. Images-only and combined data/image assessments remain available through the required secure companion 1.1.0 or later.
+
+New assessment workflows include evidence/freshness details, four analysis presets plus custom instructions, bounded sample statistics, comparison of two supplied current/baseline query results, frozen-text follow-up questions, and Markdown incident briefs with opt-in query evidence. Settings follow six numbered sections with an expandable setup checklist. See [the setup guide](SETUP.md) for examples and limits.
+
+Statistics describe included samples only. Baseline history must be supplied by the configured queries. Follow-ups retain the original textual evidence and pause automatic analysis; successful image assessments release image files, so follow-ups cannot inspect those images again. Conversations remain temporary panel state.
 
 Dashboard capture, panel discovery, selected-panel capture, and the `html-to-image` dependency are removed from public source and builds. Upload a locally saved PNG/JPEG when visual context is needed. PDF, CSV, and office-document uploads are not supported.
 

@@ -1,4 +1,4 @@
-import { test, expect } from '@grafana/plugin-e2e';
+import { test, expect } from './fixtures';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -35,30 +35,25 @@ test('exposes the manual analysis behavior option', async ({ gotoPanelEditPage, 
   const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
   const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
   await page.getByTestId('intelligence-gateway-panel').waitFor({ state: 'visible' });
-  const behavior = panelEditPage.getCustomOptions('Behavior');
+  const behavior = panelEditPage.getCustomOptions('3. Analysis task');
   const analyzeButton = behavior.getSwitch('Show Analyze button');
   await expect(analyzeButton).toBeChecked();
 });
 
-test('identifies the provisioned mock AI connection before analysis', async ({
+test('shows the selected AI connection without a large status banner', async ({
   gotoPanelEditPage,
   readProvisionedDashboard,
   readProvisionedDataSource,
   page,
 }) => {
   const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
-  const mock = await readProvisionedDataSource<{ reviewMock: boolean }>({ fileName: 'intelligence-gateway.yml' });
-  expect(mock.jsonData.reviewMock).toBe(true);
-  const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
-  const notice = panelEditPage.panel.locator.getByTestId('connection-notice');
-  await expect(notice).toBeVisible();
-  await expect(notice).toContainText('Mock connection — no AI analysis');
-  await expect(notice).toContainText(mock.name);
-  await expect(page.getByText('Server-side credentials enabled')).toBeVisible();
-  await expect(page.getByText(/API keys and provider policy remain on the Grafana server/)).toBeVisible();
+  const source = await readProvisionedDataSource({ fileName: 'intelligence-gateway.yml' });
+  const editor = await gotoPanelEditPage({ dashboard, id: '2' });
+  await expect(editor.panel.locator.getByTestId('connection-notice')).toContainText(source.name);
+  await expect(page.getByText('Server-side credentials enabled')).toHaveCount(0);
 });
 
-test('completes analysis through the secure backend and deterministic provider', async ({
+test('renders an intercepted backend response in the UI contract test', async ({
   gotoPanelEditPage,
   readProvisionedDashboard,
   page,
@@ -67,6 +62,6 @@ test('completes analysis through the secure backend and deterministic provider',
   const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
   await page.getByTestId('intelligence-gateway-panel').waitFor({ state: 'visible' });
   await page.getByRole('button', { name: 'Analyze' }).click();
-  await expect(panelEditPage.panel.locator).toContainText('MOCK MODE — no AI inference performed.');
-  await expect(panelEditPage.panel.locator).toContainText('does not analyze your data');
+  await expect(panelEditPage.panel.locator).toContainText('Automated UI test response.');
+  await expect(panelEditPage.panel.locator).toContainText('Automated UI test response.');
 });

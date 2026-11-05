@@ -1,4 +1,4 @@
-# Public edition — 1.2.0 (unreleased)
+# Public edition — 1.2.0
 
 This is the public catalog candidate. The private edition is maintained in a separate local workspace and is never used as this repository's publication source.
 

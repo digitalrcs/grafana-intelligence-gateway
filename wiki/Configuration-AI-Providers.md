@@ -1,4 +1,4 @@
-> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Configuration: Secure AI Provider
 
@@ -23,7 +23,7 @@ OpenAI-compatible adapters use buffered Chat Completions with `max_tokens` and, 
 
 The **Grafana LLM app is optional** and not required for the other five choices. App 1.2.0 requires Grafana 13 and has an upstream two-minute timeout. Its dedicated service-account token is not the viewing user's SSO identity.
 
-Copilot's agent owns model choice, tools, temperature, and output-token policy. Direct Line does not enforce the panel's temperature or hard output limit. The preview requires a compatible correlated reply/completion contract and tenant-approved secured channel. See [Copilot Studio Notes](Copilot-Studio-Notes); mock coverage is not enterprise-tenant validation.
+Copilot's agent owns model choice, tools, temperature, and output-token policy. Direct Line does not enforce the panel's temperature or hard output limit. The preview requires a compatible correlated reply/completion contract and tenant-approved secured channel. See [Copilot Studio Notes](Copilot-Studio-Notes); Contract coverage is not enterprise-tenant validation.
 
 ## Panel controls
 

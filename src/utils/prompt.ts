@@ -1,4 +1,5 @@
 import { ConstructedPrompt, IntelligenceGatewayOptions, PromptVariables } from '../types';
+import { presetInstruction } from './presets';
 
 const TOKEN_PATTERN = /{{\s*(data|timeRange|panelTitle|panelId|skills|sourcePanel)\s*}}/g;
 
@@ -9,7 +10,8 @@ export const constructPrompt = (
   options: Pick<
     IntelligenceGatewayOptions,
     'systemPrompt' | 'userPromptTemplate' | 'skillsContext' | 'responseLengthTokens'
-  >,
+  > &
+    Partial<Pick<IntelligenceGatewayOptions, 'analysisPreset'>>,
   variables: Omit<PromptVariables, 'skills'>
 ): ConstructedPrompt => {
   const allVariables: PromptVariables = {
@@ -24,7 +26,7 @@ export const constructPrompt = (
         )} tokens. Prioritize conclusions and next steps. This is a soft instruction because models cannot guarantee an exact token count.`
       : '';
   return {
-    system: `${interpolatePrompt(options.systemPrompt, allVariables)}${responseLengthInstruction}`,
+    system: `${interpolatePrompt(options.systemPrompt, allVariables)}${responseLengthInstruction}${options.analysisPreset ? '\n\n' + presetInstruction(options.analysisPreset) : ''}`,
     user: interpolatePrompt(options.userPromptTemplate, allVariables),
   };
 };

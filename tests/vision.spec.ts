@@ -1,17 +1,17 @@
-import { test, expect, Dashboard, gte } from '@grafana/plugin-e2e';
+import { test, expect, Dashboard, gte } from './fixtures';
 import type { Page, Request, TestInfo } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
 // Browser plugin not available in the validation environment. Exercise the real
-// Grafana/backend transport with @grafana/plugin-e2e and the synthetic mock provider.
+// Grafana UI and request contracts with @grafana/plugin-e2e and the test-only intercepted backend responses.
 test.setTimeout(120000);
 test.use({ viewport: { width: 1440, height: 1000 }, screenshot: 'only-on-failure' });
 test.beforeEach(async ({ page, grafanaVersion, selectors }) => {
   // plugin-e2e first opens the Grafana homepage. In Grafana 13.1+ its initial
   // OFREP request can race navigation after a 500 ms network-idle window. Wait for that
   // real request to finish before navigating, including when it already
-  // completed before this hook. Do not mock flags or suppress OFREP errors.
+  // completed before this hook. Do not intercept flags or suppress OFREP errors.
   // Earlier versions expose this API but may not request it on the homepage.
   if (gte(grafanaVersion, '13.1.0')) {
     await page.waitForFunction(
@@ -265,6 +265,151 @@ async function evidence(page: Page, info: TestInfo, name: string) {
   await page.screenshot({ path: destination, fullPage: false, animations: 'disabled' });
 }
 
+test('numbered setup, presets, frozen follow-ups, freshness and incident export', async ({
+  page,
+  gotoPanelEditPage,
+  readProvisionedDashboard,
+}, info) => {
+  const observed = observe(page);
+  const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
+  const editor = await gotoPanelEditPage({ dashboard, id: '2' });
+  const panel = page.getByTestId('intelligence-gateway-panel');
+  await expect(page).toHaveURL(/edit/);
+  await expect(page).toHaveTitle(/Grafana/);
+  await expect(panel).toBeVisible();
+  await expect(page.getByText('Start here', { exact: true })).toBeVisible();
+  await evidence(page, info, 'workflow-numbered-setup');
+  await panel.getByRole('combobox', { name: 'Analysis task' }).click();
+  await page.getByText('Summarize for handover', { exact: true }).click();
+  await panel.getByRole('button', { name: 'Analyze', exact: true }).click();
+  await expect(panel).toContainText('Automated UI test response.', { timeout: 30000 });
+  expect(observed.inference).toHaveLength(1);
+  const original = observed.inference[0].postDataJSON();
+  expect(original.prompt.system).toContain('incident handover');
+  expect(original.prompt.user).toContain('"statistics"');
+  await panel.getByText(/^Evidence ·/).click();
+  await expect(panel).toContainText('rows omitted');
+  const evidenceGroup = editor.getCustomOptions('2. Choose evidence');
+  await evidenceGroup.getTextInput('Source panel title or ID (hint)').fill('Updated source label');
+  await evidenceGroup.getTextInput('Source panel title or ID (hint)').press('Tab');
+  await expect(panel).toContainText('Assessment is out of date');
+  await panel.getByText('Ask a follow-up', { exact: true }).click();
+  await panel.getByRole('textbox', { name: 'Follow-up question' }).fill('What does the original evidence establish?');
+  await panel.getByRole('button', { name: 'Ask follow-up' }).click();
+  await expect(panel).toContainText('1/6 follow-ups used');
+  expect(observed.inference).toHaveLength(2);
+  expect(observed.inference[1].postDataJSON().prompt.user).toContain(original.prompt.user);
+  await panel.getByText('Share assessment', { exact: true }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await panel.getByRole('button', { name: 'Download brief' }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe('intelligence-incident-brief.md');
+  const stream = await download.createReadStream();
+  const chunks = [];
+  for await (const chunk of stream!) {
+    chunks.push(chunk);
+  }
+  const brief = Buffer.concat(chunks).toString('utf8');
+  expect(brief).toContain('What does the original evidence establish?');
+  expect(brief).not.toContain('Submitted query evidence');
+  await evidence(page, info, 'workflow-snapshot-followup');
+  await panel.getByRole('button', { name: 'Clear analysis', exact: true }).click();
+  await expect(panel.getByRole('button', { name: 'Download brief' })).toHaveCount(0);
+  await assertNoUnexpectedErrors(observed, info);
+});
+
+test('supplied baseline queries produce numeric comparisons in the submitted evidence', async ({
+  page,
+  request,
+  gotoDashboardPage,
+  readProvisionedDashboard,
+}, info) => {
+  const observed = observe(page);
+  const reference = await readProvisionedDashboard({ fileName: 'dashboard.json' });
+  const response = await request.get(`/api/dashboards/uid/${reference.uid}`);
+  expect(response.ok()).toBe(true);
+  const source = (await response.json()).dashboard;
+  const chart = source.panels.find((panel: { type: string }) => panel.type === 'timeseries');
+  const intelligence = source.panels.find(
+    (panel: { type: string }) => panel.type === 'digitalrcs-intelligencegateway-panel'
+  );
+  const uid = `baseline-${randomUUID().slice(0, 24)}`;
+  const title = 'Synthetic baseline comparison';
+  const payload = {
+    ...source,
+    id: null,
+    uid,
+    title,
+    version: 0,
+    panels: [
+      {
+        ...intelligence,
+        id: 1,
+        title,
+        datasource: chart.datasource,
+        gridPos: { h: 24, w: 24, x: 0, y: 0 },
+        options: {
+          ...intelligence.options,
+          compareBaseline: true,
+          currentRefId: 'A',
+          baselineRefId: 'B',
+          metricKind: 'gauge',
+          includeStatistics: true,
+          analysisPreset: 'compare',
+          sourcePanelHint: 'Synthetic current and baseline windows',
+          userPromptTemplate: 'Compare supplied results: {{data}}',
+        },
+        targets: [
+          {
+            ...chart.targets[0],
+            refId: 'A',
+            csvContent: 'Time,latency\n2026-09-18T12:00:00Z,20\n2026-09-18T12:05:00Z,40',
+          },
+          {
+            ...chart.targets[0],
+            refId: 'B',
+            csvContent: 'Time,latency\n2026-09-18T11:00:00Z,10\n2026-09-18T11:05:00Z,20',
+          },
+        ],
+      },
+    ],
+  };
+  const saved = await request.post('/api/dashboards/db', { data: { dashboard: payload, overwrite: false } });
+  expect(saved.ok()).toBe(true);
+  try {
+    const dashboardPage = await gotoDashboardPage({ uid });
+    await dashboardPage.waitForPanelsQueriesToComplete({ timeout: 30000 });
+    const panel = page.getByTestId('intelligence-gateway-panel');
+    await panel.getByRole('button', { name: 'Analyze', exact: true }).click();
+    await expect(panel).toContainText('Automated UI test response.', { timeout: 30000 });
+    expect(observed.inference).toHaveLength(1);
+    const submitted = JSON.parse(
+      observed.inference[0].postDataJSON().prompt.user.split('Compare supplied results: ')[1]
+    );
+    expect(submitted.comparisons[0]).toMatchObject({
+      currentMean: 30,
+      baselineMean: 15,
+      meanDifference: 15,
+      percentChange: 100,
+    });
+    await panel.getByText(/^Evidence ·/).click();
+    await panel.getByText('Submitted query evidence', { exact: true }).click();
+    await expect(panel).toContainText('"percentChange": 100');
+    await evidence(page, info, 'workflow-baseline');
+    await panel.getByText('Share assessment', { exact: true }).click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await panel.getByRole('button', { name: 'Download brief' }).scrollIntoViewIfNeeded();
+    await expect(panel.getByRole('button', { name: 'Download brief' })).toBeVisible();
+    await evidence(page, info, 'workflow-narrow');
+    const narrowDownload = page.waitForEvent('download');
+    await panel.getByRole('button', { name: 'Download brief' }).click();
+    expect((await narrowDownload).suggestedFilename()).toBe('intelligence-incident-brief.md');
+    await assertNoUnexpectedErrors(observed, info);
+  } finally {
+    expect((await request.delete(`/api/dashboards/uid/${uid}`)).ok()).toBe(true);
+  }
+});
+
 test('multiple PNG and JPEG uploads preview, remove, and remain out of saved dashboard data', async ({
   page,
   request,
@@ -307,7 +452,7 @@ test('multiple PNG and JPEG uploads preview, remove, and remain out of saved das
   await dialog.getByRole('button', { name: 'Use images', exact: true }).click();
   expect(observed.inference).toHaveLength(0);
   await panel.getByRole('button', { name: 'Analyze images', exact: true }).click();
-  await expect(panel).toContainText('Image transport receipt: 1 image(s) received.', { timeout: 30000 });
+  await expect(panel).toContainText('Image request: 1 image(s) received.', { timeout: 30000 });
   expect(observed.inference).toHaveLength(1);
   await panel.getByRole('button', { name: 'Clear analysis', exact: true }).click();
   await panel.getByRole('button', { name: 'Images', exact: true }).click();
@@ -331,19 +476,19 @@ test('images-only analysis needs no query source and sends one image only after 
   const dashboard = (await readProvisionedDashboard({ fileName: 'dashboard.json' })) as VisionDashboard;
   const intelligence = dashboard.panels.find((panel) => panel.options?.secureDataSourceUid)!;
   const source = dashboard.panels.find((panel) => panel.type === 'timeseries')!;
-  const mock = await readProvisionedDataSource<{ provider: string; baseUrl: string; defaultModel: string }>({
+  const fixture = await readProvisionedDataSource<{ provider: string; baseUrl: string; defaultModel: string }>({
     fileName: 'intelligence-gateway.yml',
   });
   // Fail before any inference if this test is accidentally pointed at an instance
   // whose provisioned UID has been repurposed for a real provider.
-  expect(mock.jsonData.provider).toBe('custom');
-  expect(mock.jsonData.baseUrl).toMatch(/^http:\/\/mock-ai(?::\d+)?\/v1$/);
-  const currentProvider = await requestAPI.get(`/api/datasources/uid/${mock.uid}`);
+  expect(fixture.jsonData.provider).toBe('custom');
+  expect(fixture.jsonData.baseUrl).toBe('https://inference.invalid/v1');
+  const currentProvider = await requestAPI.get(`/api/datasources/uid/${fixture.uid}`);
   expect(currentProvider.ok()).toBe(true);
   expect((await currentProvider.json()).jsonData).toMatchObject({
-    provider: mock.jsonData.provider,
-    baseUrl: mock.jsonData.baseUrl,
-    defaultModel: mock.jsonData.defaultModel,
+    provider: fixture.jsonData.provider,
+    baseUrl: fixture.jsonData.baseUrl,
+    defaultModel: fixture.jsonData.defaultModel,
   });
 
   // Take a synthetic chart image first; the assessment dashboard below contains
@@ -375,8 +520,8 @@ test('images-only analysis needs no query source and sends one image only after 
         gridPos: { h: 16, w: 24, x: 0, y: 0 },
         options: {
           ...intelligence.options,
-          secureDataSourceUid: mock.uid,
-          model: mock.jsonData.defaultModel,
+          secureDataSourceUid: fixture.uid,
+          model: fixture.jsonData.defaultModel,
           includeDataWithImages: false,
           showImageControls: true,
           showAnalyzeButton: true,
@@ -443,7 +588,7 @@ test('images-only analysis needs no query source and sends one image only after 
     expect(observed.queryCount()).toBe(queryBaseline);
 
     await analyze.click();
-    await expect(panel).toContainText('Image transport receipt: 1 image(s) received.', { timeout: 30000 });
+    await expect(panel).toContainText('Image request: 1 image(s) received.', { timeout: 30000 });
     expect(observed.inference).toHaveLength(1);
     const payload = observed.inference[0].postDataJSON();
     expect(payload.images).toHaveLength(1);
@@ -482,7 +627,7 @@ test('secure data source exposes provider-specific credentials and vision policy
   const dataSource = await readProvisionedDataSource({ fileName: 'intelligence-gateway.yml' });
   await gotoDataSourceConfigPage(dataSource.uid);
   await expect(page.getByRole('switch', { name: 'Enable image analysis', exact: true })).toBeChecked();
-  await expect(page.getByRole('textbox', { name: /^Allowed vision models/ })).toHaveValue('review-model');
+  await expect(page.getByRole('textbox', { name: /^Allowed vision models/ })).toHaveValue('test-model');
   console.log('Secure AI data-source settings URL:', page.url());
   const provider = page.getByRole('radiogroup', { name: /^Provider/ });
   await expect(provider.getByRole('radio')).toHaveCount(6);
@@ -498,7 +643,7 @@ test('secure data source exposes provider-specific credentials and vision policy
   await expect(page.getByRole('spinbutton', { name: /^Maximum output tokens/ })).toBeDisabled();
   await expect(page.getByText(/does not perform interactive end-user sign-in/)).toBeVisible();
   await evidence(page, info, 'vision-provider-settings');
-  // Do not save these exploratory form changes or invoke any non-mock provider.
+  // Do not save these exploratory form changes or invoke any non-fixture provider.
   expect(observed.inference).toHaveLength(0);
   await assertNoUnexpectedErrors(observed, info);
 });

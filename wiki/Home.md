@@ -1,10 +1,10 @@
-> Public 1.2.0 candidate documentation; see [Public Edition](Public-Edition) for scope and release status.
+> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
 
 # Grafana Intelligence Gateway
 
 Grafana Intelligence Gateway is DigitalRCS's AI assessment panel for Grafana. It turns selected query results or uploaded PNG/JPEG images into an assessment from an administrator-approved local or hosted model, rendered as theme-aware Markdown.
 
-Public version **1.2.0 (unreleased)** requires companion **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. The companion stores credentials in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side. The panel has no credential or direct provider-URL fields.
+Public version **1.2.0** requires companion **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. The companion stores credentials in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side. The panel has no credential or direct provider-URL fields.
 
 ![Grafana Intelligence Gateway assessment](images/panel-assessment.png)
 
@@ -20,11 +20,11 @@ Public version **1.2.0 (unreleased)** requires companion **`digitalrcs-intellige
 
 Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration), then [Image Analysis](Image-Analysis). The six provider choices are OpenAI, LM Studio, Open WebUI, the optional Grafana LLM app, custom OpenAI-compatible Chat Completions, and Copilot Studio Direct Line **preview**. Copilot is not an enterprise SSO integration; see its [authentication boundaries](Copilot-Studio-Notes).
 
-Trying the supplied demo? **DEMO ONLY - Mock AI (no inference)** returns a fixed receipt, not an assessment. Follow the [two-phase walkthrough](Reviewer-Walkthrough): first verify the mock path, then create and select a **separate real-provider instance**. Check the analysis panel's current **AI connection label**; the dashboard introduction describes only the supplied default. TestData and **Queries → Dashboard** provide evidence, not an AI model.
+Connect your own local/hosted backend or Copilot Studio agent. Follow [Panel setup](Panel-Setup-and-Configuration); analysis requires a configured secure AI instance and model or agent alias.
 
 ## Pages
 
-- [Reviewer Walkthrough](Reviewer-Walkthrough): purpose, mock versus real inference, and a worked traffic assessment
+- [Reviewer Walkthrough](Reviewer-Walkthrough): real backend setup and capability verification
 - [Installation](Installation)
 - [Public 1.2.0 changes](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/RELEASE_NOTES_1.2.0.md)
 - [Panel Setup and Configuration](Panel-Setup-and-Configuration)
