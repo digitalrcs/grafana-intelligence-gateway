@@ -4,7 +4,16 @@
   "name": "Grafana Intelligence Gateway",
   "id": "digitalrcs-intelligencegateway-panel",
   "info": {
-    "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "vision", "panel"],
+    "keywords": [
+      "ai",
+      "llm",
+      "openai",
+      "lmstudio",
+      "intelligence",
+      "assessment",
+      "vision",
+      "panel"
+    ],
     "description": "Analyze panel query results or uploaded PNG/JPEG images through the DigitalRCS secure AI data source.",
     "author": {
       "name": "DigitalRCS",
@@ -34,7 +43,7 @@
     ],
     "screenshots": [
       {
-        "name": "Local AI analysis of synthetic panel data with LM Studio",
+        "name": "Real LM Studio assessment of a synthetic uploaded image",
         "path": "img/panel-analysis.png"
       }
     ],
