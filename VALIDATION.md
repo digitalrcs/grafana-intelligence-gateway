@@ -1,6 +1,6 @@
 # Public candidate validation
 
-See [the current audit](docs/PUBLIC_AUDIT.md) for verified results, limitations and remaining gates. Version 1.2.0 remains an unreleased candidate.
+Public 1.2.1 is published on GitHub. See [release verification](docs/GRAFANA_SUBMISSION.md) for exact signed artifact values. Earlier sections retain historical candidate evidence.
 
 ## Release reliability follow-up — 2026-11-05
 
@@ -32,3 +32,7 @@ The results in this section predate the real-backend setup cleanup below; refere
 - All inference tests used synthetic query data and the explicitly labeled deterministic mock. These verify transport and workflow, not real-model assessment quality. No signing, public release, Wiki publication or catalog submission was performed. Intermediate Grafana versions and latest development images were not exercised in this change.
 
 Release follow-up: all 84 unit tests and TypeScript passed. Real images-only inference was also exercised through the rendered public panel with no intercepted responses; both counts and their difference were correct. Catalog and wiki screenshots now show this live assessment and its upload preview. A redacted Gitleaks scan of 71 public source commits found no leaks.
+
+## Published 1.2.1 — 2026-11-05
+
+All 84 unit tests and the seven-version browser matrix passed. Tag v1.2.1 points to bb43800e6717b749e668a121dfe0b87bd9383b0f. The exact signed archive passed strict Plugin Validator checks and provenance verification. Downloaded SHA1: 8b85b838fd04f14513d588ee474f7411b5e931c6. All manifest file hashes match. The 1.2.0 draft is retained without moving its tag. No Grafana portal submission was performed.

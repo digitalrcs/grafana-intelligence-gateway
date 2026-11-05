@@ -1,21 +1,30 @@
-# Public 1.2.0 submission preparation
+# Public 1.2.1 release verification and catalog handoff
 
-Public 1.2.0 is an unreleased source candidate. Uploading source and the wiki to GitHub does not sign a plugin, publish a release archive, or submit a Grafana catalog update.
+Published on GitHub on 2026-11-05. The exact archive passed strict Plugin Validator checks, has a verified Community signature for DigitalRCS, matching manifest file hashes, and verified GitHub build provenance. No Grafana catalog update was submitted in this task; catalog approval is separate.
 
+## Exact release values
+
+- [GitHub release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.2.1)
+- [Signed ZIP](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.2.1/digitalrcs-intelligencegateway-panel-1.2.1.zip)
+- [Immutable source tag](https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.2.1)
+- Source commit: `bb43800e6717b749e668a121dfe0b87bd9383b0f`
+- SHA1: `8b85b838fd04f14513d588ee474f7411b5e931c6`
+- SHA256: `a7e52fe6e9eeb6fae41eb29893dc9b0773ed010d186e05637dd2dd7fdb78134f`
 - Plugin ID: `digitalrcs-intelligencegateway-panel` (unchanged).
-- Type: frontend-only panel; minimum Grafana: 11.6.0.
-- Required companion: `digitalrcs-intelligencegateway-datasource` 1.1.0 or later; use security-fixed 1.1.2 or later.
-- Public scope: query-data analysis and explicitly submitted PNG/JPEG uploads. No dashboard or selected-panel capture.
+- Grafana: 11.6 or later. Companion: 1.1.0 or later; use security-fixed 1.1.2 or newer.
 
-## Remaining release steps
+## Validation
 
-1. Confirm organization-admin access, plugin ownership, and applicable public signature authorization. Pass the public-edition guard, typecheck, lint, unit tests, production build, and supported-version browser matrix on the exact release commit. See [validation](../VALIDATION.md).
-2. Verify data-only, images-only, and combined analysis, preview without inference, absent capture controls, removal/clear, and vision policy. Use automated UI contracts for regressions and an approved real vision provider with synthetic evidence for understanding.
-3. Create an immutable version tag only after release checks pass. Build and sign through the release workflow.
-4. Inspect the exact downloaded ZIP: plugin root, version, manifest/signature, SHA1, build provenance, and full Plugin Validator results.
-5. Record the actual published ZIP URL, immutable source-tag URL, and 40-character SHA1 value here. Those values are pending; do not reuse 1.1.2 values for 1.2.0.
-6. Use **Submit Update** for the existing Grafana listing. Portal submission and catalog approval are separate actions.
+All 84 unit tests, clean dependency install, high-severity dependency audit, typecheck, lint, build and latest Grafana API compatibility checks passed. [Candidate CI](https://github.com/digitalrcs/grafana-intelligence-gateway/actions/runs/42093619410) passed browser checks on Grafana 11.6.16, 12.0.10, 12.2.10, 12.4.0, 12.4.14, 13.1.9 and 13.3.0. Browser contracts use isolated test responses; cloud CI skips the optional live-backend test.
 
-Follow the [reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough). Connect a real backend and model or Copilot agent before analysis. No hosted credentials are bundled. Restart Grafana after installation and reload the browser.
+Separate real LM Studio checks completed query assessment, frozen-evidence follow-up and images-only browser assessment using synthetic evidence. Both image labels, values and their difference were correct. No live Copilot tenant validation or general model-quality guarantee is claimed.
 
-See [public changes](RELEASE_NOTES_1.2.0.md) and the [historical 1.1.2 handoff](GRAFANA_SUBMISSION_1.1.2.md).
+[Release verification](https://github.com/digitalrcs/grafana-intelligence-gateway/actions/runs/42094539807) checked the exact downloaded ZIP with the full official Plugin Validator in strict mode and verified provenance against the tag, source commit and release workflow. Local verification checked archive root, ID/version, SHA1, signed manifest and every file hash. Public source and wiki history scans found no secrets.
+
+The immutable 1.2.0 tag and draft archive are retained for traceability. Its validator reported direct window.location access; 1.2.1 resolves that warning using Grafana locationService. Use 1.2.1 for installation.
+
+## Installation and catalog update
+
+Install the companion first, replace the panel directory, restart Grafana and fully reload the browser. Install only one panel edition per Grafana instance. Existing settings remain supported; public dashboard/selected-panel capture is removed. Select a real backend/model or Copilot Studio Direct Line agent before analysis.
+
+For the existing Grafana listing, use **Submit Update** with the ZIP URL, immutable source-tag URL and SHA1 above. Use the actual ZIP URL, not the checksum file or GitHub source archive. Signing and GitHub publication are not catalog submission or approval.

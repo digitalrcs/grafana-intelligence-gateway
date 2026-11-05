@@ -1,6 +1,6 @@
 # Public edition — 1.2.1
 
-This is the public catalog candidate. The private edition is maintained in a separate local workspace and is never used as this repository's publication source.
+This is the public 1.2.1 release. The private edition is maintained in a separate local workspace and is never used as this repository's publication source.
 
 - Standard query-data analysis, provider selection, prompts, skills and limits remain.
 - PNG/JPEG file upload, preview, removal and explicit image analysis remain.
@@ -14,8 +14,8 @@ This is the public catalog candidate. The private edition is maintained in a sep
 
 Run `npm ci`, `npm run typecheck`, `npm run lint`, `npm run test:ci`, and `npm run build`.
 The prebuild guard rejects the known cross-panel capture implementation. It is a regression guard, not proof of Grafana approval.
-The public Git remote is the existing public repository. This 1.2.0 candidate is subject to the readiness gates in docs/GRAFANA_SUBMISSION.md; no release or catalog approval is implied.
+The public Git remote is the existing public repository. See docs/GRAFANA_SUBMISSION.md for exact signed release values and catalog handoff. GitHub publication is not catalog approval.
 The companion secure AI data source remains shared and does not need a separate edition. Set INTELLIGENCE_GATEWAY_DATASOURCE_DIST when testing against its existing build.
 Run browser tests against the public build before release. Historical release notes and evidence describe earlier releases, not this edition.
 
-See VALIDATION.md for verified checks and pending browser/signing work.
+See VALIDATION.md for completed browser, live-provider and release checks.

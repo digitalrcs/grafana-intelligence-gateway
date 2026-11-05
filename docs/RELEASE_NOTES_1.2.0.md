@@ -1,3 +1,5 @@
+> Baseline changes inherited by public 1.2.1. Version 1.2.0 remains a draft; use [1.2.1](RELEASE_NOTES_1.2.1.md).
+
 # Intelligence Gateway public 1.2.0
 
 This public edition retains query-data analysis, provider/model selection, prompts, skills, limits, and PNG/JPEG uploads with preview, removal, and explicit **Analyze images** submission. Images-only and combined data/image assessments remain available through the required secure companion 1.1.0 or later.

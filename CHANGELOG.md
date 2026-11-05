@@ -3,7 +3,7 @@
 ## 1.2.1 - 2026-11-05
 
 - Use Grafana locationService and the base-URL helper for navigation identity and exported dashboard links, resolving the full Plugin Validator's direct window.location warning.
-- Supersedes the signed 1.2.0 prerelease; retains its numerical reliability fixes, real-backend setup and assessment workflows.
+- Supersedes the signed 1.2.0 draft; retains its numerical reliability fixes, real-backend setup and assessment workflows.
 
 ## 1.2.0 - 2026-11-05
 

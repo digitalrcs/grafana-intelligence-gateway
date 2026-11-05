@@ -53,4 +53,4 @@ If controls still look unchanged after an upgrade, restart Grafana and fully rel
 
 See the [complete image-analysis guide](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/IMAGE_ANALYSIS.md) for the public workflow and validation boundaries.
 
-![Public candidate PNG/JPEG preview with synthetic charts](images/public-upload-preview.png)
+![PNG/JPEG preview with a real LM Studio connection and synthetic evidence](images/public-upload-preview.png)
