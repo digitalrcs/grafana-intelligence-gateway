@@ -4,8 +4,17 @@
   "name": "Grafana Intelligence Gateway",
   "id": "digitalrcs-intelligencegateway-panel",
   "info": {
-    "keywords": ["ai", "llm", "openai", "lmstudio", "intelligence", "assessment", "vision", "panel"],
-    "description": "Assess panel query data, reviewed dashboard captures, or uploaded images with local or hosted AI. Connect through the required DigitalRCS secure AI data source.",
+    "keywords": [
+      "ai",
+      "llm",
+      "openai",
+      "lmstudio",
+      "intelligence",
+      "assessment",
+      "vision",
+      "panel"
+    ],
+    "description": "Analyze panel query results or uploaded PNG/JPEG images through the DigitalRCS secure AI data source.",
     "author": {
       "name": "DigitalRCS",
       "url": "https://www.digitalrcs.com"
@@ -15,13 +24,28 @@
       "large": "img/logo.svg"
     },
     "links": [
-      { "name": "DigitalRCS", "url": "https://www.digitalrcs.com" },
-      { "name": "Source", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway" },
-      { "name": "Documentation", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/wiki" },
-      { "name": "Issues", "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues" }
+      {
+        "name": "DigitalRCS",
+        "url": "https://www.digitalrcs.com"
+      },
+      {
+        "name": "Source",
+        "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway"
+      },
+      {
+        "name": "Documentation",
+        "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/wiki"
+      },
+      {
+        "name": "Issues",
+        "url": "https://github.com/DigitalRCS/grafana-intelligence-gateway/issues"
+      }
     ],
     "screenshots": [
-      { "name": "Local AI analysis of synthetic panel data with LM Studio", "path": "img/panel-analysis.png" }
+      {
+        "name": "Real LM Studio assessment of a synthetic uploaded image",
+        "path": "img/panel-analysis.png"
+      }
     ],
     "version": "%VERSION%",
     "updated": "%TODAY%"

@@ -53,13 +53,19 @@ export const ModelEditor = ({
         options={modelOptions}
         value={value ?? ''}
         onChange={(selection) => onChange(selection?.value ?? '')}
-        placeholder="Enter a model ID or load available models"
+        placeholder="Model ID or Copilot agent alias"
         noOptionsMessage="Load administrator-approved models from the selected secure data source, or enter an allowed model ID."
         createCustomValue
         customValueDescription="Use custom model ID"
         isClearable
       />
-      <Button type="button" variant="secondary" icon="search" disabled={loading} onClick={() => void loadModels()}>
+      <Button
+        type="button"
+        variant="secondary"
+        icon="search"
+        disabled={loading || !options.secureDataSourceUid}
+        onClick={() => void loadModels()}
+      >
         {loading ? 'Loading models...' : 'Load models securely'}
       </Button>
       {availableModels.length > 0 ? <span>{availableModels.length} model(s) available in the dropdown.</span> : null}

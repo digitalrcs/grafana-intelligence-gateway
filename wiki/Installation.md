@@ -1,6 +1,8 @@
+> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+
 # Installation
 
-Panel **1.1.0** requires **Grafana 11.6 or later** and **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. Install the companion first. The optional Grafana LLM app has its own requirements: app 1.2.0 requires Grafana 13. The Current View Exporter plugin is not required for image capture.
+Public panel **1.2.0** requires **Grafana 11.6 or later** and **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. Install the companion first. The optional Grafana LLM app has its own requirements: app 1.2.0 requires Grafana 13. The Current View Exporter plugin is not required for uploads.
 
 ## Development
 
@@ -18,7 +20,7 @@ npm run build
 docker compose up --build
 ```
 
-Open `http://localhost:3004`. The development Compose configuration mounts both unsigned plugins, starts a credential-free deterministic mock provider, and provisions **DEMO ONLY - Mock AI (no inference)**. The supplied default returns a fixed receipt: no model runs and no data or image analysis occurs. The TestData chart supplies synthetic rows, not an AI model. Follow the [two-phase walkthrough](Reviewer-Walkthrough) to create a separate real-provider instance, then select that instance and model under the panel's **AI provider** settings. Read the current AI connection label after switching; the introduction describes only the supplied default.
+Open http://localhost:3005. The starter dashboard has no AI connection selected. Configure a real Secure AI data source, then choose its model or Copilot alias in the panel. See [Panel setup](Panel-Setup-and-Configuration).
 
 ## Built artifact
 

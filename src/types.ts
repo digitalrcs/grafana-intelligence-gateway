@@ -1,6 +1,14 @@
 export type TextAlignment = 'left' | 'center' | 'right';
 
 export interface IntelligenceGatewayOptions {
+  analysisPreset: 'custom' | 'spike' | 'compare' | 'handover' | 'quality';
+  includeStatistics: boolean;
+  metricKind: 'unknown' | 'gauge' | 'counter';
+  compareBaseline: boolean;
+  currentRefId: string;
+  baselineRefId: string;
+  showEvidence: boolean;
+  allowFollowUps: boolean;
   secureDataSourceUid: string;
   model: string;
   temperature: number;
@@ -59,8 +67,16 @@ Dashboard data:
 {{data}}`;
 
 export const DEFAULT_OPTIONS: IntelligenceGatewayOptions = {
+  analysisPreset: 'custom',
+  includeStatistics: true,
+  metricKind: 'unknown',
+  compareBaseline: false,
+  currentRefId: 'A',
+  baselineRefId: 'B',
+  showEvidence: true,
+  allowFollowUps: true,
   secureDataSourceUid: '',
-  model: 'gpt-4.1-mini',
+  model: '',
   temperature: 0.2,
   maxTokens: 1200,
   unlimitedOutputTokens: false,

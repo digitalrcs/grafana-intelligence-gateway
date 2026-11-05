@@ -1,170 +1,91 @@
-# Panel Setup and Configuration
+# Panel setup and analysis workflow
 
-Grafana Intelligence Gateway analyzes query data, images, or both. This guide covers panel **1.1.2**, which requires companion **1.1.0 or later** and Grafana **11.6 or later**. The optional Grafana LLM app may require a newer Grafana version.
+Public 1.2.0 requires Grafana 11.6 or later and the Intelligence Gateway Secure AI companion 1.1.0 or later; use security-fixed companion 1.1.2 or later. The optional Grafana LLM app has separate requirements.
 
-| Mode            | Query setup                                                            | Image setup and action                                                                                       |
-| --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Data only       | Configure this panel's queries, commonly **Dashboard → Source panel**. | Leave images unattached; select **Analyze**.                                                                 |
-| Images only     | No query results or Dashboard source required.                         | Turn **Include query data with images** off; preview images, select **Use images**, then **Analyze images**. |
-| Data and images | Connect the query results needed for precise values.                   | Leave **Include query data with images** on; preview images, select **Use images**, then **Analyze images**. |
+## Quick start
 
-All three modes require **AI provider → Secure AI data source**. It connects the model. **Queries → Dashboard** is a separate setting that reuses another panel's query results; selecting the AI data source does not import measurements. Capturing a panel adds its rendered image, not its DataFrames.
+1. In **Connections → Data sources**, create an **Intelligence Gateway Secure AI** instance. Configure the provider, server-reachable endpoint, credentials if required, approved model and administrator limits. Select **Save & test**.
+2. Add an Intelligence Gateway panel. Open **1. Connect AI**, select that instance, and choose an approved model using **Load models securely**.
+3. In the **Queries** tab, select **Dashboard → Source panel** to reuse an existing panel’s results. Alternatively, configure this panel’s own queries. This supplies measurements; the Secure AI connection supplies the model.
+4. In **3. Analysis task**, choose a preset. Optionally add team definitions, thresholds or runbook instructions under **Skills / additional context**.
+5. Return to the panel and select **Analyze**. Review the answer and expand **Evidence** to inspect its inputs. Expand **Ask a follow-up** or **Share assessment** to continue or export.
 
-The supplied demo instance, **DEMO ONLY - Mock AI (no inference)**, returns a fixed receipt: no model runs and no data or image analysis occurs. Read the analysis panel's **AI connection label** to identify the currently selected instance. For genuine analysis, use **Connections → Data sources → Add new data source** to create a **separate** real-provider instance, configure and test it, then select it and its approved model under the panel's **AI provider** settings. Follow the [two-phase walkthrough](Reviewer-Walkthrough#phase-2-connect-a-real-provider); the chart's TestData/Dashboard connection is not an AI provider.
+No AI instance or model is preselected. Configure a real provider before analysis; the Analyze button remains disabled until you select an instance and a model or Copilot agent alias.
 
-## 1. Configure the required secure data source
+## Settings, in order
 
-Install `digitalrcs-intelligencegateway-datasource` **1.1.0 or later**, restart Grafana, then create an **Intelligence Gateway Secure AI** data-source instance.
+| Section                            | What to configure                                                                                                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1. Connect AI**                  | Setup checklist, Secure AI data source and model. Credentials stay in the companion’s encrypted configuration.                                                      |
+| **2. Choose evidence**             | Source label, empty-data behavior, image controls, sample statistics, numeric semantics and optional baseline query IDs. The source label does not connect a query. |
+| **3. Analysis task**               | Preset, team context, manual/automatic analysis and debounce. Start with manual analysis.                                                                           |
+| **4. Results and sharing**         | Evidence details, follow-ups, assessment title and description. Export controls are available after a successful assessment.                                        |
+| **5. Advanced prompts and limits** | System/user prompts, preview, row/character limits, temperature, output budget, requested visible-answer length and timeout.                                        |
+| **6. Appearance**                  | Background, text color, font size, padding and alignment.                                                                                                           |
 
-1. Select OpenAI, LM Studio, Open WebUI, Grafana LLM app, Custom/OpenAI-compatible, or Copilot Studio Direct Line **preview**. The Grafana app is optional; Copilot is not an enterprise SSO integration.
-2. Configure the administrator-controlled base URL.
-3. Set a default model and include it in **Allowed models**. If the list is empty, only the default model is permitted.
-4. Set the backend timeout and maximum output-token ceiling.
-5. Store the provider's API key, bearer token, or Copilot Direct Line secret only in its dedicated `secureJsonData` field. LM Studio may need no credential. A Grafana LLM app token is a dedicated Grafana service-account token, not a browser login.
-6. Keep HTTPS enabled. Use **Allow insecure HTTP** only for a trusted local development network.
-7. Select **Save & test**.
+Existing saved prompts and settings are preserved. **Custom instructions** remains the default task. Other presets add instructions to your configured prompts rather than replacing them.
 
-See [AI Providers](Configuration-AI-Providers) for endpoint examples, and [Secure Backend and Secret Storage](Secure-Backend-and-Secrets) for provisioning and policy. OpenAI-compatible models must accept the adapter's Chat Completions parameters; model discovery alone does not guarantee compatibility.
+## Choose an analysis task
 
-## 2. Add query data when needed
+- **Explain this spike:** identify changes and timestamps, distinguish possible causes from observations, and suggest checks.
+- **Compare these series:** compare supplied series and any configured baseline, respecting units and sample coverage.
+- **Summarize for handover:** organize observations, supported impact, uncertainty and next checks.
+- **Check data quality:** inspect explicit null/invalid values and coverage limitations without inventing missing timestamps.
+- **Custom instructions:** use your existing system and user prompts.
 
-For data-only or combined assessment, create or identify a panel that returns the data to analyze. Time series, tables, logs, and other query results are accepted when Grafana exposes them as DataFrames. Confirm that the source returns data for the active dashboard time range. Skip this step for images-only assessment.
+You can also change the task using the selector on the panel. Selecting a preset does not immediately submit a manual request. With automatic analysis enabled, task changes can trigger analysis after the debounce.
 
-## 3. Add the Intelligence Gateway panel
+## Understand the evidence
 
-1. Select **Add visualization**.
-2. Choose **Grafana Intelligence Gateway**.
-3. For query-data sharing, in **Queries**, select the `-- Dashboard --` data source. For images-only use, skip steps 3–5.
-4. Under **Source panel**, select the panel whose results should be analyzed.
-5. Choose **All data** unless annotations are specifically required.
-6. Save the dashboard.
+Each successful assessment keeps a temporary snapshot of its prompt, bounded query evidence, model, time range, source label and submission timestamp. Evidence details show included/omitted row counts. Changes to query data, the dashboard time range or relevant analysis settings mark the answer **out of date**, including changes outside the sampled rows. Failed refreshes retain the previous snapshot.
 
-The **Source panel title or ID (hint)** is descriptive prompt metadata only. The Dashboard data source performs the actual connection.
+Row limits include the last rows in the supplied frame order; they do not sort or fetch data. Character limits remove whole oldest rows and recompute statistics, keeping valid JSON. Large metadata can cause entire frames to be omitted. Statistics describe the retained samples, not the full query window. Review the payload under **Submitted query evidence**.
 
-![Dashboard data source and source panel selection](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/configuration-data-context.png)
+**Numeric metric meaning** applies to every numeric field in the panel:
 
-## 4. Configure AI generation
+- **Unknown / raw values:** report raw numeric summaries without assuming a metric’s meaning; no calculated baseline percentages.
+- **Gauge / measured values:** sample minimum, maximum, unweighted mean, first/last values and change. Baseline comparisons match unique field names, labels and units.
+- **Cumulative counter:** raw minimum/maximum and adjacent observed increases, with decreases treated as resets to zero. No gauge mean or rate is reported. Missing values break adjacency. These are observed sample increments, not a replacement for source-side `rate()`/`increase()` calculations.
 
-| Option                                  | Purpose                                       | Example                          | Guidance                                                                                                                                    |
-| --------------------------------------- | --------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Secure AI data source**               | Selects the backend instance by UID.          | `Intelligence Gateway Secure AI` | Required. The panel stores only the UID.                                                                                                    |
-| **Model**                               | Chooses an administrator-approved model.      | `review-model`                   | Use **Load models securely** or enter an allowed ID.                                                                                        |
-| **Temperature**                         | Controls response randomness where supported. | `0.2`                            | Range 0–2. Low values can reduce variation, but do not guarantee repeatability. Not enforced by Copilot Direct Line.                        |
-| **Provider/model default output limit** | Omits the panel request cap.                  | Off                              | The backend administrator ceiling and provider limits still apply.                                                                          |
-| **Maximum output tokens**               | Hard panel request cap where supported.       | `1200`                           | Slider range is 64–1,048,576; the backend applies the lower panel/admin cap. Model limits can be lower; Copilot owns its generation policy. |
-| **Requested answer max tokens (soft)**  | Adds a concision instruction.                 | `0`                              | Zero disables it. Models cannot guarantee exact token counts.                                                                               |
-| **Response timeout**                    | Cancels the panel wait.                       | `300`                            | Range is 10–600 seconds. Align it with the backend timeout.                                                                                 |
+For mixed counter/gauge data, calculate rates in the source query or use separate analysis panels. Missing counts identify explicit null/non-finite values in supplied rows; absent timestamps cannot be counted without an expected cadence. Sample means are not time-weighted averages.
 
-Responses are buffered and cancellable; tokens do not stream into the panel as they are generated. Provider credentials, URLs, authentication headers, and provider error bodies never enter panel options.
+## Compare a baseline
 
-For reasoning models, the output budget may include both reasoning and the visible answer. Raising only the data-source ceiling does not raise a smaller panel request: a panel set to `1200` still requests only 1,200 output tokens even when the data source permits `256000`. As a bounded starting point for a suitable local model, try **Maximum output tokens** `8192` in both panel and backend, **Requested answer max tokens (soft)** `500`, and **Response timeout** `300` seconds in both. These are examples, not guaranteed capabilities. A model's context window is not its output budget. The soft target is approximate, the default-limit option is not unlimited, and the panel does not expose a separate reasoning-effort control.
+1. Configure current query **A** and historical baseline query **B** in Queries, or share a source panel that supplies both reference IDs. Configure the historical period using the data source’s query facilities. This plugin does not retrieve past windows itself.
+2. Enable **Compare with a baseline** under **2. Choose evidence**, then enter the exact current and baseline reference IDs.
+3. For calculated mean differences and percentage changes, select **Gauge / measured values** and keep **Calculate sample statistics** enabled. Align field names, labels and units between the queries. Duplicate matches are intentionally not compared.
+4. Select **Compare these series**, then **Analyze**. Only the two selected query groups are supplied. Missing datasets, identical IDs, or a context limit that removes either dataset block analysis with a setup message.
 
-Output-limit errors and timeouts are different. The shortest applicable panel, backend, proxy, and upstream deadline wins. The Grafana LLM app 1.2.0 has a two-minute upstream timeout that these settings cannot override. Copilot Direct Line does not enforce temperature or output-token settings; configure those policies on the agent.
+The dashboard time range and supplied time fields are recorded; query time shifts may make historical timestamps appear aligned to the current window. Describe the actual baseline period in team context. Percent change is unavailable when the baseline mean is zero. Incompatible/ambiguous series can still be reviewed, but have no calculated pair comparison.
 
-![Secure data source, model, and generation controls](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/configuration-model-generation.png)
+## Follow up and share
 
-After analysis, the generated assessment appears with **Clear analysis** and **Refresh assessment**. **Clear analysis** cancels an active request and removes the answer, errors, and pending images without modifying the dashboard query or source data. A successful image assessment releases its attachments; capture or attach again before requesting another image assessment. Refreshing without new attachments is a data-only request.
+**Ask about this snapshot** sends the original textual prompt and conversation, even if the dashboard has refreshed. It never silently substitutes new measurements. Up to six follow-ups are allowed; questions are limited to 2,000 characters and prior conversation to 24,000 characters. Oversized conversations are rejected rather than silently truncated. Provider/backend limits still apply. Automatic analysis pauses once a follow-up starts; use **Analyze latest data** to begin a fresh assessment.
 
-![Completed secure-backend analysis and runtime controls](https://raw.githubusercontent.com/digitalrcs/grafana-intelligence-gateway/main/docs/images/production-secure-analysis.png)
+Under **Share assessment**, **Copy brief** and **Download brief** create Markdown with the assessment, follow-ups, time range, source, model and dashboard link. Submitted query evidence is excluded by default; explicitly select **Include query evidence in export** to add it. The brief still contains model-generated observations and source metadata, which may themselves be sensitive. Dashboard links use absolute times and omit variable values; reselect variables if needed. Clipboard support depends on browser permissions; downloading is the fallback.
 
-## 5. Configure prompts and skills
+Snapshots and conversations remain in memory, are not saved with the dashboard and are cleared by **Clear analysis**, navigation/unmount or model/provider changes. Clear also cancels active requests. Exports are user-managed files or clipboard contents.
 
-| Option                          | Purpose                                                                      | Example                                                          |
-| ------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **System / backend prompt**     | Defines the model's role, evidence rules, safety rules, and response format. | `You are an SRE analyst. Separate observations from hypotheses.` |
-| **User message template**       | Defines the task and injects runtime variables.                              | `Assess {{panelTitle}} for {{timeRange}} using {{data}}.`        |
-| **Skills / additional context** | Adds thresholds, runbooks, ownership, and domain definitions.                | `p95 latency critical: 1000 ms.`                                 |
-| **Constructed prompt preview**  | Shows assembled messages before live data is injected.                       | Read-only preview                                                |
+## Images
 
-Supported variables:
+For images-only analysis, turn off **Include query data with images**. No query is required, even with empty-data behavior set to Block. Open **Images**, add PNG/JPEG files, review the previews, choose **Use images**, then **Analyze images**. Administrator-approved vision support is required. Images are never submitted automatically.
 
-| Variable          | Runtime value                                           |
-| ----------------- | ------------------------------------------------------- |
-| `{{data}}`        | Bounded JSON serialization of every received DataFrame. |
-| `{{timeRange}}`   | Current dashboard start/end timestamps.                 |
-| `{{panelTitle}}`  | Intelligence Gateway panel title.                       |
-| `{{panelId}}`     | Numeric Grafana panel ID.                               |
-| `{{skills}}`      | Skills/additional context.                              |
-| `{{sourcePanel}}` | Descriptive source-panel hint.                          |
+Successful image analysis clears the image files. Follow-ups use the textual assessment and any originally supplied query data; they cannot inspect the images again. Reattach images to request a new visual assessment. Images are not included in exports or saved dashboards. Public-edition dashboard/selected-panel capture, PDF, CSV and office-file uploads are not implemented.
 
-Treat dashboard field names, labels, values, and logs as untrusted evidence rather than instructions.
+## Advanced settings and troubleshooting
 
-## 6. Bound data and behavior
+Keep `{{data}}` in a prompt to send query evidence. Other variables are `{{timeRange}}`, `{{panelTitle}}`, `{{panelId}}`, `{{skills}}`, and `{{sourcePanel}}`. The preview substitutes placeholders for live query values. Treat field names, labels, logs and uploaded text as untrusted evidence.
 
-| Option                              | Purpose                                                                                                                     | Default             |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| **Recent rows per frame**           | Includes the most recent rows per frame; range 1–1,000.                                                                     | `50`                |
-| **Maximum context characters**      | Caps serialized DataFrame JSON; range 1,000–200,000.                                                                        | `24000`             |
-| **Source panel title or ID (hint)** | Descriptive prompt label; does not establish a data connection.                                                             | `Synthetic traffic` |
-| **When no data arrives**            | Allows, warns, or blocks text-only analysis without frames. Attached images permit image analysis even with Block selected. | `Warn`              |
-| **Analyze automatically**           | Runs data-only analysis after data/prompt changes; pauses while image inputs are open or attached.                          | Off                 |
-| **Auto-analysis debounce (ms)**     | Waits after a change before automatic analysis; range 300–30,000. Shown when automatic analysis is enabled.                 | `1200`              |
-| **Show Analyze button**             | Keeps manual analysis available.                                                                                            | On                  |
-| **Clear analysis**                  | Cancels an active request and removes response, errors, and pending images.                                                 | Runtime button      |
+**Maximum output tokens** is a hard request cap, including hidden reasoning on many models. **Requested answer max tokens (soft)** is only a visible-answer length instruction. The provider-default option omits the panel cap but does not bypass administrator/provider limits. Local reasoning models may need both panel and backend caps increased to produce a visible answer. Align panel and backend timeouts; the shortest provider/proxy deadline still wins. Copilot Direct Line owns its generation policy; the optional Grafana LLM app has its own upstream limits. Responses are buffered, not streamed.
 
-Start with manual analysis. Enable automatic analysis only after provider budgets, prompt behavior, and data limits are understood.
-
-## 7. Configure image assessment
-
-Image controls are included in 1.1.0 and require companion 1.1.0 or later. They are optional: keep using **Analyze** with no attachments for data-only analysis.
-
-| Control                            | Purpose                                                                                                       | Default or example            |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| **Show image controls**            | Shows the runtime **Images** button. Any pending images remain reviewable even if this setting is turned off. | On                            |
-| **Include query data with images** | Sends this panel's bounded query rows alongside the images. Turn off for an image-only assessment.            | On                            |
-| **Images**                         | Opens capture, upload, and removable previews. It does not send an assessment.                                | Runtime button                |
-| **Use images**                     | Closes the preview and keeps the images staged in memory.                                                     | No network submission         |
-| **Remove / Remove all images**     | Discards one or all staged attachments.                                                                       | No network submission         |
-| **Analyze images**                 | Sends the staged images and prompt through the selected secure companion.                                     | Explicit action only          |
-| **Clear analysis**                 | Cancels a request and removes the answer, errors, and pending images.                                         | Source measurements unchanged |
-
-The administrator must enable image analysis and approve the selected vision model in the data source. Automatic analysis is paused while images are staged or the dialog is open. Successful image assessments release the attachments; capture again for a newer view. See [Image Analysis](Image-Analysis) for all capture limits and privacy considerations.
-
-## 8. Configure the display
-
-| Option               | Purpose                                                                                  | Default or example                                |
-| -------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| **Assessment title** | Heading above the generated assessment.                                                  | `Intelligence assessment`                         |
-| **Description**      | Optional explanatory text beneath the title. Use it to label a mock or live environment. | Empty; for example `Assessment of synthetic data` |
-| **Background color** | Assessment background.                                                                   | Transparent                                       |
-| **Text color**       | Overrides the theme's text color; leave empty for theme-aware text.                      | Empty                                             |
-| **Font size**        | Assessment font size in pixels; range 10–48.                                             | `14`                                              |
-| **Padding**          | Inner spacing in pixels; range 0–64.                                                     | `16`                                              |
-| **Alignment**        | Left, Center, or Right.                                                                  | Left                                              |
-
-Keep sufficient contrast and verify both Grafana themes when choosing custom colors.
-
-## 9. Verify
-
-### First analysis
-
-1. Select **Load models securely** and confirm only approved models appear.
-2. Select **Analyze**.
-3. Confirm the Markdown assessment renders.
-4. Compare cited fields, values, and timestamps with the source panel.
-5. Select **Clear analysis** and confirm only generated state is removed.
-6. Save the dashboard.
-
-For images-only verification, disconnect query results, turn **Include query data with images** off, attach an approved synthetic image, preview it, then select **Analyze images**. Check known visual facts in the response. For a combined test, reconnect the query results and turn that setting on. A mock image-count receipt verifies transport, not visual understanding.
-
-## Troubleshooting
-
-| Symptom                                      | Likely cause                                                                                                      | Action                                                                                                                                   |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| No secure data source appears                | Companion plugin is missing or no instance exists.                                                                | Install it, restart Grafana, configure an instance, and reload the editor.                                                               |
-| Save & test fails                            | Endpoint, HTTPS policy, credential, model, or network error.                                                      | Correct the data-source configuration; provider details remain server-side.                                                              |
-| No models load                               | Provider `/models` failed or no approved model was returned.                                                      | Verify data-source health and ensure the default/allowed IDs exist upstream.                                                             |
-| Requested model is rejected                  | It is outside the administrator allow-list.                                                                       | Select an approved ID or ask the administrator to update policy.                                                                         |
-| No visible answer or reasoning-only response | The model may have exhausted its output cap before the final answer; empty provider output can have other causes. | Read the sanitized error, compare both caps, and use an appropriately supported model.                                                   |
-| Request times out                            | Model generation exceeded a panel or backend deadline.                                                            | Reduce context, use a faster model, or align/increase both timeouts within 600 seconds.                                                  |
-| No source data                               | Dashboard data source is disconnected or source panel is empty.                                                   | Re-select `-- Dashboard --`, choose the source panel, and inspect its active-range data.                                                 |
-| Image controls cannot send                   | Companion is older than 1.1.0, vision is disabled, or model is not approved for images.                           | Upgrade both plugins, restart Grafana, and ask the administrator to check vision policy.                                                 |
-| Old labels or controls after upgrade         | Browser tab is still using the earlier plugin runtime.                                                            | Restart Grafana after installation, then reload the whole page; dashboard Refresh is not a code reload. Follow the cache guidance below. |
-
-See [Connecting Data from Other Panels](Connecting-Data-from-Other-Panels) for transformations and multi-frame behavior.
-
-For persistent stale code, see [the development cache guide](https://github.com/digitalrcs/grafana-intelligence-gateway/blob/main/docs/DEVELOPMENT.md#rebuilt-code-still-looks-unchanged). Do not clear all browser credentials or enable server development mode just to bypass cache.
-
-## Grafana 12.4 dashboard capture
-
-Use panel 1.1.2 or later for tall dashboards on Grafana 12.4.0. This fixes document scrolling so lower panels can be visited. A stalled scroll reports an error instead of producing an incomplete image. Existing size limits and partial-capture warnings still apply. Companion 1.1.0 or later remains required; updating Current View Exporter alone does not update this panel.
+| Symptom                    | Check                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| No AI instance/models      | Install the companion, configure an instance, Save & test, and check its approved model list.                             |
+| No query data              | Check Queries → Dashboard → Source panel and the active time range. AI connection selection does not supply measurements. |
+| Baseline setup error       | Check different reference IDs, nonempty results and sufficient character budget for both datasets.                        |
+| No calculated comparison   | Use gauge semantics and statistics; match unique field names, labels and units.                                           |
+| Out-of-date assessment     | Select Analyze latest data, or keep asking about the clearly labeled original snapshot.                                   |
+| No visible answer          | Check both output caps; reasoning may exhaust the budget before the final answer.                                         |
+| Timeout                    | Reduce context or align panel/backend/provider timeouts.                                                                  |
+| Images rejected            | Check companion version, enabled vision policy, approved vision model and image limits.                                   |
+| Old interface after update | Restart Grafana after replacing the plugin and reload the browser page.                                                   |

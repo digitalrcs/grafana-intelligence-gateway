@@ -1,3 +1,5 @@
+> Historical evidence for earlier releases; not validation of public 1.2.0. See [current validation](../VALIDATION.md).
+
 # Live reviewer evidence: synthetic traffic assessment
 
 Captured September 18, 2026, in local Docker Grafana 13.1.0. These are actual browser screenshots of responses generated through the panel and secure data-source backend by a loaded LM Studio model. They are not mock responses or manually authored assessments. Only the invented [eight-row fixture](../testdata/reviewer-traffic.csv) and its operational instructions were sent.

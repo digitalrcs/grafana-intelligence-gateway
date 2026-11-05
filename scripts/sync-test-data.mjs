@@ -5,7 +5,7 @@ import { format } from 'prettier';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const csvPath = path.join(root, 'testdata', 'reviewer-traffic.csv');
-const dashboardPath = path.join(root, 'provisioning', 'dashboards', 'dashboard.json');
+const dashboardPath = path.join(root, 'tests', 'fixtures', 'dashboard.json');
 const csvContent = (await readFile(csvPath, 'utf8')).trim();
 const lines = csvContent.split(/\r?\n/);
 

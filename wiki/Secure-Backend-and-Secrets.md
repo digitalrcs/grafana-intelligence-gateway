@@ -1,8 +1,10 @@
+> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+
 # Secure Backend and Secret Storage
 
 ## Recommended production architecture
 
-DigitalRCS provides the required companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource). Panel **1.1.0 requires companion 1.1.0 or later**. Install it beside the panel, create an **Intelligence Gateway Secure AI** data-source instance, store the provider credential in Grafana `secureJsonData`, and select that instance under **AI provider > Secure AI data source**.
+DigitalRCS provides the required companion [`digitalrcs-intelligencegateway-datasource`](https://github.com/DigitalRCS/grafana-intelligence-gateway-datasource). Panel **1.1.0 requires companion 1.1.0 or later**. Install it beside the panel, create an **Intelligence Gateway Secure AI** data-source instance, store the provider credential in Grafana `secureJsonData`, and select that instance under **1. Connect AI > Secure AI data source**.
 
 The data source has its own [installation and operations wiki](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki), including a credential-free reviewer environment and troubleshooting.
 
@@ -133,4 +135,4 @@ The shortest panel, backend, reverse-proxy, and provider timeout can terminate a
 
 ## Integrated Docker test
 
-The panel repository's Docker Compose environment mounts both sibling `dist` directories and provisions the secure instance plus a dashboard already configured with UID `intelligence-gateway-secure`. Build both plugins, start the panel Compose project, and open <http://localhost:3004>. The default deterministic mock requires no credential or `OPENAI_API_KEY` and performs no AI inference. To test a real provider, follow the [Reviewer Walkthrough](Reviewer-Walkthrough); configure a server-side API key only when the selected provider requires one, such as OpenAI.
+The panel repository's Docker Compose environment mounts both plugin builds and opens an unconfigured starter dashboard on <http://localhost:3005>. Configure your backend and choose its model or Copilot agent alias before analysis. Follow the [Reviewer Walkthrough](Reviewer-Walkthrough); store credentials in the secure data-source fields only when your provider requires them.

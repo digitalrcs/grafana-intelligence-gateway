@@ -1,8 +1,8 @@
 {
   "name": "digitalrcs-intelligencegateway-panel",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "scripts": {
-    "build": "webpack -c ./webpack.config.ts --env production --no-cache",
+    "build": "node scripts/check-edition.mjs && webpack -c ./webpack.config.ts --env production --no-cache",
     "dev": "webpack -w -c ./webpack.config.ts --env development",
     "test": "jest --watch --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4",
@@ -12,7 +12,10 @@
     "lint:fix": "npm run lint -- --fix && prettier --write --list-different .",
     "e2e": "playwright test",
     "server": "docker compose up --build",
-    "sign": "sign-plugin"
+    "sign": "node scripts/check-edition.mjs && sign-plugin",
+    "check:edition": "node scripts/check-edition.mjs",
+    "prebuild": "npm run check:edition",
+    "presign": "npm run check:edition"
   },
   "author": "DigitalRCS",
   "homepage": "https://www.digitalrcs.com",
@@ -82,7 +85,6 @@
     "@grafana/runtime": "13.1.2",
     "@grafana/schema": "13.1.2",
     "@grafana/ui": "13.1.2",
-    "html-to-image": "^1.11.13",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "rxjs": "^7.8.1"

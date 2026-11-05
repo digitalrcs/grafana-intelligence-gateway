@@ -1,5 +1,6 @@
 import { getDataSourceSrv } from '@grafana/runtime';
-import { DEFAULT_OPTIONS } from '../types';
+import { DEFAULT_OPTIONS as BASE_OPTIONS } from '../types';
+const DEFAULT_OPTIONS = { ...BASE_OPTIONS, secureDataSourceUid: 'test-ai', model: 'test-model' };
 import {
   analyzeWithAI,
   extractModelIds,

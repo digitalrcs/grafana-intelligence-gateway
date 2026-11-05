@@ -1,3 +1,5 @@
+> Public 1.2.0 documentation; see [Public Edition](Public-Edition) for scope and release status.
+
 # LM Studio Setup
 
 Use panel and secure companion **1.1.0 or later** together. The Grafana LLM app is not required for LM Studio.
@@ -23,7 +25,7 @@ Load a model that actually supports vision. In the companion, turn on **Enable i
 Choose the evidence in the panel:
 
 - **Data only:** connect **Queries → Dashboard → Source panel**, leave images unattached, and select **Analyze**.
-- **Images only:** no query results required; turn **Include query data with images** off, preview captures or uploads, then select **Use images → Analyze images**.
+- **Images only:** no query results required; turn **Include query data with images** off, preview uploaded PNG/JPEG images, then select **Use images → Analyze images**.
 - **Data and images:** connect query results, leave **Include query data with images** on, preview the images, and explicitly select **Analyze images**.
 
-Use a synthetic image with known visual facts to verify the response. A model-list request, successful text completion, or mock receipt is not a vision test. See [Image Analysis](Image-Analysis) and [LM Studio's OpenAI-compatible API documentation](https://lmstudio.ai/docs/developer/openai-compat).
+Use a synthetic image with known visual facts to verify the response. Model discovery or successful text completion does not verify image understanding. See [Image Analysis](Image-Analysis) and [LM Studio's OpenAI-compatible API documentation](https://lmstudio.ai/docs/developer/openai-compat).

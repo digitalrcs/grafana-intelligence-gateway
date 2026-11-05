@@ -33,11 +33,11 @@ The source panel can use Prometheus, Loki, SQL, InfluxDB, Elasticsearch, TestDat
 5. In **Use results from panel**, select the source panel, for example `Server CPU by host`.
 6. Choose whether to include the source panel's transformations when Grafana presents that option.
 7. Select **Refresh** or **Run queries**. The Intelligence Gateway should no longer show the no-data notice.
-8. Under **Data context**, configure:
+8. Under **5. Advanced prompts and limits**, configure:
    - **Recent rows per frame**: number of newest rows included from each DataFrame.
    - **Maximum context characters**: hard request-size cap.
-   - **Source panel title or ID (hint)**: optional text added to the prompt; this does not create the connection.
-9. Select the required secure AI data source, then configure the model, prompt, and skills context.
+   Under **2. Choose evidence**, set **Source panel title or ID (hint)** if desired. This label does not create the connection. Select numeric semantics and optional baseline comparison here.
+9. Under **1. Connect AI**, select the secure AI data source and model. Under **3. Analysis task**, select a preset and optional skills context.
 10. Select **Analyze**, then save the dashboard.
 
 ## What the plugin sends

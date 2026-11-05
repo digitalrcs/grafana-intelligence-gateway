@@ -46,3 +46,11 @@ ci/
 .idea
 
 .eslintcache
+
+# Local credentials and confidential overrides
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+config.local.*

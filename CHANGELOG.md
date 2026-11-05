@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.2.0 - 2026-11-05
+
+- Separate freshness fingerprint values and structural boundaries; report unknown counter increase/reset counts when no valid adjacent sample pair exists, with explicit pair coverage.
+
+- Remove the bundled demonstration AI service and preset connection; require users to configure their real backend/model or Copilot Studio agent. Simplify connection status and collapse evidence, sharing and follow-up controls without removing capabilities.
+
+- Add evidence snapshots, included/omitted row counts and stale-assessment warnings.
+- Add analysis presets, bounded sample statistics with explicit metric semantics, and comparison of supplied current/baseline query results.
+- Add frozen-text follow-up conversations and Markdown incident briefs with opt-in query evidence.
+- Organize setup into six numbered sections with an inline checklist and a rewritten setup guide; preserve existing saved options and custom prompts.
+
+- Remove cross-panel DOM discovery, dashboard/selected-panel capture, and html-to-image from the public edition.
+- Retain PNG/JPEG uploads, explicit image analysis, and Dashboard data-source result sharing.
+- Isolate the public test stack on loopback port 3005 and update the public documentation.
+
 ## 1.1.2 - 2026-10-30
 
 - Fix dashboard capture on Grafana 12.4.0 when body overflow belongs to the document viewport.

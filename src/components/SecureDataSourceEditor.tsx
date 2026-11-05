@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StandardEditorProps } from '@grafana/data';
 import { getDataSourceSrv } from '@grafana/runtime';
-import { Alert, Combobox, type ComboboxOption, Stack } from '@grafana/ui';
+import { Combobox, type ComboboxOption, Stack } from '@grafana/ui';
 import { SECURE_DATASOURCE_PLUGIN_ID } from '../utils/aiClient';
 import { IntelligenceGatewayOptions } from '../types';
 
@@ -9,10 +9,7 @@ export const SecureDataSourceEditor = ({
   value,
   onChange,
 }: StandardEditorProps<string, undefined, IntelligenceGatewayOptions>) => {
-  const instances = useMemo(
-    () => getDataSourceSrv().getList({ pluginId: SECURE_DATASOURCE_PLUGIN_ID, all: true }),
-    []
-  );
+  const instances = useMemo(() => getDataSourceSrv().getList({ pluginId: SECURE_DATASOURCE_PLUGIN_ID, all: true }), []);
   const choices: Array<ComboboxOption<string>> = instances.map((instance) => ({
     value: instance.uid,
     label: instance.name,
@@ -29,16 +26,10 @@ export const SecureDataSourceEditor = ({
         noOptionsMessage="No Intelligence Gateway Secure AI data source is configured."
         isClearable
       />
-      {value ? (
-        <Alert severity="success" title="Server-side credentials enabled">
-          Provider requests use the selected data source. API keys and provider policy remain on the Grafana server.
-        </Alert>
-      ) : (
-        <Alert severity="error" title="Secure data source required">
-          Configure and select an Intelligence Gateway Secure AI data source before running analysis. The panel never
-          stores provider credentials.
-        </Alert>
-      )}
+      <small>
+        Configure OpenAI, LM Studio, Open WebUI, Grafana LLM, an OpenAI-compatible endpoint, or Copilot Studio Direct
+        Line in the data source. Credentials stay on the server.
+      </small>
     </Stack>
   );
 };
