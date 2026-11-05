@@ -1,3 +1,5 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
 # Configuration: Secure AI Provider
 
 Panel 1.1.0 requires a configured **Intelligence Gateway Secure AI** data-source instance from companion plugin **1.1.0 or later**. Provider URLs and credentials are configured in that data source, not in the panel. The panel stores the instance UID and non-secret analysis settings.

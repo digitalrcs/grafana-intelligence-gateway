@@ -1,3 +1,5 @@
+[Public edition 1.2.0 candidate and boundaries](Public-Edition)
+
 # Grafana Intelligence Gateway
 
 - [Home](Home)

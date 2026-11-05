@@ -1,53 +1,31 @@
-# Grafana submission update — 1.1.2
+# Public 1.2.0 readiness and submission handoff
 
-Use **Submit Update** on the existing plugin submission. This is a panel-only patch; companion data source 1.1.0 or later is still required and does not need a new release. The fields below target the 1.1.2 release. Confirm publication and the exact archive verification before entering them in Grafana. Preparing these fields does not update the portal or grant approval.
+Status: candidate, not released or submitted. Do not enter historical 1.1.2 archive values for this candidate.
 
-| Field                 | Value                                                                                                                                   |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Plugin ID             | `digitalrcs-intelligencegateway-panel`                                                                                                  |
-| Version               | `1.1.2`                                                                                                                                 |
-| Type                  | Panel                                                                                                                                   |
-| OS & Architecture     | Single (frontend-only archive)                                                                                                          |
-| ZIP URL               | https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.1.2/digitalrcs-intelligencegateway-panel-1.1.2.zip      |
-| Source URL            | https://github.com/digitalrcs/grafana-intelligence-gateway/tree/v1.1.2                                                                  |
-| SHA1 asset            | https://github.com/digitalrcs/grafana-intelligence-gateway/releases/download/v1.1.2/digitalrcs-intelligencegateway-panel-1.1.2.zip.sha1 |
-| Provisioning provided | Yes                                                                                                                                     |
-| Minimum Grafana       | 11.6.0; optional Grafana LLM app requires Grafana 13+                                                                                   |
-| License               | Apache-2.0                                                                                                                              |
+The public project is https://github.com/digitalrcs/grafana-intelligence-gateway; the shared companion is https://github.com/digitalrcs/grafana-intelligence-gateway-datasource. Retain plugin ID `digitalrcs-intelligencegateway-panel` for dashboard compatibility. A separate workspace/repository does not create a new catalog identity. Confirm the existing listing with the organization administrator; normally this is Submit Update. A genuinely new plugin identity requires a deliberate migration and Grafana agreement, not just a repository rename.
 
-Copy the **hash value** from the SHA1 asset into Grafana's SHA1 field, not the checksum-file URL. Do not substitute GitHub's automatically generated source-code ZIP for the packaged plugin.
+## Required gates
 
-## Testing guidance
+1. Review the public source, history, documentation and image assets for secrets and private-only additions. Historical public capture code remains public history; removing it from the current tree does not retract old releases.
+2. Pass clean dependency installation, edition guard, typecheck, lint, unit tests, production build and dependency audit. Run the upload/data browser suite across supported Grafana versions with the pinned secure companion. Mock receipts establish transport only; separately validate a real approved vision provider with synthetic evidence.
+3. Confirm public signing authorization and organization ownership. Public Community/Commercial classification is Grafana's decision; free source alone does not establish Community eligibility. Organization-admin access is required for submission. Do not expose signing credentials to pull-request builds.
+4. Prepare an immutable source tag and a ZIP rooted at the plugin ID. Verify license, catalog README, metadata, screenshots, module and signature as applicable. Run the full official plugin validator against that exact ZIP and source revision; resolve warnings or document reviewer disposition.
+5. Verify exact public-download SHA1/SHA256, manifest signature and GitHub provenance. Record artifact URL, immutable source URL, literal 40-character SHA1, test guidance and all validation evidence below.
+6. Only after these gates and necessary account approvals, use the appropriate portal submission action. This document authorizes no automatic portal submission.
 
-Install panel 1.1.2 beside companion data source 1.1.0 or later. Follow the [panel reviewer walkthrough](https://github.com/digitalrcs/grafana-intelligence-gateway/wiki/Reviewer-Walkthrough) and [data-source test guide](https://github.com/digitalrcs/grafana-intelligence-gateway-datasource/wiki/Testing-and-Review). The provisioned Docker environment uses a deterministic mock and synthetic traffic data without external credentials. Its labeled receipt verifies transport, not AI understanding.
+## Candidate submission values
 
-Phase 1 checks the mock connection only. Before Phase 2, use an existing approved provider or coordinate suitable limited test API access privately with DigitalRCS through the existing Grafana review conversation. [Grafana may require test API access for more complex plugins](https://grafana.com/developers/plugin-tools/publish-a-plugin/provide-test-environment). No hosted service or credentials are currently bundled or promised; any access must be arranged and confirmed separately. Never publish credentials or private endpoint details. Completing the mock check does not complete real-provider review.
+Version: 1.2.0. ZIP URL, immutable source URL and SHA1: **not established**. Do not substitute a source ZIP, a checksum-file URL or historical values. Signing, provenance, catalog approval and certification are distinct states.
 
-Verify all three input modes:
+## Reviewer scenario
 
-1. **Data only:** configure the panel's Queries using Grafana's Dashboard data source to reuse the source chart; select **Analyze** without attaching images.
-2. **Images only:** enable vision on the secure AI data source and approve the model. In the panel, turn off **Include query data with images**; no source panel query is required. Capture or upload, review previews, then select **Analyze images**.
-3. **Images and data:** enable **Include query data with images**, configure a source query, then explicitly send the reviewed images and bounded query results.
+Install the companion first (use security-fixed 1.1.2 or later). Start the isolated loopback-only port-3005 fixture with synthetic TestData and the labeled deterministic mock. Connect Queries → Dashboard → Source panel for existing results. Choose the secure AI instance separately. Verify Analyze for data, PNG/JPEG preview without inference, explicit Analyze images, images-only with query inclusion disabled, combined mode, removal, clear/cancellation, model-policy rejection and absence of dashboard/selected-panel capture controls. Do not run the full mock-oriented suite against a real provider.
 
-Confirm previews do not send inference requests, the Intelligence panels are excluded from capture, names wrap beside their checkboxes, Clear analysis removes queued images/results, and invalid images/model policies fail safely. Use a separate real provider with synthetic input to assess image understanding. Live validation of every provider and Microsoft tenant is not implied. Copilot Studio is a bounded Direct Line preview; delegated enterprise SSO is not implemented.
+## Official requirements checked 2026-11-05
 
-## Verify the exact release
+- [Publishing and review](https://grafana.com/developers/plugin-tools/publish-a-plugin/publish-a-plugin)
+- [Signing](https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin)
+- [Plugin policy and signature classifications](https://grafana.com/legal/plugins/)
+- [Packaging](https://grafana.com/developers/plugin-tools/publish-a-plugin/package-a-plugin)
 
-```bash
-gh release download v1.1.2 --repo digitalrcs/grafana-intelligence-gateway \
-  --pattern 'digitalrcs-intelligencegateway-panel-1.1.2.zip*'
-sha1sum digitalrcs-intelligencegateway-panel-1.1.2.zip
-sha256sum digitalrcs-intelligencegateway-panel-1.1.2.zip
-gh attestation verify digitalrcs-intelligencegateway-panel-1.1.2.zip \
-  --repo digitalrcs/grafana-intelligence-gateway \
-  --signer-workflow digitalrcs/grafana-intelligence-gateway/.github/workflows/release.yml \
-  --source-ref refs/tags/v1.1.2
-```
-
-The Release workflow verifies the downloaded artifact, source-tag provenance, checksum, and full Grafana Plugin Validator output. Its evidence artifact records results and the validator image digest. Check those results rather than assuming the workflow configuration proves success.
-
-The ZIP must contain one `digitalrcs-intelligencegateway-panel/` root, version 1.1.2, production module, catalog README, changelog, license, and all referenced image assets. Install the secure companion 1.1.0 or newer for image features.
-
-The release workflow requires the signing credential and a signed manifest in the exact downloaded archive. Verify the manifest, signature level, checksums, provenance, and validator results before submission. Signing does not by itself establish catalog publication or certification.
-
-See [release notes](RELEASE_NOTES_1.1.2.md), [release validation](RELEASE_VALIDATION.md), and the [GitHub release](https://github.com/digitalrcs/grafana-intelligence-gateway/releases/tag/v1.1.2). Portal submission remains a separate administrator action.
+Initial review may accept unsigned artifacts; public signing requires Grafana's signature grant. This existing project's release workflow intentionally requires signing. The installed sign-plugin 3.x is distinct from current 4.x, which requires Node 24.15 or later; do not upgrade it without updating the toolchain and validating the migration.

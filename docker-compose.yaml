@@ -1,12 +1,15 @@
+name: digitalrcs-intelligencegateway-public
+
 services:
   grafana:
+    container_name: digitalrcs-intelligencegateway-public
     extends:
       file: .config/docker-compose-base.yaml
       service: grafana
     build:
       dockerfile: ${GRAFANA_DOCKERFILE:-../Dockerfile.review}
     ports: !override
-      - 3004:3000/tcp
+      - 127.0.0.1:3005:3000/tcp
     volumes:
       - grafana-storage:/var/lib/grafana
       - ${INTELLIGENCE_GATEWAY_DATASOURCE_DIST:-../digitalrcs-intelligencegateway-datasource/dist}:/var/lib/grafana/plugins/digitalrcs-intelligencegateway-datasource
@@ -17,7 +20,6 @@ services:
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: digitalrcs-intelligencegateway-panel,digitalrcs-intelligencegateway-datasource
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     depends_on:
       mock-ai:
         condition: service_healthy
@@ -25,7 +27,7 @@ services:
   mock-ai:
     build:
       context: ./testdata/mock-provider
-    container_name: digitalrcs-intelligencegateway-panel-mock-ai
+    container_name: digitalrcs-intelligencegateway-public-mock-ai
     healthcheck:
       test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8080/v1/models')"]
       interval: 2s

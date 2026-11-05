@@ -1,3 +1,5 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
 # Connecting Data from Other Panels
 
 Grafana Intelligence Gateway consumes normal Grafana DataFrames. To assess another panel, use Grafana's built-in `-- Dashboard --` data source to reuse the other panel's query results on the same dashboard.

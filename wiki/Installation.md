@@ -1,6 +1,8 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
 # Installation
 
-Panel **1.1.0** requires **Grafana 11.6 or later** and **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. Install the companion first. The optional Grafana LLM app has its own requirements: app 1.2.0 requires Grafana 13. The Current View Exporter plugin is not required for image capture.
+Panel **1.2.0 candidate** requires **Grafana 11.6 or later** and **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. Install the companion first. The optional Grafana LLM app has its own requirements: app 1.2.0 requires Grafana 13. The Current View Exporter plugin is not required for image upload.
 
 ## Development
 

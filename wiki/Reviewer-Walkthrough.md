@@ -1,3 +1,5 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
 # Reviewer Walkthrough: explain a traffic shift
 
 ## What problem does this solve?
@@ -80,10 +82,10 @@ For this data-only example, only selected query results and prompt context are s
 | Mode            | Setup                                                                                                                                                                                    | What to verify                                                                                      |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Data only       | Leave images unattached and keep **Queries → Dashboard → Source panel** connected. Select **Analyze**.                                                                                   | The model cites supplied rows and does not claim to have received an image.                         |
-| Images only     | Use a separate test panel without query results. Turn **Include query data with images** off. Preview a chart capture or approved synthetic image, then **Use images → Analyze images**. | The model describes known visible facts without refusing solely because query rows are absent.      |
-| Data and images | Reconnect query results, leave **Include query data with images** on, and preview the chart capture before **Analyze images**.                                                           | Precise values come from supplied rows; visual observations and missing evidence are distinguished. |
+| Images only     | Use a separate test panel without query results. Turn **Include query data with images** off. Preview a approved synthetic PNG/JPEG image, then **Use images → Analyze images**. | The model describes known visible facts without refusing solely because query rows are absent.      |
+| Data and images | Reconnect query results, leave **Include query data with images** on, and preview the uploaded image before **Analyze images**.                                                           | Precise values come from supplied rows; visual observations and missing evidence are distinguished. |
 
-All three need **Secure AI data source**. Image modes also need an administrator-enabled vision policy and a genuinely vision-capable model. Capture supplies pixels, not every pictured panel's raw rows. Use **Remove** or **Remove all images** to discard staged attachments; **Clear analysis** cancels a request and clears the answer, errors, and pending images without modifying source measurements. A successful image assessment releases attachments, so capture again before another image request.
+All three need **Secure AI data source**. Image modes also need an administrator-enabled vision policy and a genuinely vision-capable model. An uploaded screenshot supplies pixels, not every pictured panel's raw rows. Use **Remove** or **Remove all images** to discard staged attachments; **Clear analysis** cancels a request and clears the answer, errors, and pending images without modifying source measurements. A successful image assessment releases attachments, so upload a fresh image before another image request.
 
 The mock can verify image counts, controls, and transport but cannot assess the chart. A model-list check or a successful data-only answer does not prove vision. Record a separate approved synthetic vision test before claiming that a provider/model combination understands images. Copilot remains a Direct Line preview, not a verified enterprise SSO connection.
 

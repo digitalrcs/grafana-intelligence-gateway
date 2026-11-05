@@ -156,7 +156,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       path: 'showImageControls',
       name: 'Show image controls',
       description:
-        'Capture dashboard panels or add PNG/JPEG images. Image sending requires administrator-enabled vision support in the secure AI data source.',
+        'Upload PNG/JPEG images. Image sending requires administrator-enabled vision support in the secure AI data source.',
       category: ['Image assessment'],
       defaultValue: DEFAULT_OPTIONS.showImageControls,
     })
@@ -164,7 +164,7 @@ export const plugin = new PanelPlugin<IntelligenceGatewayOptions>(IntelligenceGa
       path: 'includeDataWithImages',
       name: 'Include query data with images',
       description:
-        "Send this Intelligence panel's query results alongside images for precise values. Screenshot capture does not retrieve other panels' raw data.",
+        "Send this Intelligence panel's query results alongside images for precise values. Use the Dashboard data source to share another panel's query results.",
       category: ['Image assessment'],
       defaultValue: DEFAULT_OPTIONS.includeDataWithImages,
     })

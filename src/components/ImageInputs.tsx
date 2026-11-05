@@ -1,15 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/css';
-import { Alert, Button, Checkbox, Modal, Spinner, useStyles2, useTheme2 } from '@grafana/ui';
+import { Alert, Button, Modal, Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { fetchVisionCapabilities, VisionCapabilities } from '../utils/aiClient';
-import {
-  captureDashboard,
-  captureSelectedPanels,
-  discoverCapturePanels,
-  importImageFiles,
-  VisionAttachment,
-  VISION_LIMITS,
-} from '../vision';
+import { importImageFiles, VisionAttachment, VISION_LIMITS } from '../vision';
 import { ImageSession } from '../vision/session';
 
 interface Props {
@@ -27,14 +20,6 @@ const stylesFor = (theme: ReturnType<typeof useTheme2>) => ({
   modal: css({ width: 'min(920px, 96vw)', maxHeight: '90vh' }),
   stack: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }),
   actions: css({ display: 'flex', flexWrap: 'wrap', gap: theme.spacing(1), alignItems: 'center' }),
-  panelList: css({ display: 'grid', gap: theme.spacing(1), maxHeight: 180, overflowY: 'auto' }),
-  panelChoice: css({
-    gridTemplateColumns: 'max-content minmax(0, 1fr)',
-    alignItems: 'start',
-    textAlign: 'left',
-    minWidth: 0,
-    overflowWrap: 'anywhere',
-  }),
   grid: css({
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
@@ -73,8 +58,6 @@ export function ImageInputs({
   includeQueryData,
 }: Props) {
   const styles = useStyles2(stylesFor);
-  const [panels] = useState<ReturnType<typeof discoverCapturePanels>>(() => discoverCapturePanels());
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [capabilities, setCapabilities] = useState<VisionCapabilities>();
   const [checking, setChecking] = useState(true);
   const [capabilityError, setCapabilityError] = useState('');
@@ -121,7 +104,7 @@ export function ImageInputs({
           <Spinner />
           {progress}
           <Button size="sm" variant="secondary" onClick={session.cancel}>
-            Cancel capture
+            Cancel preparation
           </Button>
         </div>
       ) : null}
@@ -157,24 +140,8 @@ export function ImageInputs({
               output tokens do not apply to that agent. Prompt length requests remain advisory.
             </Alert>
           ) : null}
-          <p>
-            Capture reads the current rendered dashboard, excluding Intelligence Gateway panels. It does not
-            deliberately refresh queries. Scrolling may load previously unseen panels; scheduled dashboard refreshes can
-            still occur.
-          </p>
+          <p>Add PNG or JPEG files, review the previews, then select Analyze images.</p>
           <div className={styles.actions}>
-            <Button variant="secondary" disabled={!visionReady} onClick={() => void session.run(captureDashboard)}>
-              Capture dashboard
-            </Button>
-            <Button
-              variant="secondary"
-              disabled={!visionReady || selectedIds.length === 0}
-              onClick={() =>
-                void session.run((signal, onProgress) => captureSelectedPanels(selectedIds, signal, onProgress))
-              }
-            >
-              Capture selected panels
-            </Button>
             <Button variant="secondary" disabled={!visionReady} onClick={() => fileInput.current?.click()}>
               Add images
             </Button>
@@ -197,35 +164,13 @@ export function ImageInputs({
               }}
             />
           </div>
-          <div>
-            <strong>Panels currently loaded in this dashboard</strong>
-            <div className={styles.panelList}>
-              {panels.map((panel) => (
-                <Checkbox
-                  key={String(panel.id)}
-                  className={styles.panelChoice}
-                  label={panel.title}
-                  value={selectedIds.includes(String(panel.id))}
-                  onChange={(event) => {
-                    const checked = event.currentTarget.checked;
-                    setSelectedIds((previous) =>
-                      checked ? [...previous, String(panel.id)] : previous.filter((id) => id !== String(panel.id))
-                    );
-                  }}
-                />
-              ))}
-              {panels.length === 0 ? (
-                <span>No other rendered panels were found. Open the dashboard view or add images instead.</span>
-              ) : null}
-            </div>
-          </div>
           {error ? (
             <Alert title="Image preparation failed" severity="error">
               {error}
             </Alert>
           ) : null}
           {warnings.length > 0 ? (
-            <Alert title="Review capture limitations" severity="warning">
+            <Alert title="Review image limitations" severity="warning">
               <ul>
                 {warnings.map((warning, index) => (
                   <li key={index}>{warning}</li>
@@ -235,7 +180,7 @@ export function ImageInputs({
           ) : null}
           <p>
             {images.length} / {VISION_LIMITS.maxImages} images · PNG or JPEG · 4 MiB each · 12 MiB total. Large images
-            may be resized; use individual panel captures when small labels are hard to read.
+            may be resized; upload a higher-detail image when small labels are hard to read.
           </p>
           <div className={styles.grid}>
             {images.map((image) => (

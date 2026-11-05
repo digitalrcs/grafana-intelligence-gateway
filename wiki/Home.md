@@ -1,6 +1,10 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
+[Public edition 1.2.0 candidate and boundaries](Public-Edition)
+
 # Grafana Intelligence Gateway
 
-Grafana Intelligence Gateway is DigitalRCS's AI assessment panel for Grafana. It turns selected query results, dashboard captures, or uploaded images into an assessment from an administrator-approved local or hosted model, rendered as theme-aware Markdown.
+Grafana Intelligence Gateway is DigitalRCS's AI assessment panel for Grafana. It turns selected query results or uploaded PNG/JPEG images into an assessment from an administrator-approved local or hosted model, rendered as theme-aware Markdown.
 
 Version **1.1.2** requires companion **`digitalrcs-intelligencegateway-datasource` 1.1.0 or later**. The companion stores credentials in Grafana `secureJsonData` and enforces provider, model, token, timeout, payload, and rate policies server-side. The panel has no credential or direct provider-URL fields.
 
@@ -10,7 +14,7 @@ Version **1.1.2** requires companion **`digitalrcs-intelligencegateway-datasourc
 
 | Assessment      | Setup                                                                                                                        | Action                                  |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Data only       | Connect queries, commonly **Queries → Dashboard → Source panel**; leave images unattached.                                   | **Analyze**                             |
+| Data only       | Connect queries, commonly **Queries â†’ Dashboard â†’ Source panel**; leave images unattached.                                   | **Analyze**                             |
 | Images only     | Select the secure AI instance, turn **Include query data with images** off, and prepare previews. No query results required. | **Use images**, then **Analyze images** |
 | Data and images | Connect query data and leave **Include query data with images** on; prepare previews.                                        | **Use images**, then **Analyze images** |
 
@@ -18,7 +22,7 @@ Version **1.1.2** requires companion **`digitalrcs-intelligencegateway-datasourc
 
 Start with [Panel Setup and Configuration](Panel-Setup-and-Configuration), then [Image Analysis](Image-Analysis). The six provider choices are OpenAI, LM Studio, Open WebUI, the optional Grafana LLM app, custom OpenAI-compatible Chat Completions, and Copilot Studio Direct Line **preview**. Copilot is not an enterprise SSO integration; see its [authentication boundaries](Copilot-Studio-Notes).
 
-Trying the supplied demo? **DEMO ONLY - Mock AI (no inference)** returns a fixed receipt, not an assessment. Follow the [two-phase walkthrough](Reviewer-Walkthrough): first verify the mock path, then create and select a **separate real-provider instance**. Check the analysis panel's current **AI connection label**; the dashboard introduction describes only the supplied default. TestData and **Queries → Dashboard** provide evidence, not an AI model.
+Trying the supplied demo? **DEMO ONLY - Mock AI (no inference)** returns a fixed receipt, not an assessment. Follow the [two-phase walkthrough](Reviewer-Walkthrough): first verify the mock path, then create and select a **separate real-provider instance**. Check the analysis panel's current **AI connection label**; the dashboard introduction describes only the supplied default. TestData and **Queries â†’ Dashboard** provide evidence, not an AI model.
 
 ## Pages
 

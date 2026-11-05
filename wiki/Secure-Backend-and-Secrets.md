@@ -1,3 +1,5 @@
+> Public 1.2.0 candidate documentation; not a release or catalog approval. See [Public Edition](Public-Edition).
+
 # Secure Backend and Secret Storage
 
 ## Recommended production architecture
